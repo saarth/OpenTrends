@@ -125,6 +125,7 @@
     margin-bottom: 18px;
   }
   .brand-mark .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); box-shadow: none; }
+  .brand-logo { height: 120px; width: auto; max-width: 100%; display: block; }
   .app-header p { color: var(--muted); max-width: 640px; margin-top: 14px; font-size: 15px; line-height: 1.55; font-weight: 400; }
   .header-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
 
@@ -444,6 +445,7 @@
   @media (max-width: 640px) {
     .header-inner { flex-direction: column; align-items: flex-start; gap: 16px; }
     h1 { font-size: 30px; }
+    .brand-logo { height: 72px; }
     main { padding: 24px 20px 60px; }
     .card { padding: 20px; }
     .kpi-grid { grid-template-columns: 1fr; }
@@ -457,7 +459,7 @@
   <div class="header-inner">
     <div>
       <div class="brand-mark"><img src="logo-short.svg" alt="" width="14" height="14" style="display:block"> Trend intelligence</div>
-      <h1 style="margin:0"><a href="index.html" style="display:inline-block"><img src="logo-full.svg" alt="OpenTrends" style="height:120px;width:auto;display:block;max-width:100%"></a></h1>
+      <h1 style="margin:0"><a href="index.html" style="display:inline-block"><img src="logo-full.svg" alt="OpenTrends" class="brand-logo"></a></h1>
       <p>Turn Google Keyword Planner exports into theme-level search trend analysis for any category: growth, velocity, seasonality and top searches. You supply the category searches and the keyword buckets; Open Trends reports what is moving. Free, open source and runs entirely in your browser.</p>
     </div>
     <div class="header-actions">
