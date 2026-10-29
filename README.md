@@ -271,4 +271,4 @@ This is a fully static site. To self-host (e.g. on Unraid), run any static web s
 docker compose up -d
 ```
 
-Then open http://your-server:8080. Put it behind your reverse proxy (Nginx Proxy Manager, Traefik, Caddy, …) for HTTPS and a custom domain.
+Then open http://your-server:8090. Put it behind your reverse proxy (Nginx Proxy Manager, Traefik, Caddy, …) for HTTPS and a custom domain.
