@@ -1,0 +1,12 @@
+# Development scratch scripts
+_*.js
+
+# Large legacy workbook / presentation (not needed at runtime)
+Fragrance Trends  GKP Analysis.xlsx
+CDH-Fragrance Trends_6th Mar 2024.pptx
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

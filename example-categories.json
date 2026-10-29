@@ -1,0 +1,10 @@
+{
+  "Gourmand": "(vanilla OR caramel OR praline) NEAR/3 (scent OR perfume OR candle) NOT (recipe)",
+  "Fruit": [
+    "cherry",
+    "apple",
+    "strawberry",
+    "peach"
+  ],
+  "Woody": "((sandalwood OR cedar OR vetiver) NEAR/3 (scent OR fragrance OR perfume)) NOT (furniture OR timber)"
+}

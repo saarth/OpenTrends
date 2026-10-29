@@ -1,0 +1,3366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open Trends</title>
+<style>
+  :root {
+    --bg: #f6f3ee;
+    --bg-soft: #efeae1;
+    --panel: #ffffff;
+    --ink: #1c1a17;
+    --ink-soft: #3a3630;
+    --muted: #7a746a;
+    --line: #e6e1d6;
+    --line-strong: #d2ccbf;
+    --accent: #1f2d4a;
+    --accent-soft: #e8ebf2;
+    --gold: #9a7b4f;
+    --pos: #2f6b4f;
+    --pos-bg: #eaf3ee;
+    --neg: #9b3a3a;
+    --neg-bg: #f6eaea;
+    --warn: #8a6a2f;
+    --shadow: 0 1px 0 rgba(20,18,14,0.04), 0 12px 40px rgba(20,18,14,0.06);
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Inter", "Helvetica Neue", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1, h2, h3, h4 { margin: 0; font-weight: 500; letter-spacing: -0.015em; }
+  h1 { font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif; font-size: 42px; font-weight: 400; line-height: 1.05; letter-spacing: -0.02em; }
+  h2 { font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif; font-size: 24px; font-weight: 400; }
+  h3 { font-size: 15px; font-weight: 600; letter-spacing: 0.01em; text-transform: none; }
+  p { margin: 0; }
+  button, input, select, textarea { font: inherit; }
+  button { cursor: pointer; }
+  .hidden { display: none !important; }
+
+  .app-header {
+    position: relative;
+    overflow: hidden;
+    color: var(--ink);
+    padding: 48px 0 40px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+  }
+  .app-header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(900px 400px at 85% -10%, rgba(31,45,74,0.05), transparent 60%);
+    pointer-events: none;
+  }
+  .header-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 1520px;
+    margin: 0 auto;
+    padding: 0 40px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 32px;
+  }
+  .brand-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--muted);
+    background: transparent;
+    margin-bottom: 18px;
+  }
+  .brand-mark .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); box-shadow: none; }
+  .app-header p { color: var(--muted); max-width: 640px; margin-top: 14px; font-size: 15px; line-height: 1.55; font-weight: 400; }
+  .header-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
+
+  main {
+    max-width: 1520px;
+    margin: 0 auto;
+    padding: 40px 40px 80px;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: none;
+    padding: 28px;
+  }
+  .card + .card { margin-top: 24px; }
+  .card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .card-head h3 { font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+  .hint { color: var(--muted); font-size: 12px; font-weight: 400; }
+  .muted { color: var(--muted); }
+
+  .btn {
+    appearance: none;
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    color: var(--ink);
+    border-radius: var(--radius-sm);
+    padding: 9px 16px;
+    font-weight: 500;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+  }
+  .btn:hover { border-color: var(--ink); background: var(--ink); color: #fff; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: none; }
+  .btn.primary:hover { background: #152238; border-color: #152238; filter: none; }
+  .btn.ghost-light { background: transparent; border-color: var(--line-strong); color: var(--ink); }
+  .btn.ghost-light:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn:disabled:hover { background: transparent; color: var(--ink); border-color: var(--line-strong); }
+  .btn.small { padding: 6px 12px; font-size: 12px; border-radius: var(--radius-sm); }
+
+  .setup-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.7fr);
+    gap: 32px;
+    align-items: start;
+  }
+  .drop-zone {
+    position: relative;
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--radius);
+    background: var(--panel);
+    padding: 48px 32px;
+    text-align: center;
+    transition: 0.2s ease;
+    min-height: 260px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+  .drop-zone.dragover { border-color: var(--accent); background: var(--accent-soft); }
+  .drop-icon {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--bg-soft);
+    display: grid; place-items: center;
+    font-size: 20px;
+    color: var(--accent);
+  }
+  .drop-zone h2 { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; font-size: 22px; font-weight: 400; }
+  .drop-zone p { color: var(--muted); font-size: 13px; max-width: 460px; line-height: 1.5; }
+  .file-info {
+    margin-top: 16px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    font-size: 13px;
+  }
+  .file-info strong { font-weight: 600; }
+  .file-info .meta { color: var(--muted); margin-top: 4px; font-size: 12px; }
+  .settings { display: flex; flex-direction: column; gap: 16px; }
+  label { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 500; color: var(--muted); letter-spacing: 0.02em; }
+  input[type="text"], input[type="number"], input[type="search"], select, textarea {
+    width: 100%;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    background: var(--panel);
+    color: var(--ink);
+    padding: 10px 12px;
+    outline: none;
+    transition: 0.2s ease;
+    font-weight: 400;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(31,45,74,0.08); }
+  .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .row > label { flex: 1 1 150px; }
+  .check { flex-direction: row; align-items: center; gap: 9px; font-weight: 400; color: var(--ink-soft); font-size: 13px; }
+  .check input { width: auto; accent-color: var(--accent); }
+  .status { min-height: 18px; font-size: 12px; color: var(--muted); }
+  .status.error { color: var(--neg); }
+  .status.ok { color: var(--pos); }
+
+  details.dict { margin-top: 20px; border-top: 1px solid var(--line); padding-top: 18px; }
+  details.dict summary { cursor: pointer; font-weight: 500; font-size: 13px; color: var(--ink); display: flex; gap: 8px; align-items: center; letter-spacing: 0.02em; }
+  details.dict summary::marker { color: var(--accent); }
+  details.dict p { color: var(--muted); font-size: 12.5px; margin: 12px 0; line-height: 1.6; }
+  details.dict textarea {
+    min-height: 220px;
+    font-family: "SF Mono", "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-size: 11.5px;
+    line-height: 1.55;
+    background: #1a1a1a;
+    color: #e8e4dc;
+    border-color: #1a1a1a;
+    border-radius: var(--radius-sm);
+    resize: vertical;
+  }
+  details.dict .row { margin-top: 12px; }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .kpi {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    box-shadow: none;
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi::before { content: none; }
+  .kpi .label { color: var(--muted); font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; }
+  .kpi .value { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; font-size: 30px; font-weight: 400; letter-spacing: -0.02em; margin-top: 10px; color: var(--ink); }
+  .kpi .sub { color: var(--muted); font-size: 12px; margin-top: 6px; line-height: 1.4; }
+
+  .tabs {
+    display: flex;
+    gap: 2px;
+    padding: 4px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--panel);
+    margin-bottom: 24px;
+    overflow-x: auto;
+    position: sticky;
+    top: 12px;
+    z-index: 20;
+  }
+  .tab {
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    font-size: 13px;
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+    transition: 0.2s ease;
+  }
+  .tab:hover { color: var(--ink); }
+  .tab.active { background: var(--accent); color: #fff; }
+
+  .grid-2 { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 24px; }
+  .grid-2 > .card { margin-top: 0; }
+  .chart-wrap { position: relative; height: 360px; }
+  .chart-wrap.short { height: 280px; }
+  canvas { max-width: 100%; }
+
+  .table-wrap { overflow: auto; border: 1px solid var(--line); border-radius: var(--radius); max-height: 620px; background: var(--panel); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--panel);
+    color: var(--muted);
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  th:hover { color: var(--ink); }
+  th .sort-arrow { opacity: 0.4; margin-left: 4px; font-size: 9px; }
+  tbody tr { transition: background 0.15s ease; }
+  tbody tr:hover td { background: var(--bg-soft); }
+  tbody tr.selected td { background: var(--accent-soft); }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.nowrap { white-space: nowrap; }
+  .family-name { font-weight: 500; color: var(--ink); }
+  .rank { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 4px; background: var(--bg-soft); color: var(--muted); font-size: 11px; font-weight: 600; }
+  .growth { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .growth.pos { color: var(--pos); background: var(--pos-bg); }
+  .growth.neg { color: var(--neg); background: var(--neg-bg); }
+  .growth.na { color: var(--muted); background: var(--bg-soft); font-weight: 500; }
+  .bar-track { height: 4px; border-radius: 2px; background: var(--bg-soft); overflow: hidden; min-width: 60px; }
+  .bar-fill { height: 100%; border-radius: 2px; background: var(--accent); }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    cursor: pointer;
+    user-select: none;
+    transition: 0.2s ease;
+  }
+  .chip:hover { border-color: var(--line-strong); }
+  .chip input { accent-color: var(--accent); width: auto; }
+  .chip.active { border-color: var(--accent); background: var(--accent); color: #fff; }
+  .empty { padding: 40px 24px; text-align: center; color: var(--muted); font-size: 13px; font-style: italic; }
+  .note {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-left: 2px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .note b { color: var(--ink); font-weight: 600; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; color: var(--muted); font-size: 12px; margin-top: 10px; }
+  .legend .swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; margin-right: 6px; vertical-align: middle; }
+
+  .heat { font-variant-numeric: tabular-nums; font-weight: 600; }
+  .heat.low { color: var(--muted); }
+  .heat.high { color: var(--accent); }
+
+  .driver-list { display: flex; flex-direction: column; gap: 10px; }
+  .driver-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--panel);
+  }
+  .driver-item .driver-label {
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 4px;
+  }
+  .driver-item .driver-value { font-weight: 500; color: var(--ink); font-size: 14px; }
+  .driver-item .driver-detail { color: var(--muted); font-size: 12px; text-align: right; white-space: nowrap; }
+  .driver-item .driver-detail strong { color: var(--ink); font-weight: 600; }
+  .delta-pos { color: var(--pos); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .delta-neg { color: var(--neg); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .delta-na { color: var(--muted); font-weight: 500; }
+
+  #toast {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    background: var(--ink);
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+    font-size: 13px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: 0.25s ease;
+    pointer-events: none;
+    z-index: 100;
+    max-width: 380px;
+    letter-spacing: 0.01em;
+  }
+  #toast.show { opacity: 1; transform: translateY(0); }
+  #toast.error { background: var(--neg); }
+
+  .footer-note { color: var(--muted); font-size: 12px; margin-top: 24px; text-align: center; letter-spacing: 0.02em; }
+
+  @media (max-width: 1100px) {
+    .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-2 { grid-template-columns: 1fr; }
+    .setup-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .header-inner { flex-direction: column; align-items: flex-start; gap: 16px; }
+    h1 { font-size: 30px; }
+    main { padding: 24px 20px 60px; }
+    .card { padding: 20px; }
+    .kpi-grid { grid-template-columns: 1fr; }
+    .chart-wrap { height: 300px; }
+    .header-actions { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<header class="app-header">
+  <div class="header-inner">
+    <div>
+      <div class="brand-mark"><span class="dot"></span> Trend intelligence</div>
+      <h1>Open Trends</h1>
+      <p>Turn Google Keyword Planner exports into theme-level growth, velocity and seasonality for any category. You supply the category searches and the keyword buckets, and Open Trends reports what is moving.</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn ghost-light" id="headerDefaultBtn">Reset to example definitions</button>
+      <button class="btn ghost-light" id="headerExportBtn" disabled>Export Excel</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="card" id="setupCard">
+    <div class="setup-grid">
+      <div>
+        <div class="drop-zone" id="dropZone">
+          <div class="drop-icon">^</div>
+          <h2>Drop a Google Keyword Planner export</h2>
+          <p>XLSX, XLS or CSV. The tool looks for a keyword column, an AMS / average monthly searches column, and monthly date columns.</p>
+          <button class="btn primary" id="browseBtn" type="button">Choose file</button>
+          <input type="file" id="fileInput" accept=".xlsx,.xls,.csv,text/csv" class="hidden">
+        </div>
+        <div class="file-info hidden" id="fileInfo"></div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="card-head"><h3>Category definitions</h3></div>
+        <p class="hint" style="margin-bottom:12px">Upload your keyword buckets as a dictionary (.json, .xlsx, .xls or .csv): one row per theme, with a boolean query or a list of terms. The example file shows the expected columns (Theme, Query).</p>
+        <div class="row">
+          <button class="btn small" id="uploadCategoryBtn" type="button">Upload definitions</button>
+          <a class="btn small ghost-light" href="example-categories.xlsx" download>Example definitions (.xlsx)</a>
+          <a class="btn small ghost-light" href="example-categories.json" download>Example definitions (.json)</a>
+          <input type="file" id="categoryFile" accept=".json,.xlsx,.xls,.csv" class="hidden">
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="card-head"><h3>Example data</h3></div>
+        <p class="hint" style="margin-bottom:12px">A small Google Keyword Planner export with the expected columns (keyword, AMS, 48 monthly columns) to try the tool.</p>
+        <div class="row">
+          <a class="btn small ghost-light" href="example-gkp.xlsx" download>Example GKP export (.xlsx)</a>
+        </div>
+      </div>
+      <div class="settings">
+        <label>Worksheet
+          <select id="sheetSelect" disabled><option>Load a file first</option></select>
+        </label>
+        <div class="row">
+          <label>Short window (months)
+            <input type="number" id="shortWindow" value="12" min="2" max="36" step="1">
+          </label>
+          <label>Long window (months)
+            <input type="number" id="longWindow" value="48" min="6" max="120" step="1">
+          </label>
+        </div>
+        <label class="check"><input type="checkbox" id="dedupe" checked> Merge duplicate keywords (keep first)</label>
+        <button class="btn primary" id="runBtn" disabled>Run analysis</button>
+        <div class="status" id="parseStatus"></div>
+      </div>
+    </div>
+
+    <details class="dict" id="dictDetails">
+      <summary>Category definitions <span class="hint" id="dictCount"></span></summary>
+      <p>Each key is a theme (your keyword bucket); each value is either a <b>boolean query</b> or a plain list of terms. Queries support <b>OR</b>, <b>AND</b>, <b>NOT</b>, <b>NEAR/3</b>, parentheses, <b>"quoted phrases"</b>, <b>*</b>/<b>?</b> wildcards and <b>#hashtags</b>, and are matched against the words of each search term  -  so <code>(vanilla OR caramel) NEAR/3 (perfume OR candle) NOT (recipe)</code> behaves as written. Term lists keep the older forgiving substring matching (whole words for terms of 4 characters or fewer).</p>
+      <textarea id="dictText" spellcheck="false"></textarea>
+      <div class="row">
+        <button class="btn small" id="loadDefaultBtn" type="button">Load example definitions (fragrance)</button>
+        <button class="btn small" id="loadWorkbookBtn" type="button">Load fragrance term list</button>
+        <button class="btn small" id="applyDictBtn" type="button">Apply dictionary</button>
+        <button class="btn small" id="uploadDictBtn" type="button">Upload dictionary</button>
+        <button class="btn small" id="downloadDictBtn" type="button">Download JSON</button>
+        <input type="file" id="dictFile" accept=".json,.xlsx,.xls,.csv" class="hidden">
+      </div>
+      <label class="check" style="margin-top:10px"><input type="checkbox" id="contextToggle" checked> Treat product words as search context (candle, wax melt, diffuser, air freshener, incense, soap, lotion, body mist)</label>
+      <label class="check" style="margin-top:6px"><input type="checkbox" id="bareToggle" checked> Also match bare note searches ("sandalwood", "white musk", "patchouli oil", "bergamot essential oil")</label>
+      <p class="hint" style="margin-top:6px">These options keep bare ingredient searches inside a theme. The first also accepts a product word, so "sandalwood candle" counts as Woody even though the definition only lists scent, fragrance, perfume, aroma, smell, bouquet and note. The second also accepts a search that is <i>only</i> notes and filler words, so "sandalwood" counts too  -  while "vanilla extract" and "rose garden" stay out. They only matter for queries written as <i>term near context</i>; plain term lists are unaffected.</p>
+    </details>
+
+    <details class="dict" id="brandDictDetails">
+      <summary>Brand &amp; product dictionary <span class="hint" id="brandDictCount"></span></summary>
+      <p>Brands and formats are optional. Each key is a brand or a product type, and the value is a list of aliases matched against keywords the same way as terms. The bundled lists are a fragrance starter set; replace them with your own. Signature product names are included as aliases, so "santal 33" counts as Le Labo. Product types classify the format being searched for (candle, perfume, air freshener, wax melt).</p>
+      <label style="margin-top:10px">Brands
+        <textarea id="brandText" spellcheck="false" style="min-height:180px"></textarea>
+      </label>
+      <label style="margin-top:10px">Product types
+        <textarea id="typeText" spellcheck="false" style="min-height:150px"></textarea>
+      </label>
+      <div class="row">
+        <button class="btn small" id="loadDefaultBrandsBtn" type="button">Load example brand list</button>
+        <button class="btn small" id="applyBrandsBtn" type="button">Apply dictionaries</button>
+      </div>
+      <label class="check" style="margin-top:10px"><input type="checkbox" id="fuzzyToggle"> Fuzzy match brand aliases (catch novel typos like "barakat" -> "baccarat"; off by default)</label>
+      <p class="hint" style="margin-top:6px">When on, an unmatched search is attributed to a brand if one of its aliases is within one edit of a search word, and only when exactly one brand matches. Use it for messy exports; leave it off for clean data to avoid false positives.</p>
+    </details>
+  </section>
+
+  <section id="results" class="hidden">
+    <div class="kpi-grid" id="kpiGrid"></div>
+    <nav class="tabs" id="tabs">
+      <button class="tab active" data-tab="overview">Overview</button>
+      <button class="tab" data-tab="family">Theme growth</button>
+      <button class="tab" data-tab="deep">Theme deep dive</button>
+      <button class="tab" data-tab="terms">Terms</button>
+      <button class="tab" data-tab="brands">Brands &amp; products</button>
+      <button class="tab" data-tab="top">Top searches</button>
+      <button class="tab" data-tab="season">Seasonality</button>
+      <button class="tab" data-tab="export">Export</button>
+    </nav>
+
+    <section class="tab-panel" id="tab-overview">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head">
+            <h3>Velocity map</h3>
+            <span class="hint">Bubble size = AMS  |  x = long-term growth  |  y = short-term growth</span>
+          </div>
+          <div class="chart-wrap"><canvas id="bubbleChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <h3>Fastest growing themes</h3>
+            <span class="hint">Ranked by short-term growth</span>
+          </div>
+          <div class="table-wrap" id="fastestTable" style="max-height:350px"></div>
+        </div>
+      </div>
+      <div class="card" id="coverageCard" style="margin-top:18px">
+        <div class="card-head">
+          <h3>Coverage</h3>
+          <button class="btn small" id="exportUnmatchedBtn" type="button">Download unclassified CSV</button>
+        </div>
+        <div id="coverageBody"></div>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <div class="card-head"><h3>Reading the output</h3></div>
+        <div class="note">
+          <b>Size</b> is the sum of average monthly searches (AMS) for every keyword tagged with a theme  -  it is a scale signal, not a monthly volume.
+          <b>Short-term growth</b> compares the latest month with the start of the short window (default 12 months).
+          <b>Long-term growth</b> does the same over the long window (default 48 months).
+          A theme with high growth but small size is an emerging niche; high growth plus large size is a genuine momentum shift.
+          Themes and terms can overlap: one keyword can match several terms or themes, so shares can sum above 100% and term-level volumes are not mutually exclusive.
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-panel hidden" id="tab-family">
+      <div class="card">
+        <div class="card-head">
+          <h3>Theme growth</h3>
+          <span class="hint">Click a row to chart that theme</span>
+        </div>
+        <div class="table-wrap" id="familyTable"></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <h3 id="familyChartTitle">Monthly volume</h3>
+          <label style="flex-direction:row;align-items:center;gap:8px;font-weight:500;color:var(--muted)">
+            Theme
+            <select id="familySelect" style="width:auto;min-width:180px"></select>
+          </label>
+        </div>
+        <div class="chart-wrap short"><canvas id="familyChart"></canvas></div>
+      </div>
+    </section>
+
+    <section class="tab-panel hidden" id="tab-deep">
+      <div class="card">
+        <div class="card-head">
+          <h3>Theme deep dive</h3>
+          <span class="hint">Which terms are driving this theme's trend?</span>
+        </div>
+        <div class="row">
+          <label style="flex:0 0 240px">Theme <select id="deepFamily"></select></label>
+          <label style="flex:0 0 220px">Window
+            <select id="deepWindow">
+              <option value="short">Short-term (12 months)</option>
+              <option value="long">Long-term (48 months)</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div class="kpi-grid" id="deepKpis" style="margin-top:18px"></div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head">
+            <h3 id="driverChartTitle">Term contribution</h3>
+            <span class="hint">Change in monthly volume vs window start</span>
+          </div>
+          <div class="chart-wrap short"><canvas id="driverChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Driver summary</h3></div>
+          <div id="driverSummary"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <h3>Term-level drivers</h3>
+          <span class="hint">Sorted by volume change  -  contributions overlap when a keyword matches several terms</span>
+        </div>
+        <div class="table-wrap" id="driverTermTable"></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <h3>Keyword-level drivers</h3>
+          <span class="hint">Top risers and decliners behind the change</span>
+        </div>
+        <div class="table-wrap" id="driverKeywordTable"></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head">
+            <h3>Brands in this theme</h3>
+            <span class="hint">Share of the theme's AMS</span>
+          </div>
+          <div class="table-wrap" id="deepBrandTable"></div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <h3>Product types in this theme</h3>
+            <span class="hint">Candles, perfume, air care.</span>
+          </div>
+          <div class="table-wrap" id="deepTypeTable"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-panel hidden" id="tab-terms">
+      <div class="card">
+        <div class="card-head">
+          <h3>Term growth</h3>
+          <span class="hint">Within-theme term performance</span>
+        </div>
+        <div class="row" style="margin-bottom:12px">
+          <label style="flex:0 0 190px">Theme <select id="termFamily"></select></label>
+          <label style="flex:1 1 180px">Search term <input type="search" id="termSearch" placeholder="e.g. vanilla"></label>
+          <label style="flex:0 0 180px">Chart metric
+            <select id="termMetric">
+              <option value="size">Size (AMS)</option>
+              <option value="short">Short-term growth</option>
+              <option value="long">Long-term growth</option>
+            </select>
+          </label>
+        </div>
+        <div class="chart-wrap short"><canvas id="termChart"></canvas></div>
+        <div class="table-wrap" id="termTable" style="margin-top:14px"></div>
+        <div class="card" style="margin-top:18px">
+          <div class="card-head">
+            <h3 id="termDrillTitle">Keywords in this term</h3>
+            <span class="hint">Click a term row above  -  sorted by AMS</span>
+            <button class="btn small" id="exportTermDrillCsvBtn" type="button">Download CSV</button>
+          </div>
+          <div class="table-wrap" id="termDrillTable"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-panel hidden" id="tab-brands">
+      <div class="card">
+        <div class="card-head">
+          <h3>Brands &amp; products</h3>
+          <span class="hint">Who and what is behind the searches</span>
+        </div>
+        <div class="row">
+          <label style="flex:0 0 170px">View
+            <select id="brandDim">
+              <option value="brand">Brands</option>
+              <option value="type">Product types</option>
+            </select>
+          </label>
+          <label style="flex:0 0 240px">Keyword term
+            <select id="brandTerm"></select>
+          </label>
+          <label style="flex:0 0 170px">Rank by
+            <select id="brandMetric">
+              <option value="size">Size (AMS)</option>
+              <option value="short">Short-term growth</option>
+              <option value="long">Long-term growth</option>
+            </select>
+          </label>
+          <label style="flex:1 1 180px">Search
+            <input type="search" id="brandSearch" placeholder="e.g. tom ford, candle">
+          </label>
+        </div>
+        <div class="chart-wrap short" style="margin-top:14px"><canvas id="brandChart"></canvas></div>
+        <div class="table-wrap" id="brandTable" style="margin-top:14px"></div>
+        <p class="hint" style="margin-top:10px">Brand totals overlap when a keyword mentions more than one brand, and product types overlap by design (a "car air freshener" is both a car freshener and an air freshener).</p>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <h3 id="brandSpotlightTitle">Brand spotlight</h3>
+          <span class="hint">Click any row to inspect its top products</span>
+        </div>
+        <div class="table-wrap" id="brandProducts"></div>
+      </div>
+    </section>
+
+    <section class="tab-panel hidden" id="tab-top">
+      <div class="card">
+        <div class="card-head">
+          <h3>Top searches by theme</h3>
+          <span class="hint">Top keywords by AMS</span>
+        </div>
+        <div class="row" style="margin-bottom:12px">
+          <label style="flex:0 0 210px">Theme <select id="topFamily"></select></label>
+          <label style="flex:0 0 230px">Keyword term <select id="topTerm"></select></label>
+          <label style="flex:1 1 200px">Search keyword <input type="search" id="topSearch" placeholder="Filter keywords"></label>
+          <span class="hint" id="topCount"></span>
+        </div>
+        <div class="table-wrap" id="topTable"></div>
+      </div>
+    </section>
+
+    <section class="tab-panel hidden" id="tab-season">
+      <div class="card">
+        <div class="card-head">
+          <h3>Seasonality</h3>
+          <div class="row" style="gap:8px">
+            <label style="flex-direction:row;align-items:center;gap:8px;font-weight:500;color:var(--muted)">
+              Keyword term
+              <select id="seasonTerm" style="width:auto;min-width:210px"></select>
+            </label>
+            <label style="flex-direction:row;align-items:center;gap:8px;font-weight:500;color:var(--muted)">
+              View
+              <select id="seasonView" style="width:auto">
+                <option value="raw">Monthly volume</option>
+                <option value="index">Seasonality index</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <div class="chips" id="seasonToggles"></div>
+        <div class="chart-wrap"><canvas id="seasonChart"></canvas></div>
+        <div class="legend" id="seasonLegend"></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <h3>Seasonality index by month</h3>
+          <span class="hint" id="seasonTableHint">100 = an average month for that theme</span>
+        </div>
+        <div class="table-wrap" id="seasonTable"></div>
+      </div>
+    </section>
+
+    <section class="tab-panel hidden" id="tab-export">
+      <div class="card">
+        <div class="card-head"><h3>Export</h3></div>
+        <p class="muted" style="margin-bottom:14px">Download a workbook shaped like the original analysis, or take individual tables into Excel / BI tools.</p>
+        <div class="row">
+          <button class="btn primary" id="exportExcelBtn">Download full Excel workbook</button>
+          <button class="btn" id="exportFamilyCsvBtn">Theme CSV</button>
+          <button class="btn" id="exportTermCsvBtn">Term CSV</button>
+          <button class="btn" id="exportDriverTermCsvBtn">Term drivers CSV</button>
+          <button class="btn" id="exportDriverKeywordCsvBtn">Keyword drivers CSV</button>
+          <button class="btn" id="exportBrandCsvBtn">Brands CSV</button>
+          <button class="btn" id="exportTypeCsvBtn">Product types CSV</button>
+          <button class="btn" id="exportTopCsvBtn">Top searches CSV</button>
+          <button class="btn" id="exportJsonBtn">Full JSON</button>
+        </div>
+        <div class="note" style="margin-top:16px">
+          <b>Workbook sheets:</b> Summary  |  Theme Growth  |  Term Growth  |  Term Drivers  |  Keyword Drivers  |  Brand Growth  |  Product Types  |  Brand Mix  |  Top Searches  |  Seasonality Index  |  Monthly Volumes  |  Classification. Growth values are written as percentages.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Method</h3></div>
+        <div class="note">
+          Rows are tagged by testing each dictionary query or term against the keyword. A row joins a theme if any of that theme's terms match.
+          Theme monthly volume is the sum of the row's monthly volumes; theme size is the sum of AMS. Growth is
+          <b>(latest - window start) / window start</b>, using the last month in the data and the requested window length.
+          This mirrors the "1Y Growth" and "4Y Growth%" columns in the manual workbook.
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <p class="footer-note">Runs entirely in your browser. Your data is not uploaded anywhere.</p>
+</main>
+
+<div id="toast"></div>
+
+<script src="vendor/xlsx.full.min.js"></script>
+<script src="vendor/chart.umd.min.js"></script>
+<script src="default_classification.js?v=8"></script>
+<script src="default_groups.js?v=2"></script>
+<script src="default_brands.js?v=3"></script>
+<script src="analysis.js?v=12"></script>
+<script src="fragrance-trends.js?v=3"></script>
+<script>
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var state = {
+    workbook: null,
+    sheetNames: [],
+    parsed: null,
+    result: null,
+    classification: null,
+    brandDict: null,
+    typeDict: null,
+    brandResult: null,
+    typeResult: null,
+    crossBrands: null,
+    crossTypes: null,
+    coverage: null,
+    selectedBrand: null,
+    activeTab: 'overview',
+    selectedFamily: null,
+    selectedTerm: null,
+    charts: {},
+    sort: {
+      family: { key: 'size', dir: 'desc' },
+      term: { key: 'size', dir: 'desc' },
+      top: { key: 'ams', dir: 'desc' },
+      deepTerm: { key: 'change', dir: 'desc' },
+      brand: { key: 'size', dir: 'desc' },
+       termDrill: { key: 'ams', dir: 'desc' }
+    },
+    seasonFamilies: []
+  };
+
+  var COLORS = ['#5b4bff', '#00a896', '#ff7a59', '#e5484d', '#2e90fa', '#9b51e0', '#f2c94c', '#219653', '#eb5757', '#56ccf2', '#bb6bd9', '#7a5cff'];
+
+  // Product words that count as "search context" next to a note, so a keyword
+  // like "sandalwood candle" still lands in a theme.
+  var PRODUCT_CONTEXT = [
+    'candle', 'candles', 'wax melt', 'wax melts', 'wax warmer', 'diffuser',
+    'air freshener', 'room spray', 'room freshener', 'car freshener',
+    'car air freshener', 'incense', 'soap', 'body wash', 'lotion', 'body mist',
+    'body spray', 'perfume oil', 'cologne', 'detergent', 'laundry', 'scented'
+  ];
+
+  function showToast(message, isError) {
+    var toast = $('toast');
+    toast.textContent = message;
+    toast.className = 'show' + (isError ? ' error' : '');
+    clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(function () { toast.className = ''; }, 3200);
+  }
+
+  function esc(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function fmtInt(value) {
+    if (value == null || !Number.isFinite(Number(value))) return ' - ';
+    return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(Number(value));
+  }
+
+  function fmtCompact(value) {
+    if (value == null || !Number.isFinite(Number(value))) return ' - ';
+    return new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(Number(value));
+  }
+
+  function fmtPct(value) {
+    if (value == null || !Number.isFinite(Number(value))) return ' - ';
+    return (Number(value) * 100).toFixed(1) + '%';
+  }
+
+  function growthHtml(value) {
+    if (value == null || !Number.isFinite(Number(value))) return '<span class="growth na"> - </span>';
+    var positive = Number(value) >= 0;
+    return '<span class="growth ' + (positive ? 'pos' : 'neg') + '">' +
+      (positive ? '+' : '-') + ' ' + fmtPct(Math.abs(Number(value))) + '</span>';
+  }
+
+  function fmtSignedInt(value) {
+    if (value == null || !Number.isFinite(Number(value))) return ' - ';
+    var number = Number(value);
+    return (number > 0 ? '+' : '') + fmtInt(number);
+  }
+
+  function fmtPp(value) {
+    if (value == null || !Number.isFinite(Number(value))) return ' - ';
+    var number = Number(value) * 100;
+    return (number > 0 ? '+' : '') + number.toFixed(1) + ' pp';
+  }
+
+  function deltaHtml(value) {
+    if (value == null || !Number.isFinite(Number(value))) return '<span class="delta-na"> - </span>';
+    var number = Number(value);
+    return '<span class="' + (number >= 0 ? 'delta-pos' : 'delta-neg') + '">' + fmtSignedInt(number) + '</span>';
+  }
+
+  function fmtMonth(iso) {
+    if (!iso) return ' - ';
+    var parts = String(iso).split('-');
+    if (parts.length < 2) return iso;
+    var date = new Date(Date.UTC(Number(parts[0]), Number(parts[1]) - 1, 1));
+    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+  }
+
+  function fmtMonthShort(iso) {
+    if (!iso) return '';
+    var parts = String(iso).split('-');
+    if (parts.length < 2) return iso;
+    var date = new Date(Date.UTC(Number(parts[0]), Number(parts[1]) - 1, 1));
+    return date.toLocaleDateString('en-US', { month: 'short', year: '2-digit', timeZone: 'UTC' });
+  }
+
+  function monthName(index) {
+    return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][index];
+  }
+
+  function getPath(object, path) {
+    return path.split('.').reduce(function (acc, key) {
+      return acc == null ? null : acc[key];
+    }, object);
+  }
+
+  function sortRows(rows, key, dir) {
+    return rows.slice().sort(function (a, b) {
+      var av = getPath(a, key);
+      var bv = getPath(b, key);
+      if (av == null && bv == null) return 0;
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      if (typeof av === 'string' || typeof bv === 'string') {
+        var cmp = String(av).localeCompare(String(bv), undefined, { sensitivity: 'base' });
+        return dir === 'asc' ? cmp : -cmp;
+      }
+      return dir === 'asc' ? Number(av) - Number(bv) : Number(bv) - Number(av);
+    });
+  }
+
+  function sortHeader(label, key, current) {
+    var arrow = current.key === key ? (current.dir === 'asc' ? ' ^' : ' v') : '';
+    return '<th data-sort="' + esc(key) + '">' + esc(label) + (arrow ? '<span class="sort-arrow">' + arrow + '</span>' : '') + '</th>';
+  }
+
+  function destroyChart(name) {
+    if (state.charts[name]) {
+      state.charts[name].destroy();
+      delete state.charts[name];
+    }
+  }
+
+  function chartAvailable() {
+    return typeof Chart !== 'undefined';
+  }
+
+  // ---------------------------------------------------------------- dictionary
+  function cloneDictionary(source) {
+    return JSON.parse(JSON.stringify(source || {}));
+  }
+
+  function defaultClassification() {
+    return cloneDictionary(window.DEFAULT_CLASSIFICATION);
+  }
+
+  function workbookClassification() {
+    var source = window.WORKBOOK_CLASSIFICATION || {};
+    var ordered = {};
+    ['Outdoor', 'REM Scents', 'REM Scent Group', 'Floral', 'Aromatic', 'Gourmand', 'Fresh', 'Fruit', 'Tropical', 'Linen', 'Citrus', 'Lavender'].forEach(function (name) {
+      if (source[name]) ordered[name] = source[name];
+    });
+    Object.keys(source).forEach(function (name) {
+      if (!ordered[name]) ordered[name] = source[name];
+    });
+    if (ordered['REM Scent Group'] && !ordered['REM Scents']) {
+      ordered['REM Scents'] = ordered['REM Scent Group'];
+      delete ordered['REM Scent Group'];
+    }
+    return ordered;
+  }
+
+  function classificationText(classification) {
+    return JSON.stringify(classification, null, 2);
+  }
+
+  function dictionarySummary(dictionary) {
+    var families = 0;
+    var terms = 0;
+    var queries = 0;
+    Object.keys(dictionary || {}).forEach(function (name) {
+      var value = dictionary[name];
+      families += 1;
+      if (Array.isArray(value)) terms += value.length;
+      else if (typeof value === 'string') queries += 1;
+    });
+    var parts = [families + ' themes', terms + ' terms'];
+    if (queries) parts.push(queries + ' queries');
+    return parts.join('  |  ');
+  }
+
+  function setDictionary(classification, message) {
+    state.classification = classification;
+    $('dictText').value = classificationText(classification);
+    $('dictCount').textContent = dictionarySummary(classification);
+    if (message) showToast(message);
+  }
+
+  function updateDictionaryCount(text) {
+    try {
+      var parsed = JSON.parse(text);
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('Dictionary must be a JSON object');
+      $('dictCount').textContent = dictionarySummary(parsed);
+    } catch (error) {
+      $('dictCount').textContent = 'invalid JSON';
+    }
+  }
+
+  function readClassification() {
+    var text = $('dictText').value.trim();
+    var parsed;
+    try {
+      parsed = JSON.parse(text);
+    } catch (error) {
+      throw new Error('Dictionary is not valid JSON: ' + error.message);
+    }
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      throw new Error('Dictionary must be a JSON object of theme  |  terms or theme  |  query.');
+    }
+    var clean = {};
+    Object.keys(parsed).forEach(function (name) {
+      var value = parsed[name];
+      if (Array.isArray(value)) {
+        var terms = value.filter(function (term) { return typeof term === 'string' && term.length; });
+        if (terms.length) clean[name] = terms;
+        return;
+      }
+      if (typeof value === 'string' && value.trim()) clean[name] = value.trim();
+    });
+    if (!Object.keys(clean).length) throw new Error('Dictionary has no usable themes.');
+    return clean;
+  }
+
+  // ------------------------------------------------------- brand dictionaries
+  function defaultBrands() {
+    return JSON.parse(JSON.stringify(window.DEFAULT_BRANDS || {}));
+  }
+
+  function defaultTypes() {
+    return JSON.parse(JSON.stringify(window.DEFAULT_PRODUCT_TYPES || {}));
+  }
+
+  function dictionaryTermCount(dictionary) {
+    return Object.keys(dictionary).reduce(function (sum, name) {
+      return sum + (Array.isArray(dictionary[name]) ? dictionary[name].length : 0);
+    }, 0);
+  }
+
+  function setBrandDictionary(brands, types, message) {
+    state.brandDict = brands;
+    state.typeDict = types;
+    state.brandMatchers = null;
+    state.typeMatchers = null;
+    $('brandText').value = JSON.stringify(brands, null, 2);
+    $('typeText').value = JSON.stringify(types, null, 2);
+    $('brandDictCount').textContent =
+      Object.keys(brands).length + ' brands  |  ' + dictionaryTermCount(types) + ' product terms';
+    if (message) showToast(message);
+  }
+
+  function updateBrandDictCount() {
+    try {
+      var brands = JSON.parse($('brandText').value);
+      var types = JSON.parse($('typeText').value);
+      $('brandDictCount').textContent =
+        Object.keys(brands).length + ' brands  |  ' +
+        Object.keys(types).length + ' product types';
+    } catch (error) {
+      $('brandDictCount').textContent = 'invalid JSON';
+    }
+  }
+
+  function readBrandDictionary() {
+    var brands;
+    var types;
+    try {
+      brands = JSON.parse($('brandText').value.trim() || '{}');
+      types = JSON.parse($('typeText').value.trim() || '{}');
+    } catch (error) {
+      throw new Error('Brand dictionary is not valid JSON: ' + error.message);
+    }
+    function clean(parsed, label) {
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+        throw new Error(label + ' must be a JSON object of name  |  patterns.');
+      }
+      var out = {};
+      Object.keys(parsed).forEach(function (name) {
+        if (!Array.isArray(parsed[name])) return;
+        var terms = parsed[name].filter(function (term) { return typeof term === 'string' && term.length; });
+        if (terms.length) out[name] = terms;
+      });
+      return out;
+    }
+    return { brands: clean(brands, 'Brands'), types: clean(types, 'Product types') };
+  }
+
+  // ---------------------------------------------------------------- file / parse
+  function isDateLike(value) {
+    if (value instanceof Date && !isNaN(value)) return true;
+    if (typeof value === 'number' && value > 20000 && value < 80000) return true;
+    if (typeof value !== 'string') return false;
+    var text = value.trim();
+    if (!text) return false;
+    if (/^\d{4}[-/]\d{1,2}([-/]\d{1,2})?$/.test(text)) return true;
+    if (/^(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[\s\/-]+\d{2,4}$/i.test(text)) return true;
+    if (/^\d{1,2}[\s\/-]+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[\s\/-]+\d{2,4}$/i.test(text)) return true;
+    return false;
+  }
+
+  function dateToIso(value) {
+    if (value instanceof Date && !isNaN(value)) {
+      return value.getFullYear() + '-' + String(value.getMonth() + 1).padStart(2, '0') + '-01';
+    }
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      if (typeof XLSX !== 'undefined' && XLSX.SSF && XLSX.SSF.parse_date_code) {
+        var parsed = XLSX.SSF.parse_date_code(value);
+        if (parsed && parsed.y) return parsed.y + '-' + String(parsed.m).padStart(2, '0') + '-01';
+      }
+      var date = new Date(Date.UTC(1899, 11, 30) + value * 86400000);
+      return date.getUTCFullYear() + '-' + String(date.getUTCMonth() + 1).padStart(2, '0') + '-01';
+    }
+    if (typeof value !== 'string') return null;
+    var text = value.trim();
+    var match = text.match(/^(\d{4})[-/](\d{1,2})(?:[-/](\d{1,2}))?$/);
+    if (match) return match[1] + '-' + String(Number(match[2])).padStart(2, '0') + '-01';
+    var monthNames = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
+    match = text.match(/^([a-z]{3,9})[\s\/-]+(\d{2,4})$/i);
+    if (match && monthNames[match[1].slice(0, 3).toLowerCase()]) {
+      var year = Number(match[2]);
+      if (year < 100) year += year >= 70 ? 1900 : 2000;
+      return year + '-' + String(monthNames[match[1].slice(0, 3).toLowerCase()]).padStart(2, '0') + '-01';
+    }
+    match = text.match(/^(\d{1,2})[\s\/-]+([a-z]{3,9})[\s\/-]+(\d{2,4})$/i);
+    if (match && monthNames[match[2].slice(0, 3).toLowerCase()]) {
+      var y = Number(match[3]);
+      if (y < 100) y += y >= 70 ? 1900 : 2000;
+      return y + '-' + String(monthNames[match[2].slice(0, 3).toLowerCase()]).padStart(2, '0') + '-01';
+    }
+    return null;
+  }
+
+  function parseNumber(value) {
+    if (value == null || value === '') return 0;
+    if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+    var text = String(value).replace(/[,\s?$?]/g, '').replace(/[^0-9.\-]/g, '');
+    var number = parseFloat(text);
+    return Number.isFinite(number) ? number : 0;
+  }
+
+  function getCell(row, index) {
+    return index == null ? null : row[index];
+  }
+
+  function findHeaderRow(rows) {
+    var best = { index: 0, score: -1 };
+    var limit = Math.min(rows.length, 30);
+    for (var r = 0; r < limit; r++) {
+      var row = rows[r] || [];
+      var dateCount = 0;
+      var keywordCount = 0;
+      var amsCount = 0;
+      for (var c = 0; c < row.length; c++) {
+        var value = row[c];
+        if (isDateLike(value)) dateCount++;
+        if (typeof value === 'string') {
+          var text = value.trim().toLowerCase();
+          if (/^(keyword|keywords|query|search term|term)$/.test(text)) keywordCount++;
+          if (/^(ams|avg\.? monthly searches|average monthly searches|search volume)$/.test(text)) amsCount++;
+          if (/keyword|query/.test(text)) keywordCount += 0.5;
+          if (/ams|monthly search|search volume/.test(text)) amsCount += 0.5;
+        }
+      }
+      var score = dateCount * 2 + keywordCount * 4 + amsCount * 3;
+      if (score > best.score) best = { index: r, score: score };
+    }
+    return best.index;
+  }
+
+  function findColumns(headerRow) {
+    var keywordIndex = null;
+    var amsIndex = null;
+    var monthly = [];
+    for (var c = 0; c < headerRow.length; c++) {
+      var value = headerRow[c];
+      if (value == null) continue;
+      var text = typeof value === 'string' ? value.trim() : '';
+      var lower = text.toLowerCase();
+      if (keywordIndex == null && /^(keyword|keywords|query|search term|term)$/.test(lower)) keywordIndex = c;
+      if (amsIndex == null && /^(ams|avg\.? monthly searches|average monthly searches|search volume)$/.test(lower)) amsIndex = c;
+      if (isDateLike(value)) {
+        var iso = dateToIso(value);
+        if (iso) monthly.push({ index: c, iso: iso });
+      }
+    }
+    if (keywordIndex == null) {
+      for (var k = 0; k < headerRow.length; k++) {
+        if (headerRow[k] != null && String(headerRow[k]).trim()) { keywordIndex = k; break; }
+      }
+    }
+    if (amsIndex == null) {
+      for (var a = 0; a < headerRow.length; a++) {
+        if (a === keywordIndex) continue;
+        var text2 = headerRow[a] == null ? '' : String(headerRow[a]).toLowerCase();
+        if (/ams|avg.*monthly|average.*monthly|search volume/.test(text2)) { amsIndex = a; break; }
+      }
+    }
+    monthly.sort(function (a, b) { return a.iso.localeCompare(b.iso); });
+    return { keywordIndex: keywordIndex, amsIndex: amsIndex, monthly: monthly };
+  }
+
+  function parseSheet(workbook, sheetName) {
+    var sheet = workbook.Sheets[sheetName];
+    if (!sheet) throw new Error('Worksheet not found.');
+    var rows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: true, defval: null, blankrows: false });
+    if (!rows.length) throw new Error('Worksheet is empty.');
+
+    var headerIndex = findHeaderRow(rows);
+    var header = rows[headerIndex] || [];
+    var columns = findColumns(header);
+    if (columns.keywordIndex == null) throw new Error('Could not find a keyword column.');
+    if (!columns.monthly.length) throw new Error('Could not find monthly date columns. Export historical monthly data from Keyword Planner and try again.');
+
+    var dates = columns.monthly.map(function (column) { return column.iso; });
+    var seen = new Set();
+    var parsedRows = [];
+    var skipped = 0;
+
+    for (var r = headerIndex + 1; r < rows.length; r++) {
+      var row = rows[r] || [];
+      var keywordRaw = getCell(row, columns.keywordIndex);
+      if (keywordRaw == null) { skipped++; continue; }
+      var keyword = TrendAnalysis.normalizeText(keywordRaw);
+      if (!keyword) { skipped++; continue; }
+
+      var monthly = columns.monthly.map(function (column) {
+        return parseNumber(getCell(row, column.index));
+      });
+      var ams = columns.amsIndex == null ? 0 : parseNumber(getCell(row, columns.amsIndex));
+      if (!ams) {
+        var positive = monthly.filter(function (value) { return value > 0; });
+        ams = positive.length ? positive.reduce(function (a, b) { return a + b; }, 0) / positive.length : 0;
+      }
+
+      if ($('dedupe').checked) {
+        var key = keyword.toLowerCase();
+        if (seen.has(key)) { skipped++; continue; }
+        seen.add(key);
+      }
+
+      parsedRows.push({ keyword: keyword, ams: ams, monthly: monthly });
+    }
+
+    if (!parsedRows.length) throw new Error('No keyword rows found below the header row.');
+
+    // Keyword Planner often adds a future/empty month. Drop trailing columns
+    // that contain no values at all so growth uses the last real month.
+    var lastDate = dates.length - 1;
+    while (lastDate > 0) {
+      var columnTotal = 0;
+      for (var p = 0; p < parsedRows.length; p++) columnTotal += parsedRows[p].monthly[lastDate] || 0;
+      if (columnTotal !== 0) break;
+      lastDate--;
+    }
+    if (lastDate < dates.length - 1) {
+      dates = dates.slice(0, lastDate + 1);
+      columns.monthly = columns.monthly.slice(0, lastDate + 1);
+      parsedRows.forEach(function (row) { row.monthly = row.monthly.slice(0, lastDate + 1); });
+    }
+
+    return {
+      rows: parsedRows,
+      dates: dates,
+      columns: columns,
+      headerIndex: headerIndex,
+      skipped: skipped,
+      sheetName: sheetName,
+      amsHeader: columns.amsIndex == null ? null : header[columns.amsIndex],
+      keywordHeader: header[columns.keywordIndex]
+    };
+  }
+
+  function updateFileInfo(fileName, parsed) {
+    $('fileInfo').classList.remove('hidden');
+    $('fileInfo').innerHTML =
+      '<div><strong>' + esc(fileName) + '</strong></div>' +
+      '<div class="meta">' + fmtInt(parsed.rows.length) + ' keywords  |  ' + parsed.dates.length + ' months  |  ' +
+      fmtMonth(parsed.dates[0]) + ' - ' + fmtMonth(parsed.dates[parsed.dates.length - 1]) +
+      (parsed.amsHeader ? '  |  AMS column: ' + esc(parsed.amsHeader) : '  |  AMS estimated from monthly values') +
+      (parsed.skipped ? '  |  ' + fmtInt(parsed.skipped) + ' rows skipped' : '') + '</div>';
+  }
+
+  function populateSheets(workbook) {
+    var select = $('sheetSelect');
+    select.innerHTML = '';
+    workbook.SheetNames.forEach(function (name) {
+      var option = document.createElement('option');
+      option.value = name;
+      option.textContent = name + ' (' + workbook.Sheets[name]['!ref'] + ')';
+      select.appendChild(option);
+    });
+    select.disabled = false;
+
+    var preferred = workbook.SheetNames.find(function (name) { return /raw.*gkp|gkp.*raw/i.test(name); }) ||
+      workbook.SheetNames.find(function (name) { return /keyword|raw/i.test(name); }) ||
+      workbook.SheetNames[0];
+    select.value = preferred;
+  }
+
+  function loadSheet(sheetName) {
+    try {
+      var parsed = parseSheet(state.workbook, sheetName);
+      state.parsed = parsed;
+      updateFileInfo(state.fileName || 'Loaded workbook', parsed);
+      $('parseStatus').className = 'status ok';
+      $('parseStatus').textContent = 'Ready. ' + fmtInt(parsed.rows.length) + ' keywords, ' + parsed.dates.length + ' monthly columns.';
+      $('runBtn').disabled = false;
+      $('headerExportBtn').disabled = !state.result;
+    } catch (error) {
+      state.parsed = null;
+      $('runBtn').disabled = true;
+      $('parseStatus').className = 'status error';
+      $('parseStatus').textContent = error.message;
+      showToast(error.message, true);
+    }
+  }
+
+  function handleFile(file) {
+    if (!file) return;
+    state.fileName = file.name;
+    $('parseStatus').className = 'status';
+    $('parseStatus').textContent = 'Reading ' + file.name + '...';
+    var reader = new FileReader();
+    reader.onload = function (event) {
+      $('parseStatus').textContent = 'Parsing workbook...';
+      try {
+        var workbook = XLSX.read(new Uint8Array(event.target.result), { type: 'array', cellDates: true, dense: true });
+        state.workbook = workbook;
+        state.result = null;
+        $('results').classList.add('hidden');
+        $('headerExportBtn').disabled = true;
+        populateSheets(workbook);
+        loadSheet($('sheetSelect').value);
+        showToast('Loaded ' + file.name);
+      } catch (error) {
+        showToast('Could not read file: ' + error.message, true);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  // ---------------------------------------------------------------- run
+  function runAnalysis() {
+    if (!state.parsed) {
+      showToast('Load a Keyword Planner export first.', true);
+      return;
+    }
+    var classification;
+    try {
+      classification = readClassification();
+    } catch (error) {
+      showToast(error.message, true);
+      return;
+    }
+    var shortWindow = Math.max(2, Math.min(36, parseInt($('shortWindow').value, 10) || 12));
+    var longWindow = Math.max(6, Math.min(120, parseInt($('longWindow').value, 10) || 48));
+    if (longWindow < shortWindow) longWindow = shortWindow;
+    var contextWords = $('contextToggle').checked ? PRODUCT_CONTEXT : [];
+    var bareNotes = $('bareToggle').checked;
+
+    $('runBtn').disabled = true;
+    $('runBtn').textContent = 'Analysing...';
+    $('parseStatus').className = 'status';
+    $('parseStatus').textContent = 'Tagging keywords and building aggregations...';
+
+    setTimeout(function () {
+      try {
+        var hasBrands = !!(state.brandDict && Object.keys(state.brandDict).length);
+        var hasTypes = !!(state.typeDict && Object.keys(state.typeDict).length);
+        var result = TrendAnalysis.analyze(state.parsed.rows, classification, {
+          dates: state.parsed.dates,
+          shortWindow: shortWindow,
+          longWindow: longWindow,
+          topLimit: 500,
+          contextWords: contextWords,
+          bareNotes: bareNotes,
+          // Saves the brand/product mix from re-evaluating every group query.
+          collectRowGroups: hasBrands || hasTypes
+        });
+        state.result = result;
+        state.classification = classification;
+        state.selectedFamily = result.groups.length ? result.groups[0].name : null;
+        state.seasonFamilies = result.groups.slice(0, 5).map(function (group) { return group.name; });
+        // Brand / product layer is optional: if the dictionaries are broken or
+        // empty, theme analysis still succeeds.
+        var brandNote = '';
+        try {
+          var fuzzy = !!(fuzzyToggle && fuzzyToggle.checked);
+          var options = { dates: state.parsed.dates, shortWindow: shortWindow, longWindow: longWindow, topLimit: 200, contextWords: contextWords, bareNotes: bareNotes, collectRowGroups: true, normalize: window.BRAND_NORMALIZE || null, fuzzy: fuzzy };
+          var crossOptions = { contextWords: contextWords, bareNotes: bareNotes, rowFamilies: result.rowGroups, normalize: window.BRAND_NORMALIZE || null, fuzzyTags: fuzzy };
+          if (hasBrands) {
+            state.brandResult = TrendAnalysis.analyze(state.parsed.rows, state.brandDict, options);
+            state.crossBrands = TrendAnalysis.crossTab(state.parsed.rows, classification, state.brandDict, crossOptions);
+            if (!state.selectedBrand && state.brandResult.groups.length) {
+              state.selectedBrand = state.brandResult.groups[0].name;
+            }
+          } else {
+            state.brandResult = null;
+            state.crossBrands = null;
+          }
+          if (hasTypes) {
+            state.typeResult = TrendAnalysis.analyze(state.parsed.rows, state.typeDict, options);
+            state.crossTypes = TrendAnalysis.crossTab(state.parsed.rows, classification, state.typeDict, crossOptions);
+          } else {
+            state.typeResult = null;
+            state.crossTypes = null;
+          }
+          if (state.brandResult) {
+            brandNote = ' ' + fmtInt(state.brandResult.totals.matchedKeywords) + ' keywords attributed to ' +
+              state.brandResult.totals.groupCount + ' brands.';
+          }
+        } catch (brandError) {
+          console.error('Brand analysis failed', brandError);
+          state.brandResult = null;
+          state.typeResult = null;
+          state.crossBrands = null;
+          state.crossTypes = null;
+          brandNote = ' Brand layer failed: ' + brandError.message;
+        }
+
+        $('results').classList.remove('hidden');
+        $('headerExportBtn').disabled = false;
+        state.coverage = computeCoverage(result);
+        $('parseStatus').className = 'status ok';
+        $('parseStatus').textContent = 'Done. ' + fmtInt(result.totals.matchedKeywords) + ' keywords matched into ' + result.totals.groupCount + ' themes.' + brandNote;
+        populateResultControls();
+        renderKpis();
+        activateTab('overview');
+        $('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        showToast('Analysis complete');
+      } catch (error) {
+        console.error(error);
+        $('parseStatus').className = 'status error';
+        $('parseStatus').textContent = 'Analysis failed: ' + error.message;
+        showToast('Analysis failed: ' + error.message, true);
+      } finally {
+        $('runBtn').disabled = false;
+        $('runBtn').textContent = 'Run analysis';
+      }
+    }, 30);
+  }
+
+  // ------------------------------------------------------- keyword-term filters
+  // Term selects carry "theme\u0000term" as their value so repeated term names
+  // across themes stay distinct.
+  function termKey(group, term) { return group + '::' + term; }
+
+  function splitTermKey(key) {
+    if (!key) return null;
+    var idx = key.indexOf('::');
+    if (idx === -1) return null;
+    return { group: key.slice(0, idx), term: key.slice(idx + 2) };
+  }
+
+  function findTerm(key) {
+    var parts = splitTermKey(key);
+    if (!parts || !state.result) return null;
+    var group = state.result.groups.find(function (g) { return g.name === parts.group; });
+    if (!group) return null;
+    var term = (group.terms || []).find(function (t) { return t.term === parts.term; });
+    return term || null;
+  }
+
+  function allTerms() {
+    var out = [];
+    (state.result ? state.result.groups : []).forEach(function (group) {
+      (group.terms || []).forEach(function (term) { out.push({ group: group, term: term }); });
+    });
+    return out;
+  }
+
+  function fillTermSelect(select, filterGroup) {
+    if (!select) return;
+    var previous = select.value;
+    select.innerHTML = '';
+    var all = document.createElement('option');
+    all.value = '';
+    all.textContent = filterGroup ? 'All terms' : 'All terms in every theme';
+    select.appendChild(all);
+    (state.result ? state.result.groups : []).forEach(function (group) {
+      if (filterGroup && group.name !== filterGroup) return;
+      var terms = (group.terms || []).slice().sort(function (a, b) { return b.size - a.size; });
+      if (!terms.length) return;
+      var holder = filterGroup ? select : document.createElement('optgroup');
+      if (!filterGroup) holder.label = group.name;
+      terms.forEach(function (term) {
+        var option = document.createElement('option');
+        option.value = termKey(group.name, term.term);
+        option.textContent = term.term + '  |  ' + fmtCompact(term.size);
+        holder.appendChild(option);
+      });
+      if (!filterGroup) select.appendChild(holder);
+    });
+    if (previous && Array.prototype.some.call(select.options, function (o) { return o.value === previous; })) {
+      select.value = previous;
+    } else {
+      select.value = '';
+    }
+  }
+
+  function populateResultControls() {
+    var groups = state.result.groups;
+    ['familySelect', 'deepFamily', 'termFamily', 'topFamily'].forEach(function (id) {
+      var select = $(id);
+      select.innerHTML = '';
+      groups.forEach(function (group) {
+        var option = document.createElement('option');
+        option.value = group.name;
+        option.textContent = group.name + '  |  ' + fmtCompact(group.size);
+        select.appendChild(option);
+      });
+    });
+    if (state.selectedFamily) {
+      $('familySelect').value = state.selectedFamily;
+      $('deepFamily').value = state.selectedFamily;
+      $('termFamily').value = state.selectedFamily;
+      $('topFamily').value = state.selectedFamily;
+    }
+    fillTermSelect($('brandTerm'), null);
+    fillTermSelect($('topTerm'), state.selectedFamily);
+    fillTermSelect($('seasonTerm'), null);
+    $('seasonTerm').onchange = function () {
+      if (this.value) state.seasonFamilies = [];
+      renderSeasonTab();
+    };
+    $('brandTerm').onchange = function () {
+      state.selectedBrand = null;
+      renderBrandsTab();
+    };
+    $('topTerm').onchange = renderTopTab;
+    $('termFamily').onchange = function () {
+      state.selectedTerm = null;
+      state.selectedFamily = this.value;
+      $('familySelect').value = this.value;
+      $('deepFamily').value = this.value;
+      $('topFamily').value = this.value;
+      fillTermSelect($('topTerm'), state.selectedFamily);
+      renderTermTab();
+    };
+    $('familySelect').onchange = function () {
+      state.selectedFamily = this.value;
+      $('deepFamily').value = this.value;
+      $('termFamily').value = this.value;
+      $('topFamily').value = this.value;
+      fillTermSelect($('topTerm'), state.selectedFamily);
+      renderFamilyChart();
+      renderFamilyTable();
+    };
+    $('topFamily').onchange = function () {
+      state.selectedFamily = this.value;
+      $('familySelect').value = this.value;
+      $('deepFamily').value = this.value;
+      $('termFamily').value = this.value;
+      fillTermSelect($('topTerm'), state.selectedFamily);
+      renderTopTab();
+    };
+    $('deepFamily').onchange = function () {
+      state.selectedFamily = this.value;
+      $('familySelect').value = this.value;
+      $('termFamily').value = this.value;
+      $('topFamily').value = this.value;
+      fillTermSelect($('topTerm'), state.selectedFamily);
+      renderDeepTab();
+    };
+    $('deepWindow').onchange = renderDeepTab;
+  }
+
+  // ---------------------------------------------------------------- render KPIs
+  function renderKpis() {
+    var t = state.result.totals;
+    var fastest = state.result.groups
+      .filter(function (g) { return g.short && g.short.growth != null; })
+      .sort(function (a, b) { return b.short.growth - a.short.growth; })[0];
+    var biggest = state.result.groups[0];
+    $('kpiGrid').innerHTML =
+      '<div class="kpi"><div class="label">Keywords matched</div><div class="value">' + fmtInt(t.matchedKeywords) + '</div><div class="sub">of ' + fmtInt(t.keywords) + ' rows  |  ' + fmtPct(t.keywords ? t.matchedKeywords / t.keywords : null) + ' classified</div></div>' +
+      '<div class="kpi"><div class="label">Classified AMS</div><div class="value">' + fmtCompact(t.matchedAms) + '</div><div class="sub">of ' + fmtCompact(t.totalAms) + '  |  ' + fmtPct(t.totalAms ? t.matchedAms / t.totalAms : null) + ' of AMS</div></div>' +
+      '<div class="kpi"><div class="label">Date range</div><div class="value" style="font-size:19px">' + fmtMonth(t.dateStart) + ' - ' + fmtMonth(t.dateEnd) + '</div><div class="sub">' + state.result.dates.length + ' months  |  ' + t.groupCount + ' themes</div></div>' +
+      '<div class="kpi"><div class="label">Fastest growing</div><div class="value" style="font-size:19px">' + (fastest ? esc(fastest.name) : ' - ') + '</div><div class="sub">' + (fastest ? growthHtml(fastest.short.growth) + ' short-term  |  ' + fmtCompact(fastest.size) + ' AMS' : 'No growth data') + '</div></div>';
+  }
+
+  // ---------------------------------------------------------------- overview
+  function renderOverview() {
+    renderFastestTable();
+    renderBubbleChart();
+    renderCoverage();
+  }
+
+  /**
+   * Split the file into "classified by the definitions" and the reasons the
+   * rest was not classified, so a low match rate is explainable.
+   */
+  function computeCoverage(result) {
+    var rows = state.parsed.rows;
+    var brandRows = state.brandResult && state.brandResult.rowGroups;
+    var typeRows = state.typeResult && state.typeResult.rowGroups;
+    var buckets = {
+      matched: { keywords: 0, ams: 0 },
+      brand: { keywords: 0, ams: 0 },
+      product: { keywords: 0, ams: 0 },
+      other: { keywords: 0, ams: 0 }
+    };
+    var list = [];
+
+    rows.forEach(function (row, index) {
+      var ams = Number.isFinite(row.ams) ? row.ams : 0;
+      var families = (result.rowGroups && result.rowGroups[index]) || [];
+      var brands = (brandRows && brandRows[index]) || [];
+      var types = (typeRows && typeRows[index]) || [];
+      var bucket;
+      if (families.length) bucket = 'matched';
+      else if (brands.length) bucket = 'brand';
+      else if (types.length) bucket = 'product';
+      else bucket = 'other';
+      buckets[bucket].keywords += 1;
+      buckets[bucket].ams += ams;
+      if (bucket !== 'matched') {
+        list.push({ keyword: row.keyword, ams: ams, bucket: bucket, brands: brands.slice(0, 2) });
+      }
+    });
+
+    list.sort(function (a, b) { return b.ams - a.ams; });
+
+    return {
+      total: rows.length,
+      totalAms: result.totals.totalAms,
+      buckets: buckets,
+      rows: list
+    };
+  }
+
+  function renderCoverage() {
+    var c = state.coverage;
+    if (!c) {
+      $('coverageBody').innerHTML = '<div class="empty">Run the analysis to see how much of the file the definitions classify.</div>';
+      return;
+    }
+    var kwShare = c.total ? c.buckets.matched.keywords / c.total : 0;
+    var amsShare = c.totalAms ? c.buckets.matched.ams / c.totalAms : 0;
+    var labels = {
+      matched: 'Classified by the group definitions',
+      brand: 'Brand searches with no note word',
+      product: 'Product or category searches with no note word',
+      other: 'Everything else (no theme match)'
+    };
+    var html = '<div class="note" style="margin-bottom:14px">' +
+      '<b>' + fmtPct(kwShare) + '</b> of keywords and <b>' + fmtPct(amsShare) + '</b> of AMS fall into a theme under the current settings (' +
+      fmtInt(c.buckets.matched.keywords) + ' of ' + fmtInt(c.total) + ' keywords  |  ' +
+      fmtCompact(c.buckets.matched.ams) + ' of ' + fmtCompact(c.totalAms) + ' AMS). ' +
+      'Searches that name only a brand, only a format, or nothing related to your themes cannot land in one. ' +
+      'Brand and product searches are still counted in the <b>Brands &amp; products</b> tab.' +
+      '</div>';
+    html += '<table><thead><tr><th>Bucket</th><th class="num">Keywords</th><th class="num">% of keywords</th><th class="num">AMS</th><th class="num">% of AMS</th></tr></thead><tbody>';
+    ['matched', 'brand', 'product', 'other'].forEach(function (key) {
+      var bucket = c.buckets[key];
+      html += '<tr>' +
+        '<td class="family-name">' + esc(labels[key]) + '</td>' +
+        '<td class="num">' + fmtInt(bucket.keywords) + '</td>' +
+        '<td class="num">' + fmtPct(c.total ? bucket.keywords / c.total : null) + '</td>' +
+        '<td class="num">' + fmtCompact(bucket.ams) + '</td>' +
+        '<td class="num">' + fmtPct(c.totalAms ? bucket.ams / c.totalAms : null) + '</td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+
+    if (c.rows.length) {
+      html += '<div class="card-head" style="margin-top:18px"><h3 style="font-size:15px">Largest unclassified searches</h3>' +
+        '<span class="hint">Top 20 by AMS  -  download the full list to extend the definitions or the brand dictionary</span></div>';
+      html += '<div class="table-wrap" style="max-height:420px"><table><thead><tr><th>Keyword</th><th class="num">AMS</th><th>Why it is not in a group</th><th>Brand</th></tr></thead><tbody>';
+      c.rows.slice(0, 20).forEach(function (row) {
+        html += '<tr>' +
+          '<td class="family-name">' + esc(row.keyword) + '</td>' +
+          '<td class="num">' + fmtCompact(row.ams) + '</td>' +
+          '<td>' + esc(labels[row.bucket]) + '</td>' +
+          '<td>' + (row.brands.length ? esc(row.brands.join(', ')) : ' - ') + '</td>' +
+          '</tr>';
+      });
+      html += '</tbody></table></div>';
+    }
+    $('coverageBody').innerHTML = html;
+  }
+
+  function exportUnmatchedCsv() {
+    if (!state.coverage) return;
+    var labels = {
+      brand: 'Brand search, no note word',
+      product: 'Product/category search, no note word',
+      other: 'No theme match'
+    };
+    var rows = state.coverage.rows.map(function (row) {
+      return [row.keyword, row.ams, labels[row.bucket] || row.bucket, row.brands.join(', ')];
+    });
+    downloadCsv('unclassified-keywords.csv', [['Keyword', 'AMS', 'Reason', 'Brand']].concat(rows));
+  }
+
+  function renderFastestTable() {
+    var groups = state.result.groups
+      .filter(function (g) { return g.short && g.short.growth != null; })
+      .sort(function (a, b) { return b.short.growth - a.short.growth; })
+      .slice(0, 8);
+    if (!groups.length) {
+      $('fastestTable').innerHTML = '<div class="empty">No growth data available.</div>';
+      return;
+    }
+    var max = Math.max.apply(null, groups.map(function (g) { return Math.abs(g.short.growth); })) || 1;
+    var html = '<table><thead><tr><th>Theme</th><th class="num">Size</th><th class="num">Short-term</th><th class="num">Long-term</th><th>Relative</th></tr></thead><tbody>';
+    groups.forEach(function (group) {
+      var width = Math.min(100, Math.max(3, Math.abs(group.short.growth) / max * 100));
+      html += '<tr>' +
+        '<td class="family-name">' + esc(group.name) + '</td>' +
+        '<td class="num">' + fmtCompact(group.size) + '</td>' +
+        '<td class="num">' + growthHtml(group.short.growth) + '</td>' +
+        '<td class="num">' + growthHtml(group.long && group.long.growth) + '</td>' +
+        '<td><div class="bar-track"><div class="bar-fill" style="width:' + width + '%"></div></div></td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+    $('fastestTable').innerHTML = html;
+  }
+
+  function renderBubbleChart() {
+    destroyChart('bubble');
+    if (!chartAvailable()) return;
+    var points = state.result.groups.filter(function (group) {
+      return group.size > 0 && group.short && group.short.growth != null && group.long && group.long.growth != null;
+    });
+    var maxSize = Math.max.apply(null, points.map(function (p) { return p.size; }).concat([1]));
+    var data = points.map(function (group, index) {
+      return {
+        x: group.long.growth * 100,
+        y: group.short.growth * 100,
+        r: Math.max(6, Math.sqrt(group.size / maxSize) * 26),
+        group: group,
+        backgroundColor: COLORS[index % COLORS.length] + 'cc',
+        borderColor: COLORS[index % COLORS.length]
+      };
+    });
+    var context = $('bubbleChart').getContext('2d');
+    state.charts.bubble = new Chart(context, {
+      type: 'bubble',
+      data: { datasets: [{ label: 'Themes', data: data, borderWidth: 1.5 }] },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                var group = context.raw.group;
+                return [
+                  group.name,
+                  'Size: ' + fmtCompact(group.size) + ' AMS',
+                  'Short-term: ' + fmtPct(group.short.growth),
+                  'Long-term: ' + fmtPct(group.long.growth)
+                ];
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: 'Long-term growth (%)' },
+            grid: { color: 'rgba(23,32,51,0.07)' },
+            ticks: { callback: function (value) { return value + '%'; } }
+          },
+          y: {
+            title: { display: true, text: 'Short-term growth (%)' },
+            grid: { color: 'rgba(23,32,51,0.07)' },
+            ticks: { callback: function (value) { return value + '%'; } }
+          }
+        }
+      }
+    });
+  }
+
+  // ---------------------------------------------------------------- family tab
+  function renderFamilyTab() {
+    renderFamilyTable();
+    renderFamilyChart();
+  }
+
+  function renderFamilyTable() {
+    var sort = state.sort.family;
+    var groups = sortRows(state.result.groups, sort.key, sort.dir);
+    var html = '<table><thead><tr>' +
+      sortHeader('Theme', 'name', sort) +
+      sortHeader('Size (AMS)', 'size', sort) +
+      sortHeader('Share', 'share', sort) +
+      sortHeader('Latest', 'latest', sort) +
+      sortHeader('Short-term', 'short.growth', sort) +
+      sortHeader('Long-term', 'long.growth', sort) +
+      '<th>Window start</th>' +
+      '<th></th>' +
+      '</tr></thead><tbody>';
+    groups.forEach(function (group) {
+      var selected = group.name === state.selectedFamily ? ' class="selected"' : '';
+      html += '<tr data-family="' + esc(group.name) + '"' + selected + '>' +
+        '<td class="family-name">' + esc(group.name) + '</td>' +
+        '<td class="num">' + fmtInt(group.size) + '</td>' +
+        '<td class="num">' + fmtPct(group.share) + '</td>' +
+        '<td class="num">' + fmtInt(group.latest) + '</td>' +
+        '<td class="num">' + growthHtml(group.short && group.short.growth) + '</td>' +
+        '<td class="num">' + growthHtml(group.long && group.long.growth) + '</td>' +
+        '<td class="nowrap muted">' + fmtMonth(group.short && group.short.startIso) + '</td>' +
+        '<td><button class="btn small" data-deepdive="' + esc(group.name) + '">Deep dive -></button></td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+    $('familyTable').innerHTML = html;
+  }
+
+  function renderFamilyChart() {
+    destroyChart('family');
+    if (!chartAvailable() || !state.selectedFamily) return;
+    var group = state.result.groups.find(function (g) { return g.name === state.selectedFamily; });
+    if (!group) return;
+    $('familyChartTitle').textContent = group.name + '  -  monthly search volume';
+    var labels = state.result.dates.map(fmtMonthShort);
+    var context = $('familyChart').getContext('2d');
+    state.charts.family = new Chart(context, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: group.name,
+          data: group.monthly,
+          borderColor: '#5b4bff',
+          backgroundColor: 'rgba(91,75,255,0.08)',
+          fill: true,
+          tension: 0.28,
+          pointRadius: 0,
+          borderWidth: 2.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (ctx) { return fmtInt(ctx.parsed.y) + ' searches'; } } } },
+        scales: {
+          x: { grid: { display: false }, ticks: { maxTicksLimit: 12, maxRotation: 0 } },
+          y: { grid: { color: 'rgba(23,32,51,0.07)' }, ticks: { callback: function (value) { return fmtCompact(value); } } }
+        }
+      }
+    });
+  }
+
+  // ---------------------------------------------------------------- deep dive
+  function currentDeepGroup() {
+    if (!state.result || !state.result.groups.length) return null;
+    return state.result.groups.find(function (group) { return group.name === $('deepFamily').value; }) || state.result.groups[0];
+  }
+
+  function deepMetric() {
+    return $('deepWindow').value === 'long' ? 'long' : 'short';
+  }
+
+  function renderDeepTab() {
+    renderDeepKpis();
+    renderDriverChart();
+    renderDriverSummary();
+    renderDriverTermTable();
+    renderDriverKeywordTable();
+    renderDeepBrandMix();
+  }
+
+  function renderDeepKpis() {
+    var group = currentDeepGroup();
+    if (!group) { $('deepKpis').innerHTML = ''; return; }
+    var windowLabel = deepMetric() === 'long' ? 'Long-term' : 'Short-term';
+    var selectedGrowth = group[deepMetric()];
+    $('deepKpis').innerHTML =
+      '<div class="kpi"><div class="label">Theme size</div><div class="value">' + fmtCompact(group.size) + '</div><div class="sub">AMS across ' + fmtInt(group.terms.length) + ' matched terms</div></div>' +
+      '<div class="kpi"><div class="label">Latest month</div><div class="value">' + fmtCompact(group.latest) + '</div><div class="sub">' + fmtMonth(group.short && group.short.endIso) + '</div></div>' +
+      '<div class="kpi"><div class="label">' + windowLabel + ' change</div><div class="value">' + (selectedGrowth && selectedGrowth.growth != null ? fmtPct(selectedGrowth.growth) : ' - ') + '</div><div class="sub">' + deltaHtml(group[deepMetric() + 'Change']) + ' volume vs ' + fmtMonth(selectedGrowth && selectedGrowth.startIso) + '</div></div>' +
+      '<div class="kpi"><div class="label">Short / long growth</div><div class="value" style="font-size:18px">' + fmtPct(group.short && group.short.growth) + ' / ' + fmtPct(group.long && group.long.growth) + '</div><div class="sub">' + fmtCompact(group.size) + ' AMS family</div></div>';
+  }
+
+  function driverTerms(group, metric) {
+    return group.terms
+      .map(function (term) {
+        var growth = term[metric];
+        var groupGrowth = group[metric];
+        return {
+          term: term.term,
+          size: term.size,
+          growth: growth ? growth.growth : null,
+          change: growth ? growth.end - growth.start : null,
+          contribution: growth && groupGrowth && groupGrowth.start ? (growth.end - growth.start) / groupGrowth.start : null,
+          share: group.size ? term.size / group.size : null
+        };
+      })
+      .filter(function (term) { return term.change != null; });
+  }
+
+  function renderDriverChart() {
+    destroyChart('driver');
+    if (!chartAvailable()) return;
+    var group = currentDeepGroup();
+    if (!group) return;
+    var metric = deepMetric();
+    var terms = driverTerms(group, metric);
+    terms.sort(function (a, b) { return Math.abs(b.change) - Math.abs(a.change); });
+    terms = terms.slice(0, 14).sort(function (a, b) { return b.change - a.change; });
+    if (!terms.length) return;
+    $('driverChartTitle').textContent = group.name + '  -  ' + (metric === 'long' ? 'long-term' : 'short-term') + ' volume change';
+    var context = $('driverChart').getContext('2d');
+    state.charts.driver = new Chart(context, {
+      type: 'bar',
+      data: {
+        labels: terms.map(function (term) { return term.term; }),
+        datasets: [{
+          label: 'Volume change',
+          data: terms.map(function (term) { return term.change; }),
+          backgroundColor: terms.map(function (term) {
+            return term.change >= 0 ? 'rgba(9,135,95,0.78)' : 'rgba(196,60,60,0.76)';
+          }),
+          borderRadius: 6
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function (ctx) {
+                var term = terms[ctx.dataIndex];
+                return [
+                  'Change: ' + fmtSignedInt(term.change) + ' searches',
+                  'Growth: ' + fmtPct(term.growth),
+                  'Size: ' + fmtInt(term.size) + ' AMS'
+                ];
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(23,32,51,0.07)' },
+            ticks: { callback: function (value) { return fmtCompact(value); } }
+          },
+          y: { grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  function renderDriverSummary() {
+    var group = currentDeepGroup();
+    if (!group) { $('driverSummary').innerHTML = ''; return; }
+    var metric = deepMetric();
+    var terms = driverTerms(group, metric);
+    var positive = terms.filter(function (term) { return term.change > 0; }).sort(function (a, b) { return b.change - a.change; });
+    var negative = terms.filter(function (term) { return term.change < 0; }).sort(function (a, b) { return a.change - b.change; });
+    var grossPositive = positive.reduce(function (sum, term) { return sum + term.change; }, 0);
+    var grossNegative = Math.abs(negative.reduce(function (sum, term) { return sum + term.change; }, 0));
+    var topThree = positive.slice(0, 3).reduce(function (sum, term) { return sum + term.change; }, 0);
+    var topThreeShare = grossPositive > 0 ? topThree / grossPositive : null;
+    var fastest = terms
+      .filter(function (term) { return term.growth != null && term.size >= group.size * 0.01; })
+      .sort(function (a, b) { return b.growth - a.growth; })[0];
+
+    function item(label, term, detail, value) {
+      var heading = term ? esc(term.term) : (value || ' - ');
+      return '<div class="driver-item">' +
+        '<div><div class="driver-label">' + label + '</div><div class="driver-value">' + heading + '</div></div>' +
+        '<div class="driver-detail">' + detail + '</div>' +
+        '</div>';
+    }
+
+    var top = positive[0];
+    var drag = negative[0];
+    $('driverSummary').innerHTML =
+      '<div class="driver-list">' +
+      item('Biggest riser', top, top ? '<strong>' + fmtSignedInt(top.change) + '</strong>  -  ' + fmtPct(top.growth) : ' - ') +
+      item('Biggest drag', drag, drag ? '<strong>' + fmtSignedInt(drag.change) + '</strong>  -  ' + fmtPct(drag.growth) : ' - ') +
+      item('Fastest growing term', fastest, fastest ? '<strong>' + fmtPct(fastest.growth) + '</strong>  -  ' + fmtCompact(fastest.size) + ' AMS' : ' - ') +
+      item('Top 3 concentration', null, topThreeShare == null ? ' - ' : '<strong>' + fmtPct(topThreeShare) + '</strong> of gross positive change', fmtInt(positive.slice(0, 3).length) + ' terms') +
+      item('Gross positive / negative', null, '<strong class="delta-pos">+' + fmtInt(grossPositive) + '</strong> / <strong class="delta-neg">-' + fmtInt(grossNegative) + '</strong>', fmtInt(terms.length) + ' terms') +
+      '</div>' +
+      '<p class="hint" style="margin-top:12px">Term contributions overlap when one keyword matches several terms. The keyword table below is additive.</p>';
+  }
+
+  function renderDriverTermTable() {
+    var group = currentDeepGroup();
+    if (!group) { $('driverTermTable').innerHTML = ''; return; }
+    var metric = deepMetric();
+    var rows = driverTerms(group, metric);
+    var sort = state.sort.deepTerm;
+    rows = sortRows(rows, sort.key, sort.dir);
+    var html = '<table><thead><tr>' +
+      sortHeader('Term', 'term', sort) +
+      sortHeader('Size (AMS)', 'size', sort) +
+      sortHeader('Growth', 'growth', sort) +
+      sortHeader('d volume', 'change', sort) +
+      sortHeader('Contribution', 'contribution', sort) +
+      sortHeader('Share of theme', 'share', sort) +
+      '</tr></thead><tbody>';
+    rows.forEach(function (row) {
+      html += '<tr>' +
+        '<td class="family-name">' + esc(row.term) + '</td>' +
+        '<td class="num">' + fmtInt(row.size) + '</td>' +
+        '<td class="num">' + growthHtml(row.growth) + '</td>' +
+        '<td class="num">' + deltaHtml(row.change) + '</td>' +
+        '<td class="num">' + fmtPp(row.contribution) + '</td>' +
+        '<td class="num">' + fmtPct(row.share) + '</td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+    $('driverTermTable').innerHTML = html;
+  }
+
+  function renderDriverKeywordTable() {
+    var group = currentDeepGroup();
+    if (!group) { $('driverKeywordTable').innerHTML = ''; return; }
+    var metric = deepMetric();
+    var drivers = group.drivers && group.drivers[metric];
+    if (!drivers) { $('driverKeywordTable').innerHTML = '<div class="empty">No keyword driver data.</div>'; return; }
+    var map = new Map();
+    (drivers.risers || []).concat(drivers.decliners || []).forEach(function (row) { map.set(row.keyword, row); });
+    var all = Array.from(map.values()).sort(function (a, b) { return b.change - a.change; });
+    // Keep both sides visible: up to 20 risers plus up to 10 decliners.
+    var risers = all.filter(function (row) { return row.change > 0; }).slice(0, 20);
+    var decliners = all.filter(function (row) { return row.change < 0; }).slice(-10);
+    var rows = risers.concat(decliners);
+    if (!rows.length) { $('driverKeywordTable').innerHTML = '<div class="empty">No keyword driver data.</div>'; return; }
+    var html = '<table><thead><tr><th>Keyword</th><th class="num">AMS</th><th class="num">Latest</th><th class="num">Growth</th><th class="num">d volume</th></tr></thead><tbody>';
+    rows.forEach(function (row) {
+      html += '<tr>' +
+        '<td>' + esc(row.keyword) + '</td>' +
+        '<td class="num">' + fmtInt(row.ams) + '</td>' +
+        '<td class="num">' + fmtInt(row.latest) + '</td>' +
+        '<td class="num">' + growthHtml(row.growth) + '</td>' +
+        '<td class="num">' + deltaHtml(row.change) + '</td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+    $('driverKeywordTable').innerHTML = html;
+  }
+
+  // ---------------------------------------------------------------- term tab
+  function renderTermTab() {
+    renderTermTable();
+    renderTermChart();
+    renderTermDrillTable();
+  }
+
+  function currentTermRows() {
+    var group = state.result.groups.find(function (g) { return g.name === $('termFamily').value; });
+    if (!group) return [];
+    var search = $('termSearch').value.trim().toLowerCase();
+    var terms = group.terms.filter(function (term) {
+      return !search || term.term.toLowerCase().indexOf(search) !== -1;
+    });
+    return sortRows(terms, state.sort.term.key, state.sort.term.dir);
+  }
+
+  function renderTermTable() {
+    var terms = currentTermRows();
+    var sort = state.sort.term;
+    if (!terms.length) {
+      $('termTable').innerHTML = '<div class="empty">No terms match this filter.</div>';
+      return;
+    }
+    var html = '<table><thead><tr>' +
+      sortHeader('Term', 'term', sort) +
+      sortHeader('Size (AMS)', 'size', sort) +
+      sortHeader('Keywords', 'keywords', sort) +
+      sortHeader('Latest', 'latest', sort) +
+      sortHeader('Short-term', 'short.growth', sort) +
+      sortHeader('Long-term', 'long.growth', sort) +
+      '</tr></thead><tbody>';
+    terms.forEach(function (term) {
+      html += '<tr data-term="' + esc(term.term) + '" class="clickable">' +
+        '<td class="family-name">' + esc(term.term) + '</td>' +
+        '<td class="num">' + fmtInt(term.size) + '</td>' +
+        '<td class="num">' + fmtInt(term.keywords) + '</td>' +
+        '<td class="num">' + fmtInt(term.latest) + '</td>' +
+        '<td class="num">' + growthHtml(term.short && term.short.growth) + '</td>' +
+        '<td class="num">' + growthHtml(term.long && term.long.growth) + '</td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+    $('termTable').innerHTML = html;
+  }
+
+  function currentTermDrillRows() {
+    if (!state.selectedTerm) return [];
+    var group = state.result.groups.find(function (g) { return g.name === $('termFamily').value; });
+    if (!group) return [];
+    var term = group.terms.find(function (t) { return t.term === state.selectedTerm; });
+    if (!term) return [];
+    var t = state.result.totals;
+    var seen = new Map();
+    (term.keywordsList || []).forEach(function (r) {
+      var entry = keywordMetrics(r);
+      var prev = seen.get(entry.keyword);
+      if (!prev || entry.ams > prev.ams) seen.set(entry.keyword, entry);
+    });
+    return sortRows(Array.from(seen.values()), state.sort.termDrill.key, state.sort.termDrill.dir);
+  }
+
+  function renderTermDrillTable() {
+    var group = state.result.groups.find(function (g) { return g.name === $('termFamily').value; });
+    var term = group ? group.terms.find(function (t) { return t.term === state.selectedTerm; }) : null;
+    if (!term) {
+      $('termDrillTitle').textContent = 'Keywords in this term';
+      $('termDrillTable').innerHTML = "<div class='empty'>Click a row in the table above to see the keywords driving that term's volume.</div>";
+      return;
+    }
+    $('termDrillTitle').textContent = 'Keywords in "' + term.term + '"  -  ' + fmtInt(term.keywords) + ' searches';
+    var rows = currentTermDrillRows();
+    if (!rows.length) {
+      $('termDrillTable').innerHTML = '<div class="empty">No keywords recorded for this term.</div>';
+      return;
+    }
+    var sort = state.sort.termDrill;
+    var html = '<table><thead><tr>' +
+      sortHeader('Keyword', 'keyword', sort) +
+      sortHeader('AMS', 'ams', sort) +
+      sortHeader('Latest', 'latest', sort) +
+      sortHeader('Short-term', 'short.growth', sort) +
+      sortHeader('Long-term', 'long.growth', sort) +
+      '</tr></thead><tbody>';
+    rows.slice(0, 200).forEach(function (r) {
+      html += '<tr>' +
+        '<td class="family-name">' + esc(r.keyword) + '</td>' +
+        '<td class="num">' + fmtInt(r.ams) + '</td>' +
+        '<td class="num">' + fmtInt(r.latest) + '</td>' +
+        '<td class="num">' + growthHtml(r.short && r.short.growth) + '</td>' +
+        '<td class="num">' + growthHtml(r.long && r.long.growth) + '</td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+    if (rows.length > 200) html += '<div class="hint" style="margin-top:8px">Showing top 200 of ' + fmtInt(rows.length) + '.</div>';
+    $('termDrillTable').innerHTML = html;
+  }
+
+  function exportTermDrillCsv() {
+    if (!state.selectedTerm) return;
+    var group = state.result.groups.find(function (g) { return g.name === $('termFamily').value; });
+    var term = group ? group.terms.find(function (t) { return t.term === state.selectedTerm; }) : null;
+    if (!term) return;
+    var rows = currentTermDrillRows().map(function (r) {
+      return [r.keyword, r.ams, r.latest, r.short ? r.short.growth : null, r.long ? r.long.growth : null];
+    });
+    downloadCsv('term-keywords.csv', [['Keyword', 'AMS', 'Latest month', 'Short-term growth', 'Long-term growth']].concat(rows));
+  }
+  function renderTermChart() {
+    destroyChart('term');
+    if (!chartAvailable()) return;
+    var group = state.result.groups.find(function (g) { return g.name === $('termFamily').value; });
+    if (!group) return;
+    var metric = $('termMetric').value;
+    var terms = group.terms.filter(function (term) {
+      if (metric === 'size') return term.size > 0;
+      return term[metric] && term[metric].growth != null;
+    });
+    terms.sort(function (a, b) {
+      if (metric === 'size') return b.size - a.size;
+      return b[metric].growth - a[metric].growth;
+    });
+    terms = terms.slice(0, 15);
+    if (!terms.length) return;
+    var labels = terms.map(function (term) { return term.term; });
+    var values = terms.map(function (term) { return metric === 'size' ? term.size : term[metric].growth * 100; });
+    var context = $('termChart').getContext('2d');
+    state.charts.term = new Chart(context, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: metric === 'size' ? 'Size (AMS)' : (metric === 'short' ? 'Short-term growth' : 'Long-term growth'),
+          data: values,
+          backgroundColor: values.map(function (value) {
+            if (metric === 'size') return 'rgba(91,75,255,0.72)';
+            return value >= 0 ? 'rgba(9,135,95,0.78)' : 'rgba(196,60,60,0.75)';
+          }),
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: function (ctx) { return metric === 'size' ? fmtInt(ctx.parsed.y) + ' AMS' : fmtPct(ctx.parsed.y / 100); } } }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { maxRotation: 45, minRotation: 0 } },
+          y: {
+            grid: { color: 'rgba(23,32,51,0.07)' },
+            ticks: { callback: function (value) { return metric === 'size' ? fmtCompact(value) : value + '%'; } }
+          }
+        }
+      }
+    });
+  }
+
+  // ---------------------------------------------------------------- top searches
+  // Live runs keep raw monthly arrays on term keywords; precomputed data already
+  // carries latest / short / long, so only fill in what is missing.
+  function keywordMetrics(row) {
+    if (row.latest != null && row.short && row.long) return row;
+    var totals = state.result.totals;
+    var monthly = row.monthly || [];
+    return {
+      keyword: row.keyword,
+      ams: row.ams,
+      latest: row.latest != null ? row.latest : Number(monthly[totals.endIdx] || 0),
+      short: row.short || TrendAnalysis.computeGrowth(monthly, totals.endIdx, totals.shortWindow, state.result.dates),
+      long: row.long || TrendAnalysis.computeGrowth(monthly, totals.endIdx, totals.longWindow, state.result.dates)
+    };
+  }
+
+  function renderTopTab() {
+    var group = state.result.groups.find(function (g) { return g.name === $('topFamily').value; });
+    if (!group) return;
+    var term = findTerm($('topTerm').value);
+    var search = $('topSearch').value.trim().toLowerCase();
+    var source = term ? (term.keywordsList || []) : group.topKeywords;
+    var rows = source.map(keywordMetrics).filter(function (row) {
+      return !search || row.keyword.toLowerCase().indexOf(search) !== -1;
+    });
+    rows = sortRows(rows, state.sort.top.key, state.sort.top.dir);
+    var scope = term ? 'term "' + term.term + '"' : group.name;
+    $('topCount').textContent = 'Showing ' + fmtInt(Math.min(rows.length, 200)) + ' of ' + fmtInt(rows.length) + ' matching keywords  |  ' + scope;
+    if (!rows.length) {
+      $('topTable').innerHTML = '<div class="empty">No keywords match this filter.</div>';
+      return;
+    }
+    var sort = state.sort.top;
+    var html = '<table><thead><tr>' +
+      sortHeader('Keyword', 'keyword', sort) +
+      sortHeader('AMS', 'ams', sort) +
+      sortHeader('Latest month', 'latest', sort) +
+      sortHeader('Short-term', 'short.growth', sort) +
+      sortHeader('Long-term', 'long.growth', sort) +
+      '</tr></thead><tbody>';
+    rows.slice(0, 200).forEach(function (row) {
+      html += '<tr>' +
+        '<td>' + esc(row.keyword) + '</td>' +
+        '<td class="num">' + fmtInt(row.ams) + '</td>' +
+        '<td class="num">' + fmtInt(row.latest) + '</td>' +
+        '<td class="num">' + growthHtml(row.short && row.short.growth) + '</td>' +
+        '<td class="num">' + growthHtml(row.long && row.long.growth) + '</td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+    $('topTable').innerHTML = html;
+  }
+
+  // ---------------------------------------------------------------- brands
+  function brandDimension() {
+    return $('brandDim').value === 'type' ? 'type' : 'brand';
+  }
+
+  function brandResultFor(dimension) {
+    return dimension === 'type' ? state.typeResult : state.brandResult;
+  }
+
+  function brandRows() {
+    var dimension = brandDimension();
+    var term = findTerm($('brandTerm').value);
+    if (term) return brandRowsForTerm(term, dimension);
+    var result = brandResultFor(dimension);
+    if (!result) return [];
+    var total = result.totals.totalAms || 0;
+    return result.groups.map(function (group) {
+      return {
+        name: group.name,
+        size: group.size,
+        share: total ? group.size / total : null,
+        keywords: group.keywords,
+        latest: group.latest,
+        growthShort: group.short ? group.short.growth : null,
+        growthLong: group.long ? group.long.growth : null,
+        top: group.topKeywords && group.topKeywords.length ? group.topKeywords[0].keyword : null,
+        group: group
+      };
+    });
+  }
+
+  // Alias matchers for the brand / product dictionaries, built once per dictionary.
+  function dictionaryMatchers(dimension) {
+    var cacheKey = dimension === 'type' ? 'typeMatchers' : 'brandMatchers';
+    if (state[cacheKey]) return state[cacheKey];
+    var dict = dimension === 'type' ? state.typeDict : state.brandDict;
+    var out = Object.keys(dict || {}).map(function (name) {
+      var aliases = Array.isArray(dict[name]) ? dict[name] : [dict[name]];
+      return {
+        name: name,
+        matchers: aliases.map(function (alias) {
+          return TrendAnalysis.termToMatcher(String(alias));
+        }).filter(Boolean)
+      };
+    });
+    state[cacheKey] = out;
+    return out;
+  }
+
+  function keywordHitsEntry(keyword, entry) {
+    for (var i = 0; i < entry.matchers.length; i++) {
+      if (TrendAnalysis.termMatches(entry.matchers[i], keyword)) return true;
+    }
+    return false;
+  }
+
+  // Brands or product types inside one selected term, measured on that term's keywords.
+  function brandRowsForTerm(term, dimension) {
+    var entries = dictionaryMatchers(dimension);
+    var rows = term.keywordsList || [];
+    var map = {};
+    rows.forEach(function (row) {
+      entries.forEach(function (entry) {
+        if (!keywordHitsEntry(row.keyword, entry)) return;
+        var bucket = map[entry.name] || { name: entry.name, size: 0, keywords: 0, top: null, topAms: 0 };
+        bucket.size += row.ams;
+        bucket.keywords += 1;
+        if (row.ams > bucket.topAms) { bucket.topAms = row.ams; bucket.top = row.keyword; }
+        map[entry.name] = bucket;
+      });
+    });
+    var total = term.size || rows.reduce(function (sum, row) { return sum + row.ams; }, 0);
+    return Object.keys(map).map(function (name) {
+      var bucket = map[name];
+      return {
+        name: name,
+        size: bucket.size,
+        share: total ? bucket.size / total : null,
+        keywords: bucket.keywords,
+        latest: null,
+        growthShort: null,
+        growthLong: null,
+        top: bucket.top
+      };
+    }).sort(function (a, b) { return b.size - a.size; });
+  }
+
+  function brandMetricKey() {
+    var metric = $('brandMetric').value;
+    if (metric === 'short') return 'growthShort';
+    if (metric === 'long') return 'growthLong';
+    return 'size';
+  }
+
+  function renderBrandsTab() {
+    if (!state.brandResult && !state.typeResult) {
+      $('brandTable').innerHTML = '<div class="empty">No brand dictionary loaded. Add one below, then run the analysis again.</div>';
+      $('brandProducts').innerHTML = '';
+      return;
+    }
+    renderBrandChart();
+    renderBrandTable();
+    renderBrandSpotlight();
+  }
+
+  function renderBrandChart() {
+    destroyChart('brand');
+    if (!chartAvailable()) return;
+    var term = findTerm($('brandTerm').value);
+    var metric = term ? 'size' : brandMetricKey();
+    var rows = sortRows(brandRows(), metric, 'desc').filter(function (row) {
+      return row[metric] != null;
+    }).slice(0, 14);
+    if (!rows.length) return;
+    var isGrowth = metric !== 'size';
+    var context = $('brandChart').getContext('2d');
+    state.charts.brand = new Chart(context, {
+      type: 'bar',
+      data: {
+        labels: rows.map(function (row) { return row.name; }),
+        datasets: [{
+          label: isGrowth ? 'Growth' : 'AMS',
+          data: rows.map(function (row) { return isGrowth ? row[metric] * 100 : row[metric]; }),
+          backgroundColor: isGrowth
+            ? rows.map(function (row) { return row[metric] >= 0 ? 'rgba(9,135,95,0.78)' : 'rgba(196,60,60,0.76)'; })
+            : 'rgba(91,75,255,0.78)',
+          borderRadius: 6
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function (ctx) {
+                var row = rows[ctx.dataIndex];
+                var lines = [
+                  'AMS: ' + fmtInt(row.size),
+                  'Keywords: ' + fmtInt(row.keywords)
+                ];
+                if (!term) {
+                  lines.push('Short-term: ' + fmtPct(row.growthShort));
+                  lines.push('Long-term: ' + fmtPct(row.growthLong));
+                }
+                lines.push('Top search: ' + (row.top || ' - '));
+                return lines;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(23,32,51,0.07)' },
+            ticks: { callback: function (value) { return isGrowth ? value.toFixed(0) + '%' : fmtCompact(value); } }
+          },
+          y: { grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  function renderBrandTable() {
+    var term = findTerm($('brandTerm').value);
+    var search = $('brandSearch').value.trim().toLowerCase();
+    var rows = brandRows().filter(function (row) {
+      return !search || row.name.toLowerCase().indexOf(search) !== -1;
+    });
+    if (!rows.length) {
+      $('brandTable').innerHTML = '<div class="empty">' +
+        (brandRows().length ? 'No matches for this filter.' : (term ? 'No brands matched keywords in this term.' : 'No brands matched any keywords.')) + '</div>';
+      return;
+    }
+    var sort = state.sort.brand;
+    if (term) sort = { key: sort.key === 'name' ? 'name' : 'size', dir: sort.dir };
+    rows = sortRows(rows, sort.key, sort.dir);
+    var dimension = brandDimension();
+    var html = '<table><thead><tr>' +
+      sortHeader(dimension === 'type' ? 'Product type' : 'Brand', 'name', sort) +
+      sortHeader('AMS', 'size', sort) +
+      sortHeader(term ? 'Share of term' : 'Share of AMS', 'share', sort) +
+      sortHeader('Keywords', 'keywords', sort) +
+      (term ? '' : sortHeader('Latest month', 'latest', sort) + sortHeader('Short-term', 'growthShort', sort) + sortHeader('Long-term', 'growthLong', sort)) +
+      '<th>Top search</th>' +
+      '</tr></thead><tbody>';
+    rows.forEach(function (row) {
+      var selected = dimension === 'brand' && row.name === state.selectedBrand;
+      html += '<tr data-brand="' + esc(row.name) + '"' + (selected ? ' class="selected"' : '') + '>' +
+        '<td class="family-name">' + esc(row.name) + '</td>' +
+        '<td class="num">' + fmtCompact(row.size) + '</td>' +
+        '<td class="num">' + fmtPct(row.share) + '</td>' +
+        '<td class="num">' + fmtInt(row.keywords) + '</td>' +
+        (term ? '' : '<td class="num">' + fmtCompact(row.latest) + '</td>' +
+          '<td class="num">' + growthHtml(row.growthShort) + '</td>' +
+          '<td class="num">' + growthHtml(row.growthLong) + '</td>') +
+        '<td class="nowrap" style="max-width:280px;overflow:hidden;text-overflow:ellipsis">' + esc(row.top || ' - ') + '</td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+    $('brandTable').innerHTML = html;
+  }
+
+  function renderBrandSpotlight() {
+    var dimension = brandDimension();
+    var term = findTerm($('brandTerm').value);
+    if (term) {
+      var mix = brandRows();
+      if (!mix.length) {
+        $('brandProducts').innerHTML = '<div class="empty">No ' + (dimension === 'type' ? 'product types' : 'brands') + ' match the keywords in this term.</div>';
+        $('brandSpotlightTitle').textContent = term.term + '  -  no matches';
+        return;
+      }
+      var picked = mix.find(function (item) { return item.name === state.selectedBrand; });
+      if (!picked) {
+        picked = mix[0];
+        state.selectedBrand = picked.name;
+      }
+      var entry = dictionaryMatchers(dimension).find(function (item) { return item.name === picked.name; });
+      var rows = (term.keywordsList || []).filter(function (row) {
+        return entry ? keywordHitsEntry(row.keyword, entry) : false;
+      }).map(keywordMetrics).sort(function (a, b) { return b.ams - a.ams }).slice(0, 60);
+      $('brandSpotlightTitle').textContent = picked.name + '  -  ' + term.term + ' searches';
+      var termHtml = '<table><thead><tr>' +
+        '<th>Keyword</th><th class="num">AMS</th><th class="num">Latest month</th>' +
+        '<th class="num">Short-term</th><th class="num">Long-term</th>' +
+        '</tr></thead><tbody>';
+      rows.forEach(function (row) {
+        termHtml += '<tr>' +
+          '<td>' + esc(row.keyword) + '</td>' +
+          '<td class="num">' + fmtCompact(row.ams) + '</td>' +
+          '<td class="num">' + fmtCompact(row.latest) + '</td>' +
+          '<td class="num">' + growthHtml(row.short && row.short.growth) + '</td>' +
+          '<td class="num">' + growthHtml(row.long && row.long.growth) + '</td>' +
+          '</tr>';
+      });
+      termHtml += '</tbody></table>';
+      $('brandProducts').innerHTML = termHtml;
+      return;
+    }
+    var result = brandResultFor(dimension);
+    if (!result || !result.groups.length) {
+      $('brandProducts').innerHTML = '<div class="empty">Nothing to show.</div>';
+      $('brandSpotlightTitle').textContent = dimension === 'type' ? 'Product spotlight' : 'Brand spotlight';
+      return;
+    }
+    var group = result.groups.find(function (item) { return item.name === state.selectedBrand; });
+    if (!group) {
+      group = result.groups[0];
+      state.selectedBrand = group.name;
+    }
+    $('brandSpotlightTitle').textContent = group.name + '  -  top searches';
+    var rows = group.topKeywords.slice(0, 60);
+    var html = '<table><thead><tr>' +
+      '<th>Keyword</th><th class="num">AMS</th><th class="num">Latest month</th>' +
+      '<th class="num">Short-term</th><th class="num">Long-term</th>' +
+      '</tr></thead><tbody>';
+    rows.forEach(function (row) {
+      html += '<tr>' +
+        '<td>' + esc(row.keyword) + '</td>' +
+        '<td class="num">' + fmtCompact(row.ams) + '</td>' +
+        '<td class="num">' + fmtCompact(row.latest) + '</td>' +
+        '<td class="num">' + growthHtml(row.short && row.short.growth) + '</td>' +
+        '<td class="num">' + growthHtml(row.long && row.long.growth) + '</td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+    $('brandProducts').innerHTML = html;
+  }
+
+  // ------------------------------------------------------ brand mix (deep dive)
+  function renderDeepBrandMix() {
+    var group = currentDeepGroup();
+    var family = group ? group.name : null;
+    renderMixTable('deepBrandTable', state.crossBrands, family, 'No brand matches in this theme.');
+    renderMixTable('deepTypeTable', state.crossTypes, family, 'No product-type matches in this theme.');
+  }
+
+  function renderMixTable(elementId, cross, family, emptyText) {
+    var cell = cross && family ? cross.families[family] : null;
+    if (!cell || !cell.tags.length) {
+      $(elementId).innerHTML = '<div class="empty">' + esc(emptyText) + '</div>';
+      return;
+    }
+    var html = '<table><thead><tr><th>Name</th><th class="num">AMS</th><th class="num">Share</th><th class="num">Keywords</th><th>Top search</th></tr></thead><tbody>';
+    cell.tags.slice(0, 12).forEach(function (tag) {
+      html += '<tr>' +
+        '<td class="family-name">' + esc(tag.tag) + '</td>' +
+        '<td class="num">' + fmtCompact(tag.size) + '</td>' +
+        '<td class="num">' + fmtPct(tag.share) + '</td>' +
+        '<td class="num">' + fmtInt(tag.keywords) + '</td>' +
+        '<td class="nowrap" style="max-width:220px;overflow:hidden;text-overflow:ellipsis">' + esc(tag.topKeyword || ' - ') + '</td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+    $(elementId).innerHTML = html;
+  }
+
+  // ---------------------------------------------------------------- seasonality
+  function renderSeasonTab() {
+    renderSeasonToggles();
+    renderSeasonChart();
+    renderSeasonTable();
+  }
+
+  function renderSeasonToggles() {
+    var container = $('seasonToggles');
+    container.innerHTML = '';
+    state.result.groups.forEach(function (group) {
+      var label = document.createElement('label');
+      label.className = 'chip' + (state.seasonFamilies.indexOf(group.name) !== -1 ? ' active' : '');
+      var input = document.createElement('input');
+      input.type = 'checkbox';
+      input.value = group.name;
+      input.checked = state.seasonFamilies.indexOf(group.name) !== -1;
+      input.addEventListener('change', function () {
+        if (this.checked) {
+          if (state.seasonFamilies.length >= 8) {
+            this.checked = false;
+            showToast('Pick up to 8 themes for readability.', true);
+            return;
+          }
+          state.seasonFamilies.push(this.value);
+          $('seasonTerm').value = '';
+        } else {
+          state.seasonFamilies = state.seasonFamilies.filter(function (name) { return name !== this.value; }, this);
+        }
+        label.classList.toggle('active', this.checked);
+        renderSeasonChart();
+        renderSeasonTable();
+      });
+      label.appendChild(input);
+      label.appendChild(document.createTextNode(group.name));
+      container.appendChild(label);
+    });
+  }
+
+  function termSeasonality(term) {
+    return TrendAnalysis.seasonality(term.monthly || [], state.result.dates);
+  }
+
+  function renderSeasonChart() {
+    destroyChart('season');
+    if (!chartAvailable()) return;
+    var view = $('seasonView').value;
+    var term = findTerm($('seasonTerm').value);
+    var families = state.result.groups.filter(function (group) {
+      return state.seasonFamilies.indexOf(group.name) !== -1;
+    });
+    if (!term && !families.length) {
+      families = state.result.groups.slice(0, 5);
+      state.seasonFamilies = families.map(function (group) { return group.name; });
+      renderSeasonToggles();
+    }
+    var datasets;
+    var labels;
+    var legend = [];
+    if (term) {
+      var series = termSeasonality(term);
+      var label = term.term;
+      var color = COLORS[0];
+      if (view === 'raw') {
+        labels = state.result.dates.map(fmtMonthShort);
+        datasets = [{
+          label: label,
+          data: term.monthly,
+          borderColor: color,
+          backgroundColor: color + '14',
+          tension: 0.28,
+          pointRadius: 0,
+          borderWidth: 2.4,
+          fill: false
+        }];
+      } else {
+        labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        datasets = [{
+          label: label,
+          data: series.index,
+          borderColor: color,
+          backgroundColor: color + '14',
+          tension: 0.3,
+          pointRadius: 3,
+          borderWidth: 2.4,
+          fill: false
+        }];
+      }
+      legend = [{ name: label, color: color }];
+    } else if (view === 'raw') {
+      labels = state.result.dates.map(fmtMonthShort);
+      datasets = families.map(function (group, index) {
+        var color = COLORS[index % COLORS.length];
+        legend.push({ name: group.name, color: color });
+        return {
+          label: group.name,
+          data: group.monthly,
+          borderColor: color,
+          backgroundColor: color + '14',
+          tension: 0.28,
+          pointRadius: 0,
+          borderWidth: 2.2,
+          fill: false
+        };
+      });
+    } else {
+      labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      datasets = families.map(function (group, index) {
+        var color = COLORS[index % COLORS.length];
+        legend.push({ name: group.name, color: color });
+        return {
+          label: group.name,
+          data: group.seasonality.index,
+          borderColor: color,
+          backgroundColor: color + '14',
+          tension: 0.3,
+          pointRadius: 3,
+          borderWidth: 2.2,
+          fill: false
+        };
+      });
+    }
+    $('seasonLegend').innerHTML = legend.map(function (item) {
+      return '<span><span class="swatch" style="background:' + item.color + '"></span>' + esc(item.name) + '</span>';
+    }).join('');
+
+    var context = $('seasonChart').getContext('2d');
+    state.charts.season = new Chart(context, {
+      type: 'line',
+      data: { labels: labels, datasets: datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function (ctx) {
+                return ctx.dataset.label + ': ' + (view === 'raw' ? fmtInt(ctx.parsed.y) + ' searches' : ctx.parsed.y.toFixed(0) + ' index');
+              }
+            }
+          }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { maxTicksLimit: 16, maxRotation: 0 } },
+          y: {
+            grid: { color: 'rgba(23,32,51,0.07)' },
+            ticks: { callback: function (value) { return view === 'raw' ? fmtCompact(value) : value; } },
+            title: { display: true, text: view === 'raw' ? 'Monthly searches' : 'Index (100 = average)' }
+          }
+        }
+      }
+    });
+  }
+
+  function renderSeasonTable() {
+    var groups = state.result.groups;
+    if (!groups.length) {
+      $('seasonTable').innerHTML = '<div class="empty">No seasonality data.</div>';
+      return;
+    }
+    var term = findTerm($('seasonTerm').value);
+    var rows = [];
+    if (term) {
+      rows.push({ name: term.term + '  (' + term.group + ')', index: termSeasonality(term).index });
+      $('seasonTableHint').textContent = '100 = an average month for this term';
+    } else {
+      groups.forEach(function (group) { rows.push({ name: group.name, index: group.seasonality.index }); });
+      $('seasonTableHint').textContent = '100 = an average month for that theme';
+    }
+    var html = '<table><thead><tr><th>Theme</th>';
+    for (var m = 0; m < 12; m++) html += '<th class="num">' + monthName(m) + '</th>';
+    html += '</tr></thead><tbody>';
+    rows.forEach(function (row) {
+      html += '<tr><td class="family-name">' + esc(row.name) + '</td>';
+      row.index.forEach(function (value) {
+        var intensity = Math.max(0, Math.min(1, (value - 60) / 100));
+        var background = 'rgba(91,75,255,' + (0.04 + intensity * 0.20).toFixed(3) + ')';
+        html += '<td class="num heat" style="background:' + background + '">' + (value ? value.toFixed(0) : ' - ') + '</td>';
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table>';
+    $('seasonTable').innerHTML = html;
+  }
+
+  // ---------------------------------------------------------------- tabs / sorting
+  function activateTab(name) {
+    state.activeTab = name;
+    document.querySelectorAll('.tab').forEach(function (tab) {
+      tab.classList.toggle('active', tab.dataset.tab === name);
+    });
+    document.querySelectorAll('.tab-panel').forEach(function (panel) {
+      panel.classList.toggle('hidden', panel.id !== 'tab-' + name);
+    });
+    if (!state.result) return;
+    if (name === 'overview') renderOverview();
+    if (name === 'family') renderFamilyTab();
+    if (name === 'deep') renderDeepTab();
+    if (name === 'terms') renderTermTab();
+    if (name === 'brands') renderBrandsTab();
+    if (name === 'top') renderTopTab();
+    if (name === 'season') renderSeasonTab();
+  }
+
+  function bindSorting() {
+    document.addEventListener('click', function (event) {
+      var header = event.target.closest('th[data-sort]');
+      if (!header) return;
+      var table = header.closest('table');
+      var wrap = header.closest('.table-wrap');
+      if (!wrap) return;
+      var id = wrap.id;
+      var key = header.dataset.sort;
+      var sortKey = id === 'familyTable' ? 'family' : (id === 'termTable' ? 'term' : (id === 'topTable' ? 'top' : (id === 'driverTermTable' ? 'deepTerm' : (id === 'brandTable' ? 'brand' : (id === 'termDrillTable' ? 'termDrill' : null)))));
+      if (!sortKey) return;
+      var current = state.sort[sortKey];
+      if (current.key === key) current.dir = current.dir === 'asc' ? 'desc' : 'asc';
+      else { current.key = key; current.dir = (key === 'name' || key === 'term' || key === 'keyword') ? 'asc' : 'desc'; }
+      if (id === 'familyTable') renderFamilyTable();
+      if (id === 'termTable') renderTermTable();
+      if (id === 'termDrillTable') renderTermDrillTable();
+      if (id === 'topTable') renderTopTab();
+      if (id === 'driverTermTable') renderDriverTermTable();
+      if (id === 'brandTable') renderBrandTable();
+    });
+
+    document.addEventListener('click', function (event) {
+      var brandRow = event.target.closest('tr[data-brand]');
+      if (brandRow) {
+        state.selectedBrand = brandRow.dataset.brand;
+        renderBrandTable();
+        renderBrandSpotlight();
+        return;
+      }
+      var termRow = event.target.closest('tr[data-term]');
+      if (termRow) {
+        state.selectedTerm = termRow.dataset.term;
+        renderTermDrillTable();
+        return;
+      }
+      var deepButton = event.target.closest('[data-deepdive]');
+      if (deepButton) {
+        state.selectedFamily = deepButton.dataset.deepdive;
+        $('deepFamily').value = state.selectedFamily;
+        $('familySelect').value = state.selectedFamily;
+        $('termFamily').value = state.selectedFamily;
+        $('topFamily').value = state.selectedFamily;
+        fillTermSelect($('topTerm'), state.selectedFamily);
+        activateTab('deep');
+        return;
+      }
+      var row = event.target.closest('tr[data-family]');
+      if (!row) return;
+      state.selectedFamily = row.dataset.family;
+      $('familySelect').value = state.selectedFamily;
+      $('deepFamily').value = state.selectedFamily;
+      $('termFamily').value = state.selectedFamily;
+      $('topFamily').value = state.selectedFamily;
+      fillTermSelect($('topTerm'), state.selectedFamily);
+      renderFamilyTable();
+      renderFamilyChart();
+    });
+  }
+
+  // ---------------------------------------------------------------- export
+  function brandExportRows(result) {
+    if (!result) return [];
+    var total = result.totals.totalAms || 0;
+    return result.groups.map(function (group) {
+      return [
+        group.name,
+        group.size,
+        total ? group.size / total : null,
+        group.keywords,
+        group.latest,
+        group.short ? group.short.start : null,
+        group.short ? group.short.end : null,
+        group.short ? group.short.growth : null,
+        group.long ? group.long.start : null,
+        group.long ? group.long.end : null,
+        group.long ? group.long.growth : null
+      ];
+    });
+  }
+
+  function brandMixRows() {
+    var rows = [];
+    if (!state.crossBrands) return rows;
+    Object.keys(state.crossBrands.families).forEach(function (family) {
+      state.crossBrands.families[family].tags.forEach(function (tag) {
+        rows.push([family, tag.tag, tag.size, tag.share, tag.keywords, tag.topKeyword]);
+      });
+    });
+    return rows;
+  }
+
+  function familyRows() {
+    return state.result.groups.map(function (group) {
+      return [
+        group.name,
+        group.size,
+        group.share,
+        group.latest,
+        group.short ? group.short.start : null,
+        group.short ? group.short.end : null,
+        group.short ? group.short.growth : null,
+        group.long ? group.long.start : null,
+        group.long ? group.long.end : null,
+        group.long ? group.long.growth : null
+      ];
+    });
+  }
+
+  function termRows() {
+    var rows = [];
+    state.result.groups.forEach(function (group) {
+      group.terms.forEach(function (term) {
+        rows.push([
+          group.name,
+          term.term,
+          term.size,
+          term.keywords,
+          term.latest,
+          term.short ? term.short.start : null,
+          term.short ? term.short.end : null,
+          term.short ? term.short.growth : null,
+          term.long ? term.long.start : null,
+          term.long ? term.long.end : null,
+          term.long ? term.long.growth : null
+        ]);
+      });
+    });
+    return rows;
+  }
+
+  function topRows() {
+    var rows = [];
+    state.result.groups.forEach(function (group) {
+      group.topKeywords.forEach(function (row) {
+        rows.push([
+          group.name,
+          row.keyword,
+          row.ams,
+          row.latest,
+          row.short ? row.short.growth : null,
+          row.long ? row.long.growth : null
+        ]);
+      });
+    });
+    return rows;
+  }
+
+  function driverTermRows() {
+    var rows = [];
+    state.result.groups.forEach(function (group) {
+      var shortTerms = driverTerms(group, 'short');
+      var longTerms = driverTerms(group, 'long');
+      var byTerm = new Map();
+      shortTerms.forEach(function (term) { byTerm.set(term.term, { short: term }); });
+      longTerms.forEach(function (term) {
+        if (!byTerm.has(term.term)) byTerm.set(term.term, {});
+        byTerm.get(term.term).long = term;
+      });
+      byTerm.forEach(function (entry) {
+        var short = entry.short;
+        var long = entry.long;
+        var size = (long || short).size;
+        rows.push([
+          group.name,
+          (long || short).term,
+          size,
+          group.size ? size / group.size : null,
+          short ? short.growth : null,
+          short ? short.change : null,
+          short ? short.contribution : null,
+          long ? long.growth : null,
+          long ? long.change : null,
+          long ? long.contribution : null
+        ]);
+      });
+    });
+    return rows;
+  }
+
+  function driverKeywordRows() {
+    var rows = [];
+    state.result.groups.forEach(function (group) {
+      ['short', 'long'].forEach(function (window) {
+        var drivers = group.drivers && group.drivers[window];
+        if (!drivers) return;
+        var seen = new Set();
+        (drivers.risers || []).concat(drivers.decliners || []).forEach(function (row) {
+          if (seen.has(row.keyword)) return;
+          seen.add(row.keyword);
+          rows.push([
+            group.name,
+            window === 'long' ? 'Long-term' : 'Short-term',
+            row.keyword,
+            row.ams,
+            row.start,
+            row.latest,
+            row.change,
+            row.growth
+          ]);
+        });
+      });
+    });
+    return rows;
+  }
+
+  function classificationRows() {
+    var rows = [];
+    Object.keys(state.classification || {}).forEach(function (group) {
+      var definition = state.classification[group];
+      if (Array.isArray(definition)) {
+        definition.forEach(function (term) { rows.push([group, 'term', term]); });
+      } else if (typeof definition === 'string') {
+        rows.push([group, 'query', definition]);
+      }
+    });
+    return rows;
+  }
+
+  function sheetWithFormats(data, widths, percentColumns) {
+    var sheet = XLSX.utils.aoa_to_sheet(data);
+    if (widths) sheet['!cols'] = widths.map(function (w) { return { wch: w }; });
+    if (percentColumns) {
+      var range = XLSX.utils.decode_range(sheet['!ref']);
+      for (var r = 1; r <= range.e.r; r++) {
+        percentColumns.forEach(function (c) {
+          var cell = sheet[XLSX.utils.encode_cell({ r: r, c: c })];
+          if (cell && cell.t === 'n') cell.z = '0.0%';
+        });
+      }
+    }
+    return sheet;
+  }
+
+  function exportExcel() {
+    if (!state.result) return;
+    var wb = XLSX.utils.book_new();
+    var result = state.result;
+
+    var summary = [
+      ['Open Trends'],
+      ['Generated', new Date().toISOString().slice(0, 10)],
+      [],
+      ['Metric', 'Value'],
+      ['Keywords analysed', result.totals.keywords],
+      ['Keywords matched', result.totals.matchedKeywords],
+      ['Total AMS', result.totals.totalAms],
+      ['Matched AMS', result.totals.matchedAms],
+      ['Themes', result.totals.groupCount],
+      ['Months', result.dates.length],
+      ['Date start', result.totals.dateStart],
+      ['Date end', result.totals.dateEnd],
+      ['Short window (months)', result.totals.shortWindow],
+      ['Long window (months)', result.totals.longWindow]
+    ];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summary), 'Summary');
+
+    var familyHeader = [['Theme', 'Size (AMS)', 'Share', 'Latest month', 'Short-term start', 'Short-term end', 'Short-term growth', 'Long-term start', 'Long-term end', 'Long-term growth']];
+    XLSX.utils.book_append_sheet(wb, sheetWithFormats(familyHeader.concat(familyRows()), [22, 14, 9, 14, 16, 16, 17, 16, 16, 17], [2, 6, 9]), 'Theme Growth');
+
+    var termHeader = [['Theme', 'Term', 'Size (AMS)', 'Keywords', 'Latest month', 'Short-term start', 'Short-term end', 'Short-term growth', 'Long-term start', 'Long-term end', 'Long-term growth']];
+    XLSX.utils.book_append_sheet(wb, sheetWithFormats(termHeader.concat(termRows()), [22, 22, 14, 11, 14, 16, 16, 17, 16, 16, 17], [7, 10]), 'Term Growth');
+
+    var driverTermHeader = [['Theme', 'Term', 'Size (AMS)', 'Share of theme', 'Short-term growth', 'Short-term d volume', 'Short-term contribution', 'Long-term growth', 'Long-term d volume', 'Long-term contribution']];
+    XLSX.utils.book_append_sheet(wb, sheetWithFormats(driverTermHeader.concat(driverTermRows()), [22, 24, 14, 14, 17, 19, 20, 17, 19, 20], [3, 4, 6, 7, 9]), 'Term Drivers');
+
+    var driverKeywordHeader = [['Theme', 'Window', 'Keyword', 'AMS', 'Window start', 'Latest month', 'd volume', 'Growth']];
+    XLSX.utils.book_append_sheet(wb, sheetWithFormats(driverKeywordHeader.concat(driverKeywordRows()), [22, 12, 46, 14, 15, 14, 14, 12], [7]), 'Keyword Drivers');
+
+    var topHeader = [['Theme', 'Keyword', 'AMS', 'Latest month', 'Short-term growth', 'Long-term growth']];
+    XLSX.utils.book_append_sheet(wb, sheetWithFormats(topHeader.concat(topRows()), [22, 46, 14, 14, 17, 17], [4, 5]), 'Top Searches');
+
+    if (state.brandResult) {
+      var brandHeader = [['Brand', 'Size (AMS)', 'Share of AMS', 'Keywords', 'Latest month', 'Short-term start', 'Short-term end', 'Short-term growth', 'Long-term start', 'Long-term end', 'Long-term growth']];
+      XLSX.utils.book_append_sheet(wb, sheetWithFormats(brandHeader.concat(brandExportRows(state.brandResult)), [26, 14, 12, 11, 14, 16, 16, 17, 16, 16, 17], [2, 7, 10]), 'Brand Growth');
+    }
+
+    if (state.typeResult) {
+      var typeHeader = [['Product type', 'Size (AMS)', 'Share of AMS', 'Keywords', 'Latest month', 'Short-term start', 'Short-term end', 'Short-term growth', 'Long-term start', 'Long-term end', 'Long-term growth']];
+      XLSX.utils.book_append_sheet(wb, sheetWithFormats(typeHeader.concat(brandExportRows(state.typeResult)), [26, 14, 12, 11, 14, 16, 16, 17, 16, 16, 17], [2, 7, 10]), 'Product Types');
+    }
+
+    if (state.crossBrands) {
+      var mixHeader = [['Theme', 'Brand', 'AMS', 'Share of theme', 'Keywords', 'Top search']];
+      XLSX.utils.book_append_sheet(wb, sheetWithFormats(mixHeader.concat(brandMixRows()), [22, 26, 14, 15, 11, 44], [3]), 'Brand Mix');
+    }
+
+    var seasonHeader = [['Theme'].concat(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])];
+    var seasonData = result.groups.map(function (group) {
+      return [group.name].concat(group.seasonality.index.map(function (value) { return value ? Number(value.toFixed(1)) : 0; }));
+    });
+    XLSX.utils.book_append_sheet(wb, sheetWithFormats(seasonHeader.concat(seasonData), [22].concat(new Array(12).fill(9))), 'Seasonality Index');
+
+    var dateHeader = [['Theme'].concat(result.dates.map(function (iso) { return iso; }))];
+    var dateData = result.groups.map(function (group) {
+      return [group.name].concat(group.monthly);
+    });
+    XLSX.utils.book_append_sheet(wb, sheetWithFormats(dateHeader.concat(dateData), [22].concat(new Array(result.dates.length).fill(13))), 'Monthly Volumes');
+
+    var classHeader = [['Group', 'Type', 'Term or query']];
+    XLSX.utils.book_append_sheet(wb, sheetWithFormats(classHeader.concat(classificationRows()), [22, 10, 120]), 'Classification');
+
+    XLSX.writeFile(wb, 'open-trends-analysis.xlsx');
+    showToast('Workbook downloaded');
+  }
+
+  function downloadCsv(filename, rows) {
+    var csv = rows.map(function (row) {
+      return row.map(function (value) {
+        if (value == null) return '';
+        var text = String(value);
+        if (/[",\n]/.test(text)) return '"' + text.replace(/"/g, '""') + '"';
+        return text;
+      }).join(',');
+    }).join('\r\n');
+    var blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+    var link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+    setTimeout(function () { URL.revokeObjectURL(link.href); }, 2000);
+  }
+
+  function exportFamilyCsv() {
+    if (!state.result) return;
+    downloadCsv('theme-growth.csv', [['Theme', 'Size (AMS)', 'Share', 'Latest month', 'Short-term start', 'Short-term end', 'Short-term growth', 'Long-term start', 'Long-term end', 'Long-term growth']].concat(familyRows()));
+  }
+  function exportTermCsv() {
+    if (!state.result) return;
+    downloadCsv('term-growth.csv', [['Theme', 'Term', 'Size (AMS)', 'Keywords', 'Latest month', 'Short-term start', 'Short-term end', 'Short-term growth', 'Long-term start', 'Long-term end', 'Long-term growth']].concat(termRows()));
+  }
+  function exportTopCsv() {
+    if (!state.result) return;
+    downloadCsv('top-searches.csv', [['Theme', 'Keyword', 'AMS', 'Latest month', 'Short-term growth', 'Long-term growth']].concat(topRows()));
+  }
+  function exportDriverTermCsv() {
+    if (!state.result) return;
+    downloadCsv('term-drivers.csv', [['Theme', 'Term', 'Size (AMS)', 'Share of theme', 'Short-term growth', 'Short-term d volume', 'Short-term contribution', 'Long-term growth', 'Long-term d volume', 'Long-term contribution']].concat(driverTermRows()));
+  }
+  function exportDriverKeywordCsv() {
+    if (!state.result) return;
+    downloadCsv('keyword-drivers.csv', [['Theme', 'Window', 'Keyword', 'AMS', 'Window start', 'Latest month', 'd volume', 'Growth']].concat(driverKeywordRows()));
+  }
+  function exportBrandCsv() {
+    if (!state.brandResult) return;
+    downloadCsv('brand-growth.csv', [['Brand', 'Size (AMS)', 'Share of AMS', 'Keywords', 'Latest month', 'Short-term start', 'Short-term end', 'Short-term growth', 'Long-term start', 'Long-term end', 'Long-term growth']].concat(brandExportRows(state.brandResult)));
+  }
+  function exportTypeCsv() {
+    if (!state.typeResult) return;
+    downloadCsv('product-types.csv', [['Product type', 'Size (AMS)', 'Share of AMS', 'Keywords', 'Latest month', 'Short-term start', 'Short-term end', 'Short-term growth', 'Long-term start', 'Long-term end', 'Long-term growth']].concat(brandExportRows(state.typeResult)));
+  }
+  function exportJson() {
+    if (!state.result) return;
+    function slim(groups) {
+      return (groups || []).map(function (group) {
+        return {
+          name: group.name,
+          size: group.size,
+          share: group.share,
+          keywords: group.keywords,
+          latest: group.latest,
+          shortGrowth: group.short ? group.short.growth : null,
+          longGrowth: group.long ? group.long.growth : null
+        };
+      });
+    }
+    var payload = {
+      generated: new Date().toISOString(),
+      totals: state.result.totals,
+      dates: state.result.dates,
+      groups: state.result.groups,
+      classification: state.classification,
+      brands: slim(state.brandResult && state.brandResult.groups),
+      productTypes: slim(state.typeResult && state.typeResult.groups),
+      brandMix: state.crossBrands ? state.crossBrands.families : null
+    };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    var link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'open-trends-analysis.json';
+    link.click();
+    setTimeout(function () { URL.revokeObjectURL(link.href); }, 2000);
+  }
+
+  function downloadDictionary() {
+    var blob = new Blob([classificationText(readClassification())], { type: 'application/json' });
+    var link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'theme-classification.json';
+    link.click();
+    setTimeout(function () { URL.revokeObjectURL(link.href); }, 2000);
+  }
+
+  // ---------------------------------------------------------------- events
+  function bindEvents() {
+    $('browseBtn').addEventListener('click', function () { $('fileInput').click(); });
+    $('fileInput').addEventListener('change', function (event) { handleFile(event.target.files[0]); });
+    $('dictFile').addEventListener('change', function (event) {
+      var file = event.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          var text = new TextDecoder().decode(e.target.result);
+          if (/\.json$/i.test(file.name)) {
+            setDictionary(JSON.parse(text), 'Dictionary loaded');
+          } else {
+            var workbook = XLSX.read(new Uint8Array(e.target.result), { type: 'array', cellDates: true, dense: true });
+            var sheet = workbook.Sheets[workbook.SheetNames[0]];
+            var rows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: true, defval: null });
+            var headerIndex = findHeaderRow(rows);
+            var header = rows[headerIndex] || [];
+            var groupIndex = 0;
+            var termIndex = 1;
+            for (var c = 0; c < header.length; c++) {
+              var h = String(header[c] || '').toLowerCase();
+              if (/group|family|theme|scent/.test(h)) groupIndex = c;
+              if (/term|keyword|ingredient|note|query|definition|expression|boolean/.test(h)) termIndex = c;
+            }
+            var parsed = {};
+            for (var r = headerIndex + 1; r < rows.length; r++) {
+              var group = rows[r][groupIndex] == null ? '' : String(rows[r][groupIndex]).trim();
+              var term = rows[r][termIndex] == null ? '' : String(rows[r][termIndex]).trim();
+              if (!group || !term) continue;
+              // A cell that reads like a boolean expression becomes a group query.
+              if (/\b(OR|AND|NOT)\b|NEAR\/\d|\?|\(|\)|\*/.test(term)) {
+                if (parsed[group] == null) parsed[group] = term;
+                continue;
+              }
+              if (typeof parsed[group] === 'string') continue;
+              if (!parsed[group]) parsed[group] = [];
+              parsed[group].push(term);
+            }
+            if (!Object.keys(parsed).length) throw new Error('No group/term rows found.');
+            setDictionary(parsed, 'Dictionary loaded');
+          }
+        } catch (error) {
+          showToast('Could not read dictionary: ' + error.message, true);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    });
+
+    $('dropZone').addEventListener('dragover', function (event) { event.preventDefault(); this.classList.add('dragover'); });
+    $('dropZone').addEventListener('dragleave', function () { this.classList.remove('dragover'); });
+    $('dropZone').addEventListener('drop', function (event) {
+      event.preventDefault();
+      this.classList.remove('dragover');
+      handleFile(event.dataTransfer.files[0]);
+    });
+    $('dropZone').addEventListener('click', function (event) {
+      if (event.target.tagName !== 'BUTTON') $('fileInput').click();
+    });
+
+    $('sheetSelect').addEventListener('change', function () { loadSheet(this.value); });
+    $('runBtn').addEventListener('click', runAnalysis);
+    $('applyDictBtn').addEventListener('click', function () {
+      try {
+        var classification = readClassification();
+        setDictionary(classification, 'Dictionary applied');
+        if (state.result) runAnalysis();
+      } catch (error) {
+        showToast(error.message, true);
+      }
+    });
+    $('loadDefaultBtn').addEventListener('click', function () {
+      setDictionary(defaultClassification(), 'Category definitions loaded');
+    });
+    $('loadWorkbookBtn').addEventListener('click', function () {
+      setDictionary(workbookClassification(), 'Workbook term list loaded');
+    });
+    $('headerDefaultBtn').addEventListener('click', function () {
+      setDictionary(defaultClassification(), 'Category definitions loaded');
+      $('dictDetails').open = true;
+    });
+    $('uploadDictBtn').addEventListener('click', function () { $('dictFile').click(); });
+     uploadCategoryBtn.addEventListener('click', function () { dictFile.click(); });
+    $('downloadDictBtn').addEventListener('click', downloadDictionary);
+    $('dictText').addEventListener('input', function () { updateDictionaryCount(this.value); });
+    $('shortWindow').addEventListener('change', function () { if (state.result) runAnalysis(); });
+    $('longWindow').addEventListener('change', function () { if (state.result) runAnalysis(); });
+    $('dedupe').addEventListener('change', function () {
+      if (state.workbook && $('sheetSelect').value) loadSheet($('sheetSelect').value);
+    });
+
+    document.querySelectorAll('.tab').forEach(function (tab) {
+      tab.addEventListener('click', function () { activateTab(this.dataset.tab); });
+    });
+
+    $('termSearch').addEventListener('input', renderTermTable);
+    exportTermDrillCsvBtn.addEventListener('click', exportTermDrillCsv);
+    $('termMetric').addEventListener('change', renderTermChart);
+    $('topSearch').addEventListener('input', renderTopTab);
+    $('seasonView').addEventListener('change', renderSeasonChart);
+
+    $('contextToggle').addEventListener('change', function () { if (state.result) runAnalysis(); });
+    $('bareToggle').addEventListener('change', function () { if (state.result) runAnalysis(); });
+     fuzzyToggle.addEventListener('change', function () { if (state.result) runAnalysis(); });
+    $('exportUnmatchedBtn').addEventListener('click', exportUnmatchedCsv);
+    $('brandDim').addEventListener('change', function () {
+      state.selectedBrand = null;
+      renderBrandsTab();
+    });
+    $('brandMetric').addEventListener('change', renderBrandChart);
+    $('brandSearch').addEventListener('input', renderBrandTable);
+    $('loadDefaultBrandsBtn').addEventListener('click', function () {
+      setBrandDictionary(defaultBrands(), defaultTypes(), 'Default brand dictionary loaded');
+    });
+    $('applyBrandsBtn').addEventListener('click', function () {
+      try {
+        var dictionaries = readBrandDictionary();
+        setBrandDictionary(dictionaries.brands, dictionaries.types, 'Brand dictionaries applied');
+        if (state.result) runAnalysis();
+      } catch (error) {
+        showToast(error.message, true);
+      }
+    });
+    $('brandText').addEventListener('input', updateBrandDictCount);
+    $('typeText').addEventListener('input', updateBrandDictCount);
+
+    $('headerExportBtn').addEventListener('click', exportExcel);
+    $('exportExcelBtn').addEventListener('click', exportExcel);
+    $('exportFamilyCsvBtn').addEventListener('click', exportFamilyCsv);
+    $('exportTermCsvBtn').addEventListener('click', exportTermCsv);
+    $('exportDriverTermCsvBtn').addEventListener('click', exportDriverTermCsv);
+    $('exportDriverKeywordCsvBtn').addEventListener('click', exportDriverKeywordCsv);
+    $('exportBrandCsvBtn').addEventListener('click', exportBrandCsv);
+    $('exportTypeCsvBtn').addEventListener('click', exportTypeCsv);
+    $('exportTopCsvBtn').addEventListener('click', exportTopCsv);
+    $('exportJsonBtn').addEventListener('click', exportJson);
+
+    bindSorting();
+  }
+
+  function loadPrecomputedTrends() {
+    var data = window.FRAGRANCE_TRENDS_DATA;
+    if (!data) return false;
+    try {
+      state.result = data;
+      state.classification = data.classification || defaultClassification();
+      state.brandDict = defaultBrands();
+      state.typeDict = defaultTypes();
+      state.brandResult = data.brandResult || null;
+      state.typeResult = data.typeResult || null;
+      state.crossBrands = data.crossBrands || null;
+      state.crossTypes = data.crossTypes || null;
+      state.selectedFamily = data.groups && data.groups.length ? data.groups[0].name : null;
+      state.seasonFamilies = (data.groups || []).slice(0, 5).map(function (g) { return g.name; });
+      if (state.brandResult && state.brandResult.groups && state.brandResult.groups.length && !state.selectedBrand) {
+        state.selectedBrand = state.brandResult.groups[0].name;
+      }
+      state.coverage = null;
+      $('results').classList.remove('hidden');
+      $('headerExportBtn').disabled = false;
+      $('parseStatus').className = 'status ok';
+      $('parseStatus').textContent = 'Pre-loaded demo data (fragrance example category: ' + fmtInt(data.totals.keywords) + ' keywords, ' + data.totals.matchedKeywords + ' classified into ' + data.totals.groupCount + ' themes). Upload an export and your own definitions to analyse any category.';
+      populateResultControls();
+      renderKpis();
+      activateTab('overview');
+      return true;
+    } catch (error) {
+      console.error('Pre-loaded trends failed to render', error);
+      return false;
+    }
+  }
+
+  function init() {
+    setDictionary(defaultClassification());
+    setBrandDictionary(defaultBrands(), defaultTypes());
+    bindEvents();
+    updateDictionaryCount($('dictText').value);
+    if (loadPrecomputedTrends()) { $('runBtn').disabled = true; $('runBtn').title = 'Upload a Keyword Planner export to run your own analysis'; }
+    updateBrandDictCount();
+    if (!chartAvailable()) showToast('Chart library failed to load. Tables and exports still work.', true);
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
