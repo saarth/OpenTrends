@@ -1,6 +1,8 @@
 # Open Trends
 
-A local browser app for turning Google Keyword Planner exports into theme-level trend analysis for **any category**.
+A free, open-source, local browser app for turning Google Keyword Planner exports into theme-level trend analysis for **any category**.
+
+No ads, no tracking, no accounts: everything runs in your browser and your data is never uploaded. A self-hostable version is available on [GitHub](https://github.com/saarth/OpenTrends).
 
 You define the category searches and the keyword buckets (themes); Open Trends tags each search term against them and produces theme-level and term-level growth, size, velocity, seasonality and top-search tables — plus brand/product attribution and an Excel export. The bundled example is a 22-theme fragrance taxonomy.
 
