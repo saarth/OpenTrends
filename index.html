@@ -1011,10 +1011,47 @@
     return parts.join('  |  ');
   }
 
+  function dishCareProductTypes() {
+    return {
+      "Dishwasher": ["dishwasher", "dish washer", "portable dishwasher", "countertop dishwasher", "built in dishwasher", "built-in dishwasher", "integrated dishwasher", "slimline dishwasher", "freestanding dishwasher", "tabletop dishwasher", "drawer dishwasher", "compact dishwasher", "single drawer dishwasher", "ultrasonic dishwasher", "in sink dishwasher", "dishwasher machine", "dishdrawer"],
+      "Dishwasher detergent": ["dishwasher detergent", "dishwasher soap", "dishwasher powder", "dishwasher gel", "dishwasher liquid", "dishwasher tablet", "dishwasher pod", "dishwasher tab", "actionpacs", "gelpacs", "action pacs", "gel pacs"],
+      "Dish soap": ["dish soap", "dishwashing liquid", "washing up liquid", "dish detergent", "liquid dish soap"],
+      "Rinse aid": ["rinse aid", "rinse agent", "rinse fluid", "jet dry", "jet-dry", "jetdry", "drying aid"],
+      "Dishwasher cleaner": ["dishwasher cleaner", "descaler", "affresh", "glisten", "cleaner"],
+      "Dishwasher salt": ["dishwasher salt", "salt"],
+      "Dish rack": ["dish rack", "drying rack"],
+      "Scent booster": ["scent booster"]
+    };
+  }
+
+  function syncBrandsFromDictionary(classification) {
+    var brandThemes = Object.keys(classification || {}).filter(function (name) {
+      return /brand/i.test(name);
+    });
+    if (!brandThemes.length) return false;
+    var brands = {};
+    brandThemes.forEach(function (theme) {
+      var value = classification[theme];
+      var terms = Array.isArray(value) ? value : (typeof value === 'string' ? [value] : []);
+      terms.forEach(function (term) {
+        var t = String(term || '').trim();
+        if (!t) return;
+        var name = t.split(/\s+/).map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
+        if (!brands[name]) brands[name] = [];
+        if (brands[name].indexOf(t) === -1) brands[name].push(t);
+      });
+    });
+    setBrandDictionary(brands, dishCareProductTypes(), null);
+    return true;
+  }
+
   function setDictionary(classification, message) {
     state.classification = classification;
     $('dictText').value = classificationText(classification);
     $('dictCount').textContent = dictionarySummary(classification);
+    if (syncBrandsFromDictionary(classification)) {
+      updateBrandDictCount();
+    }
     if (message) showToast(message);
   }
 
