@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200" width="100%" height="100%">
+  <defs>
+    <style>
+      .icon-o { fill: none; stroke: #0066CC; stroke-width: 18; }
+      .brand-text { font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; font-size: 58px; font-weight: 700; fill: #003366; letter-spacing: -1.5px; }
+      .tagline { font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; font-size: 14px; font-weight: 500; fill: #556677; letter-spacing: 3px; }
+    </style>
+  </defs>
+
+  <!-- Background Canvas (Optional / Transparent) -->
+  <rect width="100%" height="100%" fill="none" />
+
+  <!-- Short Logo / Icon "O" -->
+  <circle cx="100" cy="100" r="50" class="icon-o" />
+
+  <!-- Full Wordmark -->
+  <text x="180" y="115" class="brand-text">opentrends</text>
+
+  <!-- Tagline -->
+  <text x="182" y="145" class="tagline">UNCOVER SEARCH TRENDS</text>
+</svg>
