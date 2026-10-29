@@ -535,7 +535,7 @@
 
     <details class="dict" id="dictDetails">
       <summary>Category definitions <span class="hint" id="dictCount"></span></summary>
-      <p>Each key is a theme (your keyword bucket); each value is either a <b>boolean query</b> or a plain list of terms. Queries support <b>OR</b>, <b>AND</b>, <b>NOT</b>, <b>NEAR/3</b>, parentheses, <b>"quoted phrases"</b>, <b>*</b>/<b>?</b> wildcards and <b>#hashtags</b>, and are matched against the words of each search term  -  so <code>(vanilla OR caramel) NEAR/3 (perfume OR candle) NOT (recipe)</code> behaves as written. Term lists keep the older forgiving substring matching (whole words for terms of 4 characters or fewer).</p>
+      <p>Each key is a theme (your keyword bucket); each value is either a <b>boolean query</b> or a plain list of terms. Queries support <b>OR</b>, <b>AND</b>, <b>NOT</b>, <b>NEAR/3</b>, parentheses, <b>"quoted phrases"</b>, <b>*</b>/<b>?</b> wildcards and <b>#hashtags</b>, and are matched against the words of each search term  -  so <code>(running OR jogging) NEAR/3 (shoe OR sneakers) NOT (recipe)</code> behaves as written. Term lists keep the older forgiving substring matching (whole words for terms of 4 characters or fewer).</p>
       <textarea id="dictText" spellcheck="false"></textarea>
       <div class="row">
         <button class="btn small" id="loadDefaultBtn" type="button">Load example definitions</button>
@@ -545,14 +545,14 @@
         <button class="btn small" id="downloadDictBtn" type="button">Download JSON</button>
         <input type="file" id="dictFile" accept=".json,.xlsx,.xls,.csv" class="hidden">
       </div>
-      <label class="check" style="margin-top:10px"><input type="checkbox" id="contextToggle" checked> Treat product words as search context (candle, wax melt, diffuser, air freshener, incense, soap, lotion, body mist)</label>
-      <label class="check" style="margin-top:6px"><input type="checkbox" id="bareToggle" checked> Also match bare note searches ("sandalwood", "white musk", "patchouli oil", "bergamot essential oil")</label>
-      <p class="hint" style="margin-top:6px">These options keep bare ingredient searches inside a theme. The first also accepts a product word, so "sandalwood candle" counts as Woody even though the definition only lists scent, fragrance, perfume, aroma, smell, bouquet and note. The second also accepts a search that is <i>only</i> notes and filler words, so "sandalwood" counts too  -  while "vanilla extract" and "rose garden" stay out. They only matter for queries written as <i>term near context</i>; plain term lists are unaffected.</p>
+      <label class="check" style="margin-top:10px"><input type="checkbox" id="contextToggle" checked> Treat product words as search context (shoes, sneakers, boots, sandals, trainers, heels, flats)</label>
+      <label class="check" style="margin-top:6px"><input type="checkbox" id="bareToggle" checked> Also match bare descriptor searches ("running", "basketball", "hiking", "casual")</label>
+      <p class="hint" style="margin-top:6px">These options keep short searches inside a theme. The first also accepts a product word, so a search like "running shoe" counts even when the definition only lists descriptor words. The second also accepts a search that is <i>only</i> descriptors and filler words, so "running" counts too  -  while unrelated searches stay out. They only matter for queries written as <i>descriptor near context</i>; plain term lists are unaffected.</p>
     </details>
 
     <details class="dict" id="brandDictDetails">
       <summary>Brand &amp; product dictionary <span class="hint" id="brandDictCount"></span></summary>
-      <p>Brands and formats are optional. Each key is a brand or a product type, and the value is a list of aliases matched against keywords the same way as terms. The bundled lists are a fragrance starter set; replace them with your own. Signature product names are included as aliases, so "santal 33" counts as Le Labo. Product types classify the format being searched for (candle, perfume, air freshener, wax melt).</p>
+      <p>Brands and formats are optional. Each key is a brand or a product type, and the value is a list of aliases matched against keywords the same way as terms. The bundled lists are a sneakers &amp; footwear starter set; replace them with your own. Signature product names are included as aliases, so "air force 1" counts as Nike. Product types classify the format being searched for (sneakers, boots, sandals, heels).</p>
       <label style="margin-top:10px">Brands
         <textarea id="brandText" spellcheck="false" style="min-height:180px"></textarea>
       </label>
@@ -759,7 +759,7 @@
             </select>
           </label>
           <label style="flex:1 1 180px">Search
-            <input type="search" id="brandSearch" placeholder="e.g. tom ford, candle">
+            <input type="search" id="brandSearch" placeholder="e.g. nike, running">
           </label>
         </div>
         <div class="chart-wrap short" style="margin-top:14px"><canvas id="brandChart"></canvas></div>
@@ -908,10 +908,11 @@
   // Product words that count as "search context" next to a note, so a keyword
   // like "sandalwood candle" still lands in a theme.
   var PRODUCT_CONTEXT = [
-    'candle', 'candles', 'wax melt', 'wax melts', 'wax warmer', 'diffuser',
-    'air freshener', 'room spray', 'room freshener', 'car freshener',
-    'car air freshener', 'incense', 'soap', 'body wash', 'lotion', 'body mist',
-    'body spray', 'perfume oil', 'cologne', 'detergent', 'laundry', 'scented'
+    'shoe', 'shoes', 'sneaker', 'sneakers', 'trainer', 'trainers', 'footwear',
+    'boot', 'boots', 'sandal', 'sandals', 'slipper', 'slippers', 'heel', 'heels',
+    'flat', 'flats', 'loafer', 'loafers', 'clog', 'clogs', 'mule', 'mules',
+    'wedge', 'wedges', 'pump', 'pumps', 'cleat', 'cleats', 'court', 'kicks',
+    'runner', 'runners'
   ];
 
   function showToast(message, isError) {
