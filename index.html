@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Open Trends — Free Google Keyword Planner Trend Analysis Tool</title>
+<title>Open Trends — Free Google Search Trend Analysis tool</title>
 <meta name="description" content="Open Trends turns Google Keyword Planner exports into theme-level trend analysis: growth, velocity, seasonality and top searches for any category. Free and open source.">
 <meta name="keywords" content="google keyword planner, trend analysis, search trends, keyword trends, google trends alternative, keyword research tool, search volume analysis, theme analysis, seasonality, free trend analysis tool">
 <meta name="author" content="Sarth Jauhari">
@@ -15,13 +15,13 @@
 <!-- Open Graph -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Open Trends">
-<meta property="og:title" content="Open Trends — Free Google Keyword Planner Trend Analysis Tool">
+<meta property="og:title" content="Open Trends — Free Google Search Trend Analysis tool">
 <meta property="og:description" content="Turn Google Keyword Planner exports into theme-level growth, velocity and seasonality for any category. Free, open source, runs in your browser.">
 <meta property="og:url" content="https://opentrends.win/">
 <meta property="og:image" content="https://opentrends.win/og-image.png">
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Open Trends — Free Google Keyword Planner Trend Analysis Tool">
+<meta name="twitter:title" content="Open Trends — Free Google Search Trend Analysis tool">
 <meta name="twitter:description" content="Turn Google Keyword Planner exports into theme-level growth, velocity and seasonality for any category. Free, open source, runs in your browser.">
 <meta name="twitter:image" content="https://opentrends.win/og-image.png">
 <!-- Structured data -->
@@ -484,6 +484,7 @@
         </div>
         <div class="file-info hidden" id="fileInfo"></div>
       </div>
+      <div>
       <div class="card" style="margin-top:16px">
         <div class="card-head"><h3>Category definitions</h3></div>
         <p class="hint" style="margin-bottom:12px">Upload your keyword buckets as a dictionary (.json, .xlsx, .xls or .csv): one row per theme, with a boolean query or a list of terms. The example file shows the expected columns (Theme, Query).</p>
@@ -495,8 +496,20 @@
         </div>
       </div>
       <div class="card" style="margin-top:16px">
+        <div class="card-head"><h3>Brand &amp; product dictionary</h3></div>
+        <p class="hint" style="margin-bottom:12px">Upload brand and product-type dictionaries (.json, .xlsx, .xls or .csv). Use "Upload combined" for a single file with both, or upload them separately.</p>
+        <div class="row">
+          <button class="btn small" id="uploadBrandsBtn2" type="button">Upload brands</button>
+          <button class="btn small" id="uploadTypesBtn2" type="button">Upload product types</button>
+          <button class="btn small" id="uploadBrandDictBtn2" type="button">Upload combined</button>
+          <input type="file" id="brandFile2" accept=".json,.xlsx,.xls,.csv" class="hidden">
+          <input type="file" id="typeFile2" accept=".json,.xlsx,.xls,.csv" class="hidden">
+          <input type="file" id="brandDictFile2" accept=".json,.xlsx,.xls,.csv" class="hidden">
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
         <div class="card-head"><h3>Example data</h3></div>
-        <p class="hint" style="margin-bottom:12px">A small Google Keyword Planner export with the expected columns (keyword, AMS, 48 monthly columns) to try the tool.</p>
+        <p class="hint" style="margin-bottom:12px">A small Google Keyword Planner export with the expected columns (keyword, AMS, 48 monthly columns, Oct 2022 - Sep 2026) to try the tool.</p>
         <div class="row">
           <a class="btn small ghost-light" href="example-gkp.xlsx" download>Example GKP export (.xlsx)</a>
         </div>
@@ -516,6 +529,7 @@
         <label class="check"><input type="checkbox" id="dedupe" checked> Merge duplicate keywords (keep first)</label>
         <button class="btn primary" id="runBtn" disabled>Run analysis</button>
         <div class="status" id="parseStatus"></div>
+      </div>
       </div>
     </div>
 
@@ -547,8 +561,14 @@
       </label>
       <div class="row">
         <button class="btn small" id="loadDefaultBrandsBtn" type="button">Load example brand list</button>
+        <button class="btn small" id="uploadBrandsBtn" type="button">Upload brands</button>
+        <button class="btn small" id="uploadTypesBtn" type="button">Upload product types</button>
+        <button class="btn small" id="uploadBrandDictBtn" type="button">Upload combined</button>
         <button class="btn small" id="applyBrandsBtn" type="button">Apply dictionaries</button>
       </div>
+      <input type="file" id="brandFile" accept=".json,.xlsx,.xls,.csv" class="hidden">
+      <input type="file" id="typeFile" accept=".json,.xlsx,.xls,.csv" class="hidden">
+      <input type="file" id="brandDictFile" accept=".json,.xlsx,.xls,.csv" class="hidden">
       <label class="check" style="margin-top:10px"><input type="checkbox" id="fuzzyToggle"> Fuzzy match brand aliases (catch novel typos like "barakat" -> "baccarat"; off by default)</label>
       <p class="hint" style="margin-top:6px">When on, an unmatched search is attributed to a brand if one of its aliases is within one edit of a search word, and only when exactly one brand matches. Use it for messy exports; leave it off for clean data to avoid false positives.</p>
     </details>
@@ -1139,6 +1159,105 @@
     return JSON.parse(JSON.stringify(window.DEFAULT_PRODUCT_TYPES || {}));
   }
 
+  function cleanBrandObject(parsed) {
+    var out = {};
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return out;
+    Object.keys(parsed).forEach(function (name) {
+      if (!Array.isArray(parsed[name])) return;
+      var terms = parsed[name].filter(function (term) { return typeof term === 'string' && term.length; });
+      if (terms.length) out[name] = terms;
+    });
+    return out;
+  }
+
+  function parseBrandTypeSheet(rows) {
+    var headerIndex = 0;
+    // find header row with a name/group column
+    for (var r = 0; r < Math.min(rows.length, 20); r++) {
+      var row = rows[r] || [];
+      var score = 0;
+      for (var c = 0; c < row.length; c++) {
+        var v = String(row[c] || '').toLowerCase();
+        if (/group|name|brand|type|product/.test(v)) score += 2;
+        if (/term|alias|pattern/.test(v)) score += 2;
+        if (/dimension|kind/.test(v)) score += 1;
+      }
+      if (score >= 3) { headerIndex = r; break; }
+    }
+    var header = rows[headerIndex] || [];
+    var dimIndex = -1, nameIndex = 0, termIndex = 1;
+    for (var c = 0; c < header.length; c++) {
+      var h = String(header[c] || '').toLowerCase();
+      if (/dimension|kind|category/.test(h)) dimIndex = c;
+      if (/group|name|brand|type|product/.test(h)) nameIndex = c;
+      if (/term|alias|pattern|keyword/.test(h)) termIndex = c;
+    }
+    var brands = {}, types = {};
+    for (var r = headerIndex + 1; r < rows.length; r++) {
+      var row = rows[r] || [];
+      var name = row[nameIndex] == null ? '' : String(row[nameIndex]).trim();
+      var term = row[termIndex] == null ? '' : String(row[termIndex]).trim();
+      if (!name || !term) continue;
+      var target = brands;
+      if (dimIndex >= 0) {
+        var dim = String(row[dimIndex] || '').toLowerCase();
+        if (/product|type/.test(dim)) target = types;
+        else if (/brand/.test(dim)) target = brands;
+      } else {
+        // heuristic: if name looks like a product type word
+      }
+      if (!target[name]) target[name] = [];
+      if (target[name].indexOf(term) === -1) target[name].push(term);
+    }
+    return { brands: brands, types: types };
+  }
+
+  function handleBrandUpload(file, mode) {
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      try {
+        var result = { brands: {}, types: {} };
+        if (/\.json$/i.test(file.name)) {
+          var parsed = JSON.parse(new TextDecoder().decode(e.target.result));
+          if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+            if (parsed.brands || parsed.productTypes || parsed.types || parsed.product_types) {
+              result.brands = cleanBrandObject(parsed.brands || parsed.Brands || {});
+              result.types = cleanBrandObject(parsed.productTypes || parsed.product_types || parsed.types || parsed.Types || {});
+            } else {
+              // could be a single dictionary; decide by mode
+              var cleaned = cleanBrandObject(parsed);
+              if (mode === 'types') result.types = cleaned;
+              else if (mode === 'brands') result.brands = cleaned;
+              else result.brands = cleaned;
+            }
+          }
+        } else {
+          var workbook = XLSX.read(new Uint8Array(e.target.result), { type: 'array', cellDates: true, dense: true });
+          var sheet = workbook.Sheets[workbook.SheetNames[0]];
+          var rows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: true, defval: null });
+          var parsed2 = parseBrandTypeSheet(rows);
+          result.brands = parsed2.brands;
+          result.types = parsed2.types;
+        }
+        // merge into textareas based on mode
+        if (mode === 'brands') {
+          if (Object.keys(result.brands).length) $('brandText').value = JSON.stringify(result.brands, null, 2);
+          else if (Object.keys(result.types).length) $('brandText').value = JSON.stringify(result.types, null, 2);
+        } else if (mode === 'types') {
+          if (Object.keys(result.types).length) $('typeText').value = JSON.stringify(result.types, null, 2);
+          else if (Object.keys(result.brands).length) $('typeText').value = JSON.stringify(result.brands, null, 2);
+        } else {
+          if (Object.keys(result.brands).length) $('brandText').value = JSON.stringify(result.brands, null, 2);
+          if (Object.keys(result.types).length) $('typeText').value = JSON.stringify(result.types, null, 2);
+        }
+        updateBrandDictCount();
+        showToast('Dictionary loaded');
+      } catch (error) {
+        showToast('Could not read dictionary: ' + error.message, true);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  }
   function dictionaryTermCount(dictionary) {
     return Object.keys(dictionary).reduce(function (sum, name) {
       return sum + (Array.isArray(dictionary[name]) ? dictionary[name].length : 0);
@@ -3373,6 +3492,37 @@
     $('brandSearch').addEventListener('input', renderBrandTable);
     $('loadDefaultBrandsBtn').addEventListener('click', function () {
       setBrandDictionary(defaultBrands(), defaultTypes(), 'Default brand dictionary loaded');
+    });
+    $('uploadBrandsBtn').addEventListener('click', function () { $('brandFile').click(); });
+    $('uploadTypesBtn').addEventListener('click', function () { $('typeFile').click(); });
+    $('uploadBrandDictBtn').addEventListener('click', function () { $('brandDictFile').click(); });
+    $('brandFile').addEventListener('change', function (event) {
+      var file = event.target.files[0]; if (!file) return;
+      handleBrandUpload(file, 'brands'); event.target.value = '';
+    });
+    $('typeFile').addEventListener('change', function (event) {
+      var file = event.target.files[0]; if (!file) return;
+      handleBrandUpload(file, 'types'); event.target.value = '';
+    });
+    $('brandDictFile').addEventListener('change', function (event) {
+      var file = event.target.files[0]; if (!file) return;
+      handleBrandUpload(file, 'combined'); event.target.value = '';
+    });
+    // second set of upload controls (card below category definitions)
+    $('uploadBrandsBtn2').addEventListener('click', function () { $('brandFile2').click(); });
+    $('uploadTypesBtn2').addEventListener('click', function () { $('typeFile2').click(); });
+    $('uploadBrandDictBtn2').addEventListener('click', function () { $('brandDictFile2').click(); });
+    $('brandFile2').addEventListener('change', function (event) {
+      var file = event.target.files[0]; if (!file) return;
+      handleBrandUpload(file, 'brands'); event.target.value = '';
+    });
+    $('typeFile2').addEventListener('change', function (event) {
+      var file = event.target.files[0]; if (!file) return;
+      handleBrandUpload(file, 'types'); event.target.value = '';
+    });
+    $('brandDictFile2').addEventListener('change', function (event) {
+      var file = event.target.files[0]; if (!file) return;
+      handleBrandUpload(file, 'combined'); event.target.value = '';
     });
     $('applyBrandsBtn').addEventListener('click', function () {
       try {

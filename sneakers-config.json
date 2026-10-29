@@ -1,0 +1,820 @@
+{
+  "classification": {
+    "Running": "((running OR jog OR jogging OR marathon OR sprint OR tempo OR runner OR runners OR \"trail running\" OR \"distance running\" OR ultramarathon OR 5k OR 10k OR half-marathon OR marathoner) NEAR/3 (shoe OR shoes OR sneaker OR sneakers OR trainer OR trainers OR footwear OR boot OR boots OR sandal OR sandals OR slipper OR slippers OR heel OR heels OR loafer OR loafers OR flat OR flats OR clog OR clogs OR mule OR mules OR wedge OR wedges OR pump OR pumps OR oxford OR oxfords OR derby OR derbies OR brogue OR brogues OR cleat OR cleats OR court OR kicks OR runner OR runners OR slip-on OR \"slip on\"))",
+    "Basketball": "((basketball OR hoops OR dunk OR \"air jordan\" OR lebron OR kobe OR kyrie OR pg OR zoom OR court OR \"basketball shoe\") NEAR/3 (shoe OR shoes OR sneaker OR sneakers OR trainer OR trainers OR footwear OR boot OR boots OR sandal OR sandals OR slipper OR slippers OR heel OR heels OR loafer OR loafers OR flat OR flats OR clog OR clogs OR mule OR mules OR wedge OR wedges OR pump OR pumps OR oxford OR oxfords OR derby OR derbies OR brogue OR brogues OR cleat OR cleats OR court OR kicks OR runner OR runners OR slip-on OR \"slip on\"))",
+    "Hiking & Trail": "((hiking OR trail OR trek OR trekking OR outdoor OR mountain OR hill OR \"trail running\" OR gtx OR \"gore tex\" OR waterproof) NEAR/3 (shoe OR shoes OR sneaker OR sneakers OR trainer OR trainers OR footwear OR boot OR boots OR sandal OR sandals OR slipper OR slippers OR heel OR heels OR loafer OR loafers OR flat OR flats OR clog OR clogs OR mule OR mules OR wedge OR wedges OR pump OR pumps OR oxford OR oxfords OR derby OR derbies OR brogue OR brogues OR cleat OR cleats OR court OR kicks OR runner OR runners OR slip-on OR \"slip on\"))",
+    "Walking": "((walking OR walk OR \"walking shoe\" OR \"walkers\") NEAR/3 (shoe OR shoes OR sneaker OR sneakers OR trainer OR trainers OR footwear OR boot OR boots OR sandal OR sandals OR slipper OR slippers OR heel OR heels OR loafer OR loafers OR flat OR flats OR clog OR clogs OR mule OR mules OR wedge OR wedges OR pump OR pumps OR oxford OR oxfords OR derby OR derbies OR brogue OR brogues OR cleat OR cleats OR court OR kicks OR runner OR runners OR slip-on OR \"slip on\"))",
+    "Training & Gym": "((training OR gym OR workout OR crossfit OR hiit OR fitness OR lifting OR weightlifting OR metcon OR \"training shoe\") NEAR/3 (shoe OR shoes OR sneaker OR sneakers OR trainer OR trainers OR footwear OR boot OR boots OR sandal OR sandals OR slipper OR slippers OR heel OR heels OR loafer OR loafers OR flat OR flats OR clog OR clogs OR mule OR mules OR wedge OR wedges OR pump OR pumps OR oxford OR oxfords OR derby OR derbies OR brogue OR brogues OR cleat OR cleats OR court OR kicks OR runner OR runners OR slip-on OR \"slip on\"))",
+    "Tennis & Court": "((tennis OR \"court shoe\" OR clay OR grass) NEAR/3 (shoe OR shoes OR sneaker OR sneakers OR trainer OR trainers OR footwear OR boot OR boots OR sandal OR sandals OR slipper OR slippers OR heel OR heels OR loafer OR loafers OR flat OR flats OR clog OR clogs OR mule OR mules OR wedge OR wedges OR pump OR pumps OR oxford OR oxfords OR derby OR derbies OR brogue OR brogues OR cleat OR cleats OR court OR kicks OR runner OR runners OR slip-on OR \"slip on\"))",
+    "Football & Soccer": "((football OR soccer OR cleats OR studs OR futsal OR \"football boot\" OR \"soccer cleat\") NEAR/3 (shoe OR shoes OR sneaker OR sneakers OR trainer OR trainers OR footwear OR boot OR boots OR sandal OR sandals OR slipper OR slippers OR heel OR heels OR loafer OR loafers OR flat OR flats OR clog OR clogs OR mule OR mules OR wedge OR wedges OR pump OR pumps OR oxford OR oxfords OR derby OR derbies OR brogue OR brogues OR cleat OR cleats OR court OR kicks OR runner OR runners OR slip-on OR \"slip on\"))",
+    "Skate": "((skate OR skating OR sb OR ollie OR \"skate shoe\" OR grip) NEAR/3 (shoe OR shoes OR sneaker OR sneakers OR trainer OR trainers OR footwear OR boot OR boots OR sandal OR sandals OR slipper OR slippers OR heel OR heels OR loafer OR loafers OR flat OR flats OR clog OR clogs OR mule OR mules OR wedge OR wedges OR pump OR pumps OR oxford OR oxfords OR derby OR derbies OR brogue OR brogues OR cleat OR cleats OR court OR kicks OR runner OR runners OR slip-on OR \"slip on\"))",
+    "Casual & Lifestyle": "((casual OR everyday OR lifestyle OR street OR streetwear OR urban OR \"everyday shoe\") NEAR/3 (shoe OR shoes OR sneaker OR sneakers OR trainer OR trainers OR footwear OR boot OR boots OR sandal OR sandals OR slipper OR slippers OR heel OR heels OR loafer OR loafers OR flat OR flats OR clog OR clogs OR mule OR mules OR wedge OR wedges OR pump OR pumps OR oxford OR oxfords OR derby OR derbies OR brogue OR brogues OR cleat OR cleats OR court OR kicks OR runner OR runners OR slip-on OR \"slip on\"))",
+    "Formal & Dress": "((formal OR dress OR oxford OR derby OR brogue OR monk OR suit OR office OR smart OR business OR \"dress shoe\") NEAR/3 (shoe OR shoes OR sneaker OR sneakers OR trainer OR trainers OR footwear OR boot OR boots OR sandal OR sandals OR slipper OR slippers OR heel OR heels OR loafer OR loafers OR flat OR flats OR clog OR clogs OR mule OR mules OR wedge OR wedges OR pump OR pumps OR oxford OR oxfords OR derby OR derbies OR brogue OR brogues OR cleat OR cleats OR court OR kicks OR runner OR runners OR slip-on OR \"slip on\"))",
+    "Boots": "boot OR boots OR chelsea OR cowboy OR western OR \"work boot\" OR \"snow boot\" OR \"rain boot\" OR wellington OR wellies OR timberland OR \"dr martens\" OR \"doc martens\" OR \"hiking boot\" OR \"combat boot\" OR \"ankle boot\" OR \"knee high\"",
+    "Sandals": "sandal OR sandals OR \"flip flop\" OR \"flip flops\" OR slide OR slides OR clog OR clogs OR mule OR mules OR birkenstock OR crocs OR thong OR \"fisherman sandal\"",
+    "Slippers": "slipper OR slippers OR \"house shoe\" OR ugg OR tasman OR scuff OR moccasin OR moccasins OR \"indoor shoe\"",
+    "Heels": "heel OR heels OR stiletto OR pump OR pumps OR wedge OR wedges OR kitten OR \"high heel\" OR \"court shoe\"",
+    "Flats & Ballet": "flat OR flats OR ballet OR ballerina OR \"mary jane\" OR \"mary janes\" OR \"ballet flat\"",
+    "Loafers": "loafer OR loafers OR penny OR tassel OR \"slip on\" OR \"slip-on\" OR \"slip on shoe\"",
+    "Platform & Chunky": "platform OR flatform OR chunky OR dad OR bulky OR oversized OR \"thick sole\"",
+    "Kids": "((kids OR kid OR children OR child OR toddler OR baby OR boys OR girls OR youth OR junior OR infant OR \"kids shoe\") NEAR/3 (shoe OR shoes OR sneaker OR sneakers OR trainer OR trainers OR footwear OR boot OR boots OR sandal OR sandals OR slipper OR slippers OR heel OR heels OR loafer OR loafers OR flat OR flats OR clog OR clogs OR mule OR mules OR wedge OR wedges OR pump OR pumps OR oxford OR oxfords OR derby OR derbies OR brogue OR brogues OR cleat OR cleats OR court OR kicks OR runner OR runners OR slip-on OR \"slip on\"))",
+    "Comfort & Orthopedic": "((comfort OR orthopedic OR orthotic OR plantar OR fasciitis OR \"arch support\" OR cushion OR \"memory foam\" OR gel OR wide OR \"extra wide\" OR \"wide fit\" OR \"comfort shoe\") NEAR/3 (shoe OR shoes OR sneaker OR sneakers OR trainer OR trainers OR footwear OR boot OR boots OR sandal OR sandals OR slipper OR slippers OR heel OR heels OR loafer OR loafers OR flat OR flats OR clog OR clogs OR mule OR mules OR wedge OR wedges OR pump OR pumps OR oxford OR oxfords OR derby OR derbies OR brogue OR brogues OR cleat OR cleats OR court OR kicks OR runner OR runners OR slip-on OR \"slip on\"))",
+    "Safety & Work": "((safety OR \"steel toe\" OR \"composite toe\" OR \"work shoe\" OR \"work boot\" OR nonslip OR \"slip resistant\" OR construction OR industrial OR \"safety shoe\") NEAR/3 (shoe OR shoes OR sneaker OR sneakers OR trainer OR trainers OR footwear OR boot OR boots OR sandal OR sandals OR slipper OR slippers OR heel OR heels OR loafer OR loafers OR flat OR flats OR clog OR clogs OR mule OR mules OR wedge OR wedges OR pump OR pumps OR oxford OR oxfords OR derby OR derbies OR brogue OR brogues OR cleat OR cleats OR court OR kicks OR runner OR runners OR slip-on OR \"slip on\"))",
+    "Waterproof & Winter": "((waterproof OR \"water resistant\" OR winter OR snow OR insulated OR \"gore tex\" OR gtx OR warm OR \"winter boot\" OR \"snow boot\") NEAR/3 (shoe OR shoes OR sneaker OR sneakers OR trainer OR trainers OR footwear OR boot OR boots OR sandal OR sandals OR slipper OR slippers OR heel OR heels OR loafer OR loafers OR flat OR flats OR clog OR clogs OR mule OR mules OR wedge OR wedges OR pump OR pumps OR oxford OR oxfords OR derby OR derbies OR brogue OR brogues OR cleat OR cleats OR court OR kicks OR runner OR runners OR slip-on OR \"slip on\"))",
+    "Lightweight & Breathable": "((lightweight OR breathable OR mesh OR knit OR airy OR sock OR \"sock-like\") NEAR/3 (shoe OR shoes OR sneaker OR sneakers OR trainer OR trainers OR footwear OR boot OR boots OR sandal OR sandals OR slipper OR slippers OR heel OR heels OR loafer OR loafers OR flat OR flats OR clog OR clogs OR mule OR mules OR wedge OR wedges OR pump OR pumps OR oxford OR oxfords OR derby OR derbies OR brogue OR brogues OR cleat OR cleats OR court OR kicks OR runner OR runners OR slip-on OR \"slip on\"))",
+    "High-top & Low-top": "((\"high top\" OR \"high tops\" OR hightop OR hightops OR \"low top\" OR \"low tops\" OR lowtop OR lowtops OR \"mid top\" OR \"mid tops\" OR midtop OR midtops) NEAR/3 (shoe OR shoes OR sneaker OR sneakers OR trainer OR trainers OR footwear OR boot OR boots OR sandal OR sandals OR slipper OR slippers OR heel OR heels OR loafer OR loafers OR flat OR flats OR clog OR clogs OR mule OR mules OR wedge OR wedges OR pump OR pumps OR oxford OR oxfords OR derby OR derbies OR brogue OR brogues OR cleat OR cleats OR court OR kicks OR runner OR runners OR slip-on OR \"slip on\"))",
+    "Retro & Vintage": "((retro OR vintage OR \"old school\" OR heritage OR classic OR \"80s\" OR \"90s\" OR \"70s\") NEAR/3 (shoe OR shoes OR sneaker OR sneakers OR trainer OR trainers OR footwear OR boot OR boots OR sandal OR sandals OR slipper OR slippers OR heel OR heels OR loafer OR loafers OR flat OR flats OR clog OR clogs OR mule OR mules OR wedge OR wedges OR pump OR pumps OR oxford OR oxfords OR derby OR derbies OR brogue OR brogues OR cleat OR cleats OR court OR kicks OR runner OR runners OR slip-on OR \"slip on\"))",
+    "Minimalist & Barefoot": "((minimalist OR minimal OR barefoot OR \"zero drop\" OR \"minimal shoe\") NEAR/3 (shoe OR shoes OR sneaker OR sneakers OR trainer OR trainers OR footwear OR boot OR boots OR sandal OR sandals OR slipper OR slippers OR heel OR heels OR loafer OR loafers OR flat OR flats OR clog OR clogs OR mule OR mules OR wedge OR wedges OR pump OR pumps OR oxford OR oxfords OR derby OR derbies OR brogue OR brogues OR cleat OR cleats OR court OR kicks OR runner OR runners OR slip-on OR \"slip on\"))",
+    "Luxury & Designer": "((luxury OR designer OR premium OR gucci OR prada OR \"louis vuitton\" OR dior OR balenciaga OR versace OR \"jimmy choo\" OR louboutin OR ysl OR valentino OR mcqueen OR margiela OR \"designer shoe\") NEAR/3 (shoe OR shoes OR sneaker OR sneakers OR trainer OR trainers OR footwear OR boot OR boots OR sandal OR sandals OR slipper OR slippers OR heel OR heels OR loafer OR loafers OR flat OR flats OR clog OR clogs OR mule OR mules OR wedge OR wedges OR pump OR pumps OR oxford OR oxfords OR derby OR derbies OR brogue OR brogues OR cleat OR cleats OR court OR kicks OR runner OR runners OR slip-on OR \"slip on\"))",
+    "Sneakers & Trainers": "((sneaker OR sneakers OR trainer OR trainers OR kicks OR \"running shoe\") NOT (running OR basketball OR hiking OR walking OR training OR tennis OR football OR soccer OR skate OR casual OR formal OR boot OR boots OR sandal OR sandals OR slipper OR slippers OR heel OR heels OR flat OR flats OR loafer OR loafers OR platform OR kids OR comfort OR safety OR waterproof OR lightweight OR retro OR minimalist OR luxury OR designer))"
+  },
+  "brands": {
+    "Nike": [
+      "nike",
+      "nikes",
+      "nike shoes",
+      "nike sneakers",
+      "air force 1",
+      "af1",
+      "air max",
+      "airmax",
+      "air jordan",
+      "dunk",
+      "dunks",
+      "vapormax",
+      "shox",
+      "metcon",
+      "vomero",
+      "pegasus",
+      "cortez",
+      "blazer",
+      "jordan 1",
+      "jordan 4",
+      "jordan 11",
+      "jordan 3",
+      "jordan 5",
+      "sb dunk",
+      "nike sb",
+      "nike tn",
+      "air max 90",
+      "air max 95",
+      "air max 97",
+      "air max 270",
+      "air max plus",
+      "air max 1",
+      "zoom",
+      "kobe",
+      "lebron",
+      "kyrie",
+      "pg",
+      "tuned",
+      "shox",
+      "vapor",
+      "mercurial",
+      "phantom",
+      "tiempo",
+      "hypervenom",
+      "magista"
+    ],
+    "Adidas": [
+      "adidas",
+      "adidas shoes",
+      "adidas sneakers",
+      "samba",
+      "gazelle",
+      "campus",
+      "superstar",
+      "ultra boost",
+      "ultraboost",
+      "nmd",
+      "stan smith",
+      "ozweego",
+      "forum",
+      "yeezy",
+      "yeezy slides",
+      "yeezy foam runner",
+      "terrex",
+      "predator",
+      "copa",
+      "x speedportal",
+      "adidas originals",
+      "adidas originals samba"
+    ],
+    "Jordan": [
+      "jordan",
+      "jordans",
+      "air jordan",
+      "jordan 1",
+      "jordan 4",
+      "jordan 11",
+      "jordan 3",
+      "jordan 5",
+      "jordan 4s",
+      "jumpman",
+      "retro jordan"
+    ],
+    "New Balance": [
+      "new balance",
+      "newbalance",
+      "nb",
+      "9060",
+      "530",
+      "550",
+      "327",
+      "574",
+      "990",
+      "2002r",
+      "1906r",
+      "991",
+      "992",
+      "993",
+      "1080",
+      "fresh foam",
+      "fuelcell",
+      "new balance 9060",
+      "new balance 530",
+      "new balance 550",
+      "new balance 327",
+      "new balance 574"
+    ],
+    "Puma": [
+      "puma",
+      "puma shoes",
+      "puma sneakers",
+      "suede",
+      "clyde",
+      "future rider",
+      "rs-x",
+      "palermo",
+      "king",
+      "future",
+      "ultra",
+      "one",
+      "mbappe"
+    ],
+    "Asics": [
+      "asics",
+      "asics shoes",
+      "asics sneakers",
+      "gel",
+      "gel-1130",
+      "gel 1130",
+      "kayano",
+      "nimbus",
+      "cumulus",
+      "novablast",
+      "gel lyte",
+      "tiger",
+      "onitsuka tiger",
+      "mexico 66"
+    ],
+    "Skechers": [
+      "skechers",
+      "skechers shoes",
+      "skechers sneakers",
+      "slip ins",
+      "max cushioning",
+      "go walk",
+      "arch fit",
+      "d'lites",
+      "d lites"
+    ],
+    "Hoka": [
+      "hoka",
+      "hoka shoes",
+      "hoka sneakers",
+      "clifton",
+      "bondi",
+      "speedgoat",
+      "mach",
+      "kawana",
+      "transport",
+      "orca"
+    ],
+    "On": [
+      "on",
+      "on cloud",
+      "on shoes",
+      "on sneakers",
+      "cloud",
+      "cloudmonster",
+      "cloudflow",
+      "cloudstratus",
+      "cloudsurfer",
+      "cloudswift"
+    ],
+    "Converse": [
+      "converse",
+      "converse shoes",
+      "chuck taylor",
+      "chuck",
+      "all star",
+      "one star",
+      "jack purcell",
+      "weapon"
+    ],
+    "Vans": [
+      "vans",
+      "vans shoes",
+      "vans sneakers",
+      "old skool",
+      "sk8-hi",
+      "sk8 hi",
+      "authentic",
+      "era",
+      "slip-on",
+      "half cab",
+      "old skool"
+    ],
+    "Crocs": [
+      "crocs",
+      "crocs shoes",
+      "croc",
+      "classic clog",
+      "jibbitz",
+      "echo",
+      "literide"
+    ],
+    "UGG": [
+      "ugg",
+      "uggs",
+      "ugg slippers",
+      "tasman",
+      "ultra mini",
+      "classic mini",
+      "classic short",
+      "ugg boots",
+      "ugg sandals"
+    ],
+    "Timberland": [
+      "timberland",
+      "timberland boots",
+      "timberlands",
+      "timbs",
+      "6-inch",
+      "yellow boot",
+      "nubuck"
+    ],
+    "Dr Martens": [
+      "dr martens",
+      "doc martens",
+      "docs",
+      "1460",
+      "1461",
+      "2976",
+      "jadon",
+      "sinclair",
+      "martens"
+    ],
+    "Reebok": [
+      "reebok"
+    ],
+    "Saucony": [
+      "saucony",
+      "saucony shoes",
+      "ride",
+      "triumph",
+      "endorphin",
+      "peregrine",
+      "guide",
+      "kinvara"
+    ],
+    "Salomon": [
+      "salomon",
+      "salomon shoes",
+      "xt-6",
+      "xt 6",
+      "speedcross",
+      "acs pro",
+      "acs",
+      "s/lab",
+      "slab",
+      "xa pro"
+    ],
+    "Birkenstock": [
+      "birkenstock",
+      "birkenstocks",
+      "arizona",
+      "boston",
+      "madrid",
+      "gizeh",
+      "mayari",
+      "milano",
+      "kyoto"
+    ],
+    "Brooks": [
+      "brooks",
+      "brooks shoes",
+      "ghost",
+      "adrenaline",
+      "glycerin",
+      "cascadia",
+      "launch",
+      "revel"
+    ],
+    "Mizuno": [
+      "mizuno",
+      "mizuno shoes",
+      "wave rider",
+      "wave inspire",
+      "wave sky"
+    ],
+    "Fila": [
+      "fila",
+      "fila shoes",
+      "fila sneakers",
+      "disruptor"
+    ],
+    "Champion": [
+      "champion",
+      "champion shoes"
+    ],
+    "Under Armour": [
+      "under armour",
+      "underarmor",
+      "ua",
+      "curry",
+      "hovr",
+      "charged",
+      "phantom"
+    ],
+    "Merrell": [
+      "merrell",
+      "merrell shoes",
+      "moab",
+      "trail glove",
+      "vapor glove"
+    ],
+    "Clarks": [
+      "clarks",
+      "clarks shoes",
+      "desert boot",
+      "wallabee",
+      "trigenic"
+    ],
+    "Ariat": [
+      "ariat",
+      "ariat boots",
+      "workhog",
+      "rambler"
+    ],
+    "Red Tape": [
+      "red tape",
+      "red tape shoes"
+    ],
+    "Red Wing": [
+      "red wing",
+      "red wing boots",
+      "iron ranger",
+      "blacksmith"
+    ],
+    "Tory Burch": [
+      "tory burch",
+      "tory burch shoes",
+      "miller",
+      "reva"
+    ],
+    "Steve Madden": [
+      "steve madden",
+      "stevemadden",
+      "madden"
+    ],
+    "Toms": [
+      "toms",
+      "toms shoes",
+      "alpargata"
+    ],
+    "HeyDude": [
+      "heydude",
+      "hey dude",
+      "wendy",
+      "wally"
+    ],
+    "Allbirds": [
+      "allbirds",
+      "all birds",
+      "tree runner",
+      "wool runner",
+      "tree dasher"
+    ],
+    "Gucci": [
+      "gucci",
+      "gucci shoes",
+      "gucci sneakers",
+      "ace",
+      "rhyton",
+      "screener"
+    ],
+    "Prada": [
+      "prada",
+      "prada shoes",
+      "prada sneakers",
+      "cloudbust",
+      "america's cup"
+    ],
+    "Louis Vuitton": [
+      "louis vuitton",
+      "lv",
+      "lv trainers",
+      "archlight",
+      "run away"
+    ],
+    "Dior": [
+      "dior",
+      "dior shoes",
+      "dior sneakers",
+      "b22",
+      "b23",
+      "dior walk",
+      "j'adior"
+    ],
+    "Balenciaga": [
+      "balenciaga",
+      "balenciaga shoes",
+      "triple s",
+      "track",
+      "speed",
+      "defender"
+    ],
+    "Versace": [
+      "versace",
+      "versace shoes",
+      "versace sneakers",
+      "chain reaction",
+      "greca"
+    ],
+    "Jimmy Choo": [
+      "jimmy choo",
+      "jimmy choo shoes",
+      "bing",
+      "lance"
+    ],
+    "Christian Louboutin": [
+      "christian louboutin",
+      "louboutin",
+      "louboutins",
+      "red bottom",
+      "so kate",
+      "pigalle",
+      "clare"
+    ],
+    "YSL": [
+      "ysl",
+      "saint laurent",
+      "yves saint laurent",
+      "sl/06",
+      "court classic",
+      "wyatt"
+    ],
+    "Valentino": [
+      "valentino",
+      "valentino shoes",
+      "rockstud",
+      "open",
+      "vltln"
+    ],
+    "Alexander McQueen": [
+      "alexander mcqueen",
+      "mcqueen",
+      "mcqueen shoes",
+      "oversized sneaker"
+    ],
+    "Maison Margiela": [
+      "maison margiela",
+      "margiela",
+      "replica",
+      "tabi",
+      "fusion"
+    ],
+    "Chanel": [
+      "chanel",
+      "chanel shoes",
+      "cap toe",
+      "ballerina"
+    ],
+    "Burberry": [
+      "burberry",
+      "burberry shoes"
+    ],
+    "Ferragamo": [
+      "ferragamo",
+      "salvatore ferragamo",
+      "gancini"
+    ],
+    "Tod's": [
+      "tod's",
+      "tods",
+      "gaiter",
+      "driving shoe"
+    ],
+    "Zegna": [
+      "zegna",
+      "ermenegildo zegna"
+    ],
+    "Cole Haan": [
+      "cole haan",
+      "colehaan",
+      "zerogrand"
+    ],
+    "Ecco": [
+      "ecco",
+      "ecco shoes"
+    ],
+    "Geox": [
+      "geox",
+      "geox shoes"
+    ],
+    "Camper": [
+      "camper",
+      "camper shoes",
+      "peu",
+      "twins"
+    ],
+    "Keen": [
+      "keen",
+      "keen shoes"
+    ],
+    "Teva": [
+      "teva",
+      "teva sandals",
+      "hurricane",
+      "original universal"
+    ],
+    "Chaco": [
+      "chaco",
+      "chaco sandals",
+      "zx/2",
+      "z1",
+      "z2"
+    ],
+    "The North Face": [
+      "the north face",
+      "north face",
+      "tnf",
+      "vectiv"
+    ],
+    "Columbia": [
+      "columbia",
+      "columbia shoes",
+      "newton ridge"
+    ],
+    "Hugo Boss": [
+      "hugo boss",
+      "boss",
+      "boss shoes"
+    ],
+    "Armani": [
+      "armani",
+      "emporio armani",
+      "giorgio armani"
+    ],
+    "Bata": [
+      "bata",
+      "bata shoes"
+    ],
+    "Woodland": [
+      "woodland",
+      "woodland shoes"
+    ],
+    "Tiger": [
+      "tiger",
+      "onitsuka",
+      "mexico 66"
+    ]
+  },
+  "productTypes": {
+    "Sneakers": [
+      "sneaker",
+      "sneakers",
+      "kicks",
+      "trainer",
+      "trainers",
+      "runners"
+    ],
+    "Running shoes": [
+      "running shoes",
+      "running shoe",
+      "running trainers",
+      "jogging shoes"
+    ],
+    "Basketball shoes": [
+      "basketball shoes",
+      "basketball shoe",
+      "hoops",
+      "court shoes"
+    ],
+    "Hiking shoes": [
+      "hiking shoes",
+      "hiking shoe",
+      "trail shoes",
+      "trail runners",
+      "trekking shoes"
+    ],
+    "Walking shoes": [
+      "walking shoes",
+      "walking shoe",
+      "walkers"
+    ],
+    "Training shoes": [
+      "training shoes",
+      "training shoe",
+      "gym shoes",
+      "workout shoes",
+      "crossfit shoes"
+    ],
+    "Tennis shoes": [
+      "tennis shoes",
+      "tennis shoe",
+      "court shoes"
+    ],
+    "Football boots": [
+      "football boots",
+      "soccer cleats",
+      "football cleats",
+      "studs",
+      "fg",
+      "ag"
+    ],
+    "Skate shoes": [
+      "skate shoes",
+      "skate shoe",
+      "skate sneakers"
+    ],
+    "Casual shoes": [
+      "casual shoes",
+      "casual shoe",
+      "everyday shoes",
+      "lifestyle shoes"
+    ],
+    "Formal shoes": [
+      "formal shoes",
+      "dress shoes",
+      "oxfords",
+      "derbies",
+      "brogues",
+      "monk straps"
+    ],
+    "Boots": [
+      "boots",
+      "boot",
+      "chelsea boots",
+      "cowboy boots",
+      "work boots",
+      "snow boots",
+      "rain boots",
+      "wellingtons",
+      "combat boots",
+      "ankle boots",
+      "knee high boots"
+    ],
+    "Sandals": [
+      "sandals",
+      "sandal",
+      "flip flops",
+      "slides",
+      "clogs",
+      "mules",
+      "birkenstocks"
+    ],
+    "Slippers": [
+      "slippers",
+      "slipper",
+      "house shoes",
+      "scuffs",
+      "moccasins",
+      "uggs"
+    ],
+    "Heels": [
+      "heels",
+      "heel",
+      "stiletto",
+      "pumps",
+      "wedges",
+      "kitten heels",
+      "high heels"
+    ],
+    "Flats": [
+      "flats",
+      "flat",
+      "ballet flats",
+      "ballerinas",
+      "mary janes"
+    ],
+    "Loafers": [
+      "loafers",
+      "loafer",
+      "penny loafers",
+      "tassel loafers",
+      "slip on",
+      "slip-on"
+    ],
+    "Platform shoes": [
+      "platform",
+      "platforms",
+      "flatforms",
+      "chunky",
+      "dad shoes"
+    ],
+    "Cleats": [
+      "cleats",
+      "studs",
+      "football boots",
+      "soccer cleats"
+    ],
+    "Safety shoes": [
+      "safety shoes",
+      "work shoes",
+      "steel toe",
+      "composite toe",
+      "nonslip shoes",
+      "slip resistant shoes"
+    ],
+    "Kids shoes": [
+      "kids shoes",
+      "childrens shoes",
+      "toddler shoes",
+      "baby shoes",
+      "boys shoes",
+      "girls shoes"
+    ],
+    "Orthopedic shoes": [
+      "orthopedic shoes",
+      "comfort shoes",
+      "wide shoes",
+      "arch support shoes",
+      "plantar fasciitis shoes"
+    ],
+    "Waterproof shoes": [
+      "waterproof shoes",
+      "winter shoes",
+      "snow shoes",
+      "insulated shoes",
+      "gore tex shoes"
+    ],
+    "Lightweight shoes": [
+      "lightweight shoes",
+      "breathable shoes",
+      "mesh shoes",
+      "knit shoes"
+    ],
+    "High-tops": [
+      "high tops",
+      "hightops",
+      "high top sneakers"
+    ],
+    "Low-tops": [
+      "low tops",
+      "lowtops",
+      "low top sneakers"
+    ],
+    "Retro sneakers": [
+      "retro",
+      "vintage",
+      "old school",
+      "heritage",
+      "classic sneakers"
+    ],
+    "Minimalist shoes": [
+      "minimalist shoes",
+      "barefoot shoes",
+      "zero drop shoes"
+    ],
+    "Luxury shoes": [
+      "luxury shoes",
+      "designer shoes",
+      "premium shoes"
+    ]
+  },
+  "normalize": {
+    "adiddas": "adidas",
+    "addidas": "adidas",
+    "nikee": "nike",
+    "newbalance": "new balance",
+    "new ballance": "new balance",
+    "reeboks": "reebok",
+    "converce": "converse",
+    "converes": "converse",
+    "crok": "crocs",
+    "uggs": "ugg",
+    "timberlands": "timberland",
+    "drmartens": "dr martens",
+    "martens": "dr martens",
+    "birkenstocks": "birkenstock",
+    "louboutins": "christian louboutin",
+    "louboutin": "christian louboutin",
+    "ysl": "yves saint laurent",
+    "lv": "louis vuitton",
+    "mcqueen": "alexander mcqueen",
+    "margiela": "maison margiela",
+    "balenciaga": "balenciaga",
+    "salomon": "salomon",
+    "salomons": "salomon",
+    "on running": "on",
+    "hokas": "hoka",
+    "pumas": "puma",
+    "asics": "asics",
+    "skechers": "skechers",
+    "vanss": "vans",
+    "gucci": "gucci"
+  }
+}
