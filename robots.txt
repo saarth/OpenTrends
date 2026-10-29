@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://saarth.github.io/OpenTrends/sitemap.xml
+Sitemap: https://opentrends.win/sitemap.xml
