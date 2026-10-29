@@ -538,8 +538,8 @@
       <p>Each key is a theme (your keyword bucket); each value is either a <b>boolean query</b> or a plain list of terms. Queries support <b>OR</b>, <b>AND</b>, <b>NOT</b>, <b>NEAR/3</b>, parentheses, <b>"quoted phrases"</b>, <b>*</b>/<b>?</b> wildcards and <b>#hashtags</b>, and are matched against the words of each search term  -  so <code>(vanilla OR caramel) NEAR/3 (perfume OR candle) NOT (recipe)</code> behaves as written. Term lists keep the older forgiving substring matching (whole words for terms of 4 characters or fewer).</p>
       <textarea id="dictText" spellcheck="false"></textarea>
       <div class="row">
-        <button class="btn small" id="loadDefaultBtn" type="button">Load example definitions (fragrance)</button>
-        <button class="btn small" id="loadWorkbookBtn" type="button">Load fragrance term list</button>
+        <button class="btn small" id="loadDefaultBtn" type="button">Load example definitions</button>
+        <button class="btn small" id="loadWorkbookBtn" type="button">Load workbook term list</button>
         <button class="btn small" id="applyDictBtn" type="button">Apply dictionary</button>
         <button class="btn small" id="uploadDictBtn" type="button">Upload dictionary</button>
         <button class="btn small" id="downloadDictBtn" type="button">Download JSON</button>
@@ -868,7 +868,7 @@
 <script src="default_groups.js?v=2"></script>
 <script src="default_brands.js?v=3"></script>
 <script src="analysis.js?v=12"></script>
-<script src="fragrance-trends.js?v=3"></script>
+<script src="sneakers-trends.js?v=1"></script>
 <script>
 (function () {
   'use strict';
@@ -3551,7 +3551,7 @@
   }
 
   function loadPrecomputedTrends() {
-    var data = window.FRAGRANCE_TRENDS_DATA;
+    var data = window.SNEAKERS_TRENDS_DATA;
     if (!data) return false;
     try {
       state.result = data;
@@ -3571,7 +3571,7 @@
       $('results').classList.remove('hidden');
       $('headerExportBtn').disabled = false;
       $('parseStatus').className = 'status ok';
-      $('parseStatus').textContent = 'Pre-loaded demo data (fragrance example category: ' + fmtInt(data.totals.keywords) + ' keywords, ' + data.totals.matchedKeywords + ' classified into ' + data.totals.groupCount + ' themes). Upload an export and your own definitions to analyse any category.';
+      $('parseStatus').textContent = 'Pre-loaded demo data (sneakers & footwear example category: ' + fmtInt(data.totals.keywords) + ' keywords, ' + data.totals.matchedKeywords + ' classified into ' + data.totals.groupCount + ' themes). Upload an export and your own definitions to analyse any category.';
       populateResultControls();
       renderKpis();
       activateTab('overview');
