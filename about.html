@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About  -  Open Trends</title>
+<style>
+  :root {
+    --bg: #f6f3ee; --bg-soft: #efeae1; --panel: #ffffff; --ink: #1c1a17;
+    --ink-soft: #3a3630; --muted: #7a746a; --line: #e6e1d6; --line-strong: #d2ccbf;
+    --accent: #1f2d4a; --accent-soft: #e8ebf2; --gold: #9a7b4f;
+    --pos: #2f6b4f; --radius: 10px; --radius-sm: 6px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: "Inter", "Helvetica Neue", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif; font-size: 14px; line-height: 1.55; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+  h1 { font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif; font-size: 42px; font-weight: 400; line-height: 1.05; letter-spacing: -0.02em; margin: 0; }
+  h2 { font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif; font-size: 24px; font-weight: 400; margin: 0 0 10px; }
+  h3 { font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+  p { margin: 0 0 12px; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 40px 80px; }
+  .header { position: relative; padding: 48px 0 40px; background: var(--bg); border-bottom: 1px solid var(--line); }
+  .header-inner { max-width: 980px; margin: 0 auto; padding: 0 40px; display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
+  .brand-mark { display: inline-flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.18em; color: var(--muted); margin-bottom: 18px; }
+  .brand-mark .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+  .header p { color: var(--muted); max-width: 640px; margin-top: 14px; font-size: 15px; line-height: 1.55; }
+  .nav { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
+  .nav a { border: 1px solid var(--line-strong); border-radius: 6px; padding: 8px 14px; font-size: 13px; font-weight: 500; color: var(--ink); background: transparent; transition: all .2s; }
+  .nav a:hover { background: var(--ink); color: #fff; border-color: var(--ink); text-decoration: none; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; margin-top: 24px; box-shadow: 0 1px 0 rgba(20,18,14,0.04), 0 12px 40px rgba(20,18,14,0.06); }
+  .card-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  .list { margin: 0; padding-left: 20px; }
+  .list li { margin-bottom: 6px; color: var(--ink-soft); }
+  .steps { counter-reset: step; list-style: none; padding: 0; }
+  .steps li { counter-increment: step; padding: 10px 0 10px 40px; position: relative; border-bottom: 1px solid var(--line); color: var(--ink-soft); }
+  .steps li:last-child { border-bottom: 0; }
+  .steps li::before { content: counter(step); position: absolute; left: 0; top: 10px; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #fff; display: grid; place-items: center; font-size: 12px; font-weight: 600; }
+  .kbd { display: inline-block; border: 1px solid var(--line-strong); border-radius: 4px; padding: 1px 6px; font-size: 12px; background: var(--bg-soft); color: var(--ink); font-family: ui-monospace, Consolas, monospace; }
+  .footer { color: var(--muted); font-size: 12px; margin-top: 40px; text-align: center; letter-spacing: 0.02em; }
+  .footer a { color: var(--muted); }
+  .footer a:hover { color: var(--ink); }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+  @media (max-width: 640px) { .wrap { padding: 0 20px 60px; } .header-inner { padding: 0 20px; } h1 { font-size: 30px; } .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="header-inner">
+    <div>
+      <div class="brand-mark"><span class="dot"></span> Trend intelligence</div>
+      <h1>About Open Trends</h1>
+      <p>A local browser app that turns Google Keyword Planner exports into theme-level trend analysis for any category. You supply the category searches and the keyword buckets; Open Trends reports what is moving.</p>
+    </div>
+    <nav class="nav">
+      <a href="index.html">App</a>
+      <a href="faq.html">FAQ</a>
+      <a href="https://github.com/saarth" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/saarth" target="_blank" rel="noopener">LinkedIn</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <div class="card">
+    <div class="card-head"><h3>What it does</h3></div>
+    <p>Open Trends takes a Google Keyword Planner export (keywords plus monthly search volumes) and a dictionary of keyword buckets you define (themes), tags each search term against those buckets, and produces:</p>
+    <ul class="list">
+      <li>Theme-level size, share, latest month, short- and long-term growth</li>
+      <li>Velocity map (short-term vs long-term growth, sized by search volume)</li>
+      <li>Term-level drivers inside each theme</li>
+      <li>Brand and product-type attribution</li>
+      <li>Seasonality and monthly volume charts</li>
+      <li>Top searches per theme</li>
+      <li>A full Excel workbook and CSV/JSON exports</li>
+    </ul>
+    <p style="margin-top:12px">Everything runs in your browser. Your data is never uploaded anywhere.</p>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-head"><h3>Inputs</h3></div>
+      <ul class="list">
+        <li><b>Category searches</b>  -  a Google Keyword Planner export (.xlsx, .xls or .csv) with a keyword column, an AMS / average monthly searches column, and monthly date columns.</li>
+        <li><b>Keyword buckets (themes)</b>  -  a dictionary mapping each theme name to a Boolean query or a plain list of terms. Upload under <span class="kbd">Category definitions</span> or paste into the panel and press <span class="kbd">Apply dictionary</span>.</li>
+        <li><b>Brands &amp; products (optional)</b>  -  a brand/product dictionary for a second attribution dimension.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>Outputs</h3></div>
+      <ul class="list">
+        <li><b>Overview</b>  -  KPIs, velocity map, fastest-growing themes, coverage breakdown</li>
+        <li><b>Theme growth</b>  -  per-theme size, share, growth, monthly chart</li>
+        <li><b>Theme deep dive</b>  -  term contributions, risers/drags, brand &amp; product mix</li>
+        <li><b>Terms</b>  -  term-level performance and keywords behind each term</li>
+        <li><b>Brands &amp; products</b>  -  brand/product tables, spotlight, filters</li>
+        <li><b>Top searches</b>, <b>Seasonality</b>, <b>Export</b></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>How to use it</h3></div>
+    <ol class="steps">
+      <li>Open <a href="index.html">the app</a>. A pre-computed fragrance example is already loaded as a demo.</li>
+      <li>Drop in a Keyword Planner export (.xlsx / .xls / .csv). Check the detected sheet, short/long windows and dedupe setting.</li>
+      <li>Click <span class="kbd">Run analysis</span>.</li>
+      <li>Explore the tabs: Overview, Theme growth, Theme deep dive, Terms, Brands &amp; products, Top searches, Seasonality.</li>
+      <li>Use <span class="kbd">Export &rarr; Download full Excel workbook</span> (or individual CSVs/JSON) for BI tools.</li>
+      <li>To analyse your own category, upload or paste your own theme dictionary under <span class="kbd">Category definitions</span>, then re-run.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>About the author</h3></div>
+    <p>Open Trends is built and maintained by Sarth Atul Jauhari.</p>
+    <div class="nav" style="justify-content:flex-start">
+      <a href="https://github.com/saarth" target="_blank" rel="noopener">GitHub  -  @saarth</a>
+      <a href="https://www.linkedin.com/in/saarth" target="_blank" rel="noopener">LinkedIn  -  /in/saarth</a>
+    </div>
+  </div>
+
+  <p class="footer">Open Trends runs entirely in your browser. &middot; Built by Sarth Jauhari. <a href="faq.html">FAQ</a> &middot; <a href="index.html">App</a> &middot; <a href="https://github.com/saarth" target="_blank" rel="noopener">GitHub</a> &middot; <a href="https://www.linkedin.com/in/saarth" target="_blank" rel="noopener">LinkedIn</a></p>
+</main>
+</body>
+</html>

@@ -397,6 +397,8 @@
   #toast.error { background: var(--neg); }
 
   .footer-note { color: var(--muted); font-size: 12px; margin-top: 24px; text-align: center; letter-spacing: 0.02em; }
+  .footer-note a { color: var(--muted); }
+  .footer-note a:hover { color: var(--ink); }
 
   @media (max-width: 1100px) {
     .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -423,6 +425,10 @@
       <p>Turn Google Keyword Planner exports into theme-level growth, velocity and seasonality for any category. You supply the category searches and the keyword buckets, and Open Trends reports what is moving.</p>
     </div>
     <div class="header-actions">
+      <a class="btn ghost-light" href="about.html">About</a>
+      <a class="btn ghost-light" href="faq.html">FAQ</a>
+      <a class="btn ghost-light" href="https://github.com/saarth" target="_blank" rel="noopener">GitHub</a>
+      <a class="btn ghost-light" href="https://www.linkedin.com/in/saarth" target="_blank" rel="noopener">LinkedIn</a>
       <button class="btn ghost-light" id="headerDefaultBtn">Reset to example definitions</button>
       <button class="btn ghost-light" id="headerExportBtn" disabled>Export Excel</button>
     </div>
@@ -791,7 +797,7 @@
     </section>
   </section>
 
-  <p class="footer-note">Runs entirely in your browser. Your data is not uploaded anywhere.</p>
+  <p class="footer-note">Runs entirely in your browser. Your data is not uploaded anywhere. &middot; Built by Sarth Jauhari &middot; <a href="about.html">About</a> &middot; <a href="faq.html">FAQ</a> &middot; <a href="https://github.com/saarth" target="_blank" rel="noopener">GitHub</a> &middot; <a href="https://www.linkedin.com/in/saarth" target="_blank" rel="noopener">LinkedIn</a></p>
 </main>
 
 <div id="toast"></div>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FAQ  -  Open Trends</title>
+<style>
+  :root {
+    --bg: #f6f3ee; --bg-soft: #efeae1; --panel: #ffffff; --ink: #1c1a17;
+    --ink-soft: #3a3630; --muted: #7a746a; --line: #e6e1d6; --line-strong: #d2ccbf;
+    --accent: #1f2d4a; --accent-soft: #e8ebf2; --gold: #9a7b4f;
+    --radius: 10px; --radius-sm: 6px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: "Inter", "Helvetica Neue", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif; font-size: 14px; line-height: 1.55; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+  h1 { font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif; font-size: 42px; font-weight: 400; line-height: 1.05; letter-spacing: -0.02em; margin: 0; }
+  h2 { font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif; font-size: 20px; font-weight: 400; margin: 0 0 8px; }
+  p { margin: 0 0 12px; color: var(--ink-soft); }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 40px 80px; }
+  .header { padding: 48px 0 40px; background: var(--bg); border-bottom: 1px solid var(--line); }
+  .header-inner { max-width: 980px; margin: 0 auto; padding: 0 40px; display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
+  .brand-mark { display: inline-flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.18em; color: var(--muted); margin-bottom: 18px; }
+  .brand-mark .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+  .header p { color: var(--muted); max-width: 640px; margin-top: 14px; font-size: 15px; line-height: 1.55; }
+  .nav { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
+  .nav a { border: 1px solid var(--line-strong); border-radius: 6px; padding: 8px 14px; font-size: 13px; font-weight: 500; color: var(--ink); background: transparent; transition: all .2s; }
+  .nav a:hover { background: var(--ink); color: #fff; border-color: var(--ink); text-decoration: none; }
+  .qa { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 26px; margin-top: 16px; }
+  .qa h2 { font-size: 17px; }
+  .qa p:last-child { margin-bottom: 0; }
+  .kbd { display: inline-block; border: 1px solid var(--line-strong); border-radius: 4px; padding: 1px 6px; font-size: 12px; background: var(--bg-soft); color: var(--ink); font-family: ui-monospace, Consolas, monospace; }
+  .footer { color: var(--muted); font-size: 12px; margin-top: 40px; text-align: center; letter-spacing: 0.02em; }
+  .footer a { color: var(--muted); }
+  .footer a:hover { color: var(--ink); }
+  @media (max-width: 640px) { .wrap { padding: 0 20px 60px; } .header-inner { padding: 0 20px; } h1 { font-size: 30px; } }
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="header-inner">
+    <div>
+      <div class="brand-mark"><span class="dot"></span> Trend intelligence</div>
+      <h1>Frequently asked questions</h1>
+      <p>Short answers about what Open Trends does and how to use it.</p>
+    </div>
+    <nav class="nav">
+      <a href="index.html">App</a>
+      <a href="about.html">About</a>
+      <a href="https://github.com/saarth" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/saarth" target="_blank" rel="noopener">LinkedIn</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <div class="qa">
+    <h2>What is Open Trends?</h2>
+    <p>A local browser app that turns Google Keyword Planner exports into theme-level trend analysis for any category. You provide the category searches and the keyword buckets (themes); it reports what is moving.</p>
+  </div>
+  <div class="qa">
+    <h2>Is my data uploaded anywhere?</h2>
+    <p>No. Everything runs in your browser. No data leaves your machine.</p>
+  </div>
+  <div class="qa">
+    <h2>What file formats are supported?</h2>
+    <p>Google Keyword Planner exports as .xlsx, .xls or .csv, plus dictionary files as .json, .xlsx, .xls or .csv. The parser auto-detects the header row, so extra title rows are fine.</p>
+  </div>
+  <div class="qa">
+    <h2>What columns does the export need?</h2>
+    <p>A keyword column (Keyword, Query, Search term, ...), an AMS / average monthly searches column (optional  -  estimated from monthly values if missing), and monthly date columns (e.g. 2020-02-01, Feb-2020).</p>
+  </div>
+  <div class="qa">
+    <h2>Can I analyse a category other than fragrance?</h2>
+    <p>Yes. Open Trends is category-agnostic. Upload your own theme dictionary under <span class="kbd">Category definitions</span> (see example-categories.xlsx / .json) and re-run. The bundled fragrance example is just a demo.</p>
+  </div>
+  <div class="qa">
+    <h2>How do themes work?</h2>
+    <p>Each theme is either a Boolean query (OR, AND, NOT, NEAR/n, parentheses, "phrases", * / ? wildcards, #hashtags) or a plain list of terms. Queries match against the words of each search term. Term lists use forgiving substring matching.</p>
+  </div>
+  <div class="qa">
+    <h2>Why are most searches "unclassified"?</h2>
+    <p>The example definitions classify a search only when it names a note. Most of a Keyword Planner export does not. That is a property of the definitions and the export, not a parsing failure. The Coverage card on the Overview tab and the unclassified CSV show what was left out and why.</p>
+  </div>
+  <div class="qa">
+    <h2>Can themes overlap?</h2>
+    <p>Yes. One keyword can match several themes and terms, so shares can sum above 100% and term-level volumes are not mutually exclusive. Only keyword-level tables are additive.</p>
+  </div>
+  <div class="qa">
+    <h2>What do "short-term" and "long-term" growth mean?</h2>
+    <p>Short-term growth compares the latest month with the start of the short window (default 12 months). Long-term growth does the same over the long window (default 48 months). Formula: (latest - window start) / window start.</p>
+  </div>
+  <div class="qa">
+    <h2>What is the seasonality index?</h2>
+    <p>Average volume for a calendar month divided by the average month for that theme, times 100. 100 = an average month.</p>
+  </div>
+  <div class="qa">
+    <h2>How do I export results?</h2>
+    <p>Use <span class="kbd">Export &rarr; Download full Excel workbook</span> for a multi-sheet workbook, or the individual CSV/JSON buttons. The workbook includes Summary, Theme Growth, Term Growth, drivers, brands, product types, top searches, seasonality, monthly volumes and classification.</p>
+  </div>
+  <div class="qa">
+    <h2>Which browsers are supported?</h2>
+    <p>Modern Chrome or Edge. The app uses local file parsing and Chart.js; open index.html directly or self-host with any static server (docker-compose included).</p>
+  </div>
+  <div class="qa">
+    <h2>Where can I get help or report an issue?</h2>
+    <p>Open an issue on <a href="https://github.com/saarth" target="_blank" rel="noopener">GitHub</a>, or connect on <a href="https://www.linkedin.com/in/saarth" target="_blank" rel="noopener">LinkedIn</a>. For how the tool works in depth, see the README in the repository.</p>
+  </div>
+  <p class="footer">Built by Sarth Jauhari. <a href="about.html">About</a> &middot; <a href="index.html">App</a> &middot; <a href="https://github.com/saarth" target="_blank" rel="noopener">GitHub</a> &middot; <a href="https://www.linkedin.com/in/saarth" target="_blank" rel="noopener">LinkedIn</a></p>
+</main>
+</body>
+</html>
