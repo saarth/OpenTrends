@@ -30,7 +30,7 @@
     {"@type":"Question","name":"Can I self-host it?","acceptedAnswer":{"@type":"Answer","text":"Yes. It is a fully static site. Run any static web server pointing at the folder, or use the included docker-compose.yml. See the README on GitHub for details."}},
     {"@type":"Question","name":"What file formats are supported?","acceptedAnswer":{"@type":"Answer","text":"Google Keyword Planner exports as .xlsx, .xls or .csv, plus dictionary files as .json, .xlsx, .xls or .csv. The parser auto-detects the header row, so extra title rows are fine."}},
     {"@type":"Question","name":"What columns does the export need?","acceptedAnswer":{"@type":"Answer","text":"A keyword column (Keyword, Query, Search term, ...), an AMS / average monthly searches column (optional, estimated from monthly values if missing), and monthly date columns (e.g. 2020-02-01, Feb-2020)."}},
-    {"@type":"Question","name":"Can I analyse a category other than fragrance?","acceptedAnswer":{"@type":"Answer","text":"Yes. Open Trends is category-agnostic. Upload your own theme dictionary under Category definitions and re-run. The bundled fragrance example is just a demo."}},
+    {"@type":"Question","name":"Can I analyse my own category?","acceptedAnswer":{"@type":"Answer","text":"Yes. Open Trends is category-agnostic. Upload your own theme dictionary under Category definitions and re-run. The bundled example is just a demo."}},
     {"@type":"Question","name":"How do themes work?","acceptedAnswer":{"@type":"Answer","text":"Each theme is either a Boolean query (OR, AND, NOT, NEAR/n, parentheses, phrases, * / ? wildcards, #hashtags) or a plain list of terms. Queries match against the words of each search term. Term lists use forgiving substring matching."}},
     {"@type":"Question","name":"Why are most searches unclassified?","acceptedAnswer":{"@type":"Answer","text":"The example definitions classify a search only when it names a note. Most of a Keyword Planner export does not. That is a property of the definitions and the export, not a parsing failure."}},
     {"@type":"Question","name":"Can themes overlap?","acceptedAnswer":{"@type":"Answer","text":"Yes. One keyword can match several themes and terms, so shares can sum above 100% and term-level volumes are not mutually exclusive. Only keyword-level tables are additive."}},
@@ -117,8 +117,8 @@
     <p>A keyword column (Keyword, Query, Search term, ...), an AMS / average monthly searches column (optional  -  estimated from monthly values if missing), and monthly date columns (e.g. 2020-02-01, Feb-2020).</p>
   </div>
   <div class="qa">
-    <h2>Can I analyse a category other than fragrance?</h2>
-    <p>Yes. Open Trends is category-agnostic. Upload your own theme dictionary under <span class="kbd">Category definitions</span> (see example-categories.xlsx / .json) and re-run. The bundled fragrance example is just a demo.</p>
+    <h2>Can I analyse my own category?</h2>
+    <p>Yes. Open Trends is category-agnostic. Upload your own theme dictionary under <span class="kbd">Category definitions</span> (see example-categories.xlsx / .json) and re-run. The bundled example is just a demo.</p>
   </div>
   <div class="qa">
     <h2>How do themes work?</h2>
