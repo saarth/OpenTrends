@@ -924,6 +924,27 @@
       }
     });
 
+    // Deduplicated list of all matched keywords, for an "All themes" view in Top searches.
+    var allKeywordMap = new Map();
+    groupNames.forEach(function (group) {
+      (groupKeywords[group] || []).forEach(function (row) {
+        var key = String(row.keyword || '').toLowerCase();
+        if (!allKeywordMap.has(key)) allKeywordMap.set(key, row);
+      });
+    });
+    var allTopKeywords = Array.from(allKeywordMap.values())
+      .sort(function (a, b) { return b.ams - a.ams; })
+      .slice(0, topLimit)
+      .map(function (row) {
+        return {
+          keyword: row.keyword,
+          ams: row.ams,
+          latest: Number(row.monthly[endIdx]) || 0,
+          short: computeGrowth(row.monthly, endIdx, shortWindow, dates),
+          long: computeGrowth(row.monthly, endIdx, longWindow, dates)
+        };
+      });
+
     var groups = groupNames.map(function (group) {
       var monthly = Array.from(groupMonthly[group]);
       var size = groupSize[group];
@@ -993,6 +1014,7 @@
     return {
       dates: dates,
       groups: groups,
+      allTopKeywords: allTopKeywords,
       groupNames: groupNames,
       rowGroups: rowGroups,
       totals: {

@@ -1728,7 +1728,7 @@
 
   function populateResultControls() {
     var groups = state.result.groups;
-    ['familySelect', 'deepFamily', 'termFamily', 'topFamily'].forEach(function (id) {
+    ['familySelect', 'deepFamily', 'termFamily'].forEach(function (id) {
       var select = $(id);
       select.innerHTML = '';
       groups.forEach(function (group) {
@@ -1737,6 +1737,19 @@
         option.textContent = group.name + '  |  ' + fmtCompact(group.size);
         select.appendChild(option);
       });
+    });
+    // Top searches gets an extra "All themes" entry for a theme-agnostic view.
+    var topSelect = $('topFamily');
+    topSelect.innerHTML = '';
+    var allOption = document.createElement('option');
+    allOption.value = '__all__';
+    allOption.textContent = 'All themes';
+    topSelect.appendChild(allOption);
+    groups.forEach(function (group) {
+      var option = document.createElement('option');
+      option.value = group.name;
+      option.textContent = group.name + '  |  ' + fmtCompact(group.size);
+      topSelect.appendChild(option);
     });
     if (state.selectedFamily) {
       $('familySelect').value = state.selectedFamily;
@@ -1775,6 +1788,17 @@
       renderFamilyTable();
     };
     $('topFamily').onchange = function () {
+      if (this.value === '__all__') {
+        // Theme-agnostic view: leave the other family selectors untouched.
+        $('topTerm').innerHTML = '';
+        var allOpt = document.createElement('option');
+        allOpt.value = '';
+        allOpt.textContent = 'All terms';
+        $('topTerm').appendChild(allOpt);
+        $('topTerm').value = '';
+        renderTopTab();
+        return;
+      }
       state.selectedFamily = this.value;
       $('familySelect').value = this.value;
       $('deepFamily').value = this.value;
@@ -2445,16 +2469,35 @@
   }
 
   function renderTopTab() {
-    var group = state.result.groups.find(function (g) { return g.name === $('topFamily').value; });
-    if (!group) return;
-    var term = findTerm($('topTerm').value);
+    var isAll = $('topFamily').value === '__all__';
+    var group = isAll ? null : state.result.groups.find(function (g) { return g.name === $('topFamily').value; });
+    if (!isAll && !group) return;
+    var term = isAll ? null : findTerm($('topTerm').value);
     var search = $('topSearch').value.trim().toLowerCase();
-    var source = term ? (term.keywordsList || []) : group.topKeywords;
+    var source;
+    if (term) source = term.keywordsList || [];
+    else if (isAll) {
+      if (state.result.allTopKeywords && state.result.allTopKeywords.length) {
+        source = state.result.allTopKeywords;
+      } else {
+        var seenAll = new Set();
+        var agg = [];
+        state.result.groups.forEach(function (g) {
+          (g.topKeywords || []).forEach(function (k) {
+            if (seenAll.has(k.keyword)) return;
+            seenAll.add(k.keyword);
+            agg.push(k);
+          });
+        });
+        agg.sort(function (a, b) { return b.ams - a.ams; });
+        source = agg;
+      }
+    } else source = group.topKeywords;
     var rows = source.map(keywordMetrics).filter(function (row) {
       return !search || row.keyword.toLowerCase().indexOf(search) !== -1;
     });
     rows = sortRows(rows, state.sort.top.key, state.sort.top.dir);
-    var scope = term ? 'term "' + term.term + '"' : group.name;
+    var scope = term ? 'term "' + term.term + '"' : (isAll ? 'All themes' : group.name);
     $('topCount').textContent = 'Showing ' + fmtInt(Math.min(rows.length, 200)) + ' of ' + fmtInt(rows.length) + ' matching keywords  |  ' + scope;
     if (!rows.length) {
       $('topTable').innerHTML = '<div class="empty">No keywords match this filter.</div>';
