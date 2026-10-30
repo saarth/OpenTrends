@@ -584,6 +584,7 @@
       <button class="tab" data-tab="brands">Brands &amp; products</button>
       <button class="tab" data-tab="top">Top searches</button>
       <button class="tab" data-tab="season">Seasonality</button>
+       <button class="tab" data-tab="trend">Trend line</button>
       <button class="tab" data-tab="export">Export</button>
     </nav>
 
@@ -822,7 +823,31 @@
       </div>
     </section>
 
-    <section class="tab-panel hidden" id="tab-export">
+    <section class="tab-panel hidden" id="tab-trend">
+       <div class="card">
+         <div class="card-head">
+           <h3>Trend line</h3>
+           <span class="hint">Chart monthly search volumes over time</span>
+         </div>
+         <div class="row" style="margin-bottom:12px">
+           <label style="flex:0 0 280px">Series
+             <select id="trendSeries"></select>
+           </label>
+           <label style="flex:0 0 180px">Time period
+             <select id="trendPeriod">
+               <option value="all">All data</option>
+               <option value="12">Last 12 months</option>
+               <option value="24">Last 24 months</option>
+               <option value="48">Last 48 months</option>
+             </select>
+           </label>
+         </div>
+         <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+         <div class="legend" id="trendLegend"></div>
+       </div>
+     </section>
+
+     <section class="tab-panel hidden" id="tab-export">
       <div class="card">
         <div class="card-head"><h3>Export</h3></div>
         <p class="muted" style="margin-bottom:14px">Download a workbook shaped like the original analysis, or take individual tables into Excel / BI tools.</p>
@@ -1764,6 +1789,9 @@
       if (this.value) state.seasonFamilies = [];
       renderSeasonTab();
     };
+    populateTrendSeries();
+    $('trendSeries').onchange = renderTrendChart;
+    $('trendPeriod').onchange = renderTrendChart;
     $('brandTerm').onchange = function () {
       state.selectedBrand = null;
       renderBrandsTab();
@@ -3012,6 +3040,114 @@
     $('seasonTable').innerHTML = html;
   }
 
+  // ---------------------------------------------------------------- trend line
+  function populateTrendSeries() {
+    var select = $('trendSeries');
+    if (!select) return;
+    var previous = select.value;
+    select.innerHTML = '';
+    function addGroup(label, groups, dim) {
+      if (!groups || !groups.length) return;
+      var og = document.createElement('optgroup');
+      og.label = label;
+      groups.forEach(function (group) {
+        var option = document.createElement('option');
+        option.value = dim + '::' + group.name;
+        option.textContent = group.name + '  |  ' + fmtCompact(group.size);
+        og.appendChild(option);
+      });
+      select.appendChild(og);
+    }
+    if (state.result) addGroup('Themes', state.result.groups, 'theme');
+    if (state.brandResult) addGroup('Brands', state.brandResult.groups, 'brand');
+    if (state.typeResult) addGroup('Product types', state.typeResult.groups, 'type');
+    if (previous && Array.prototype.some.call(select.options, function (o) { return o.value === previous; })) {
+      select.value = previous;
+    } else if (select.options.length) {
+      // pick first real option
+      for (var i = 0; i < select.options.length; i++) {
+        if (select.options[i].value) { select.value = select.options[i].value; break; }
+      }
+    }
+  }
+
+  function trendGroupFor(value) {
+    if (!value) return null;
+    var idx = value.indexOf('::');
+    if (idx === -1) return null;
+    var dim = value.slice(0, idx);
+    var name = value.slice(idx + 2);
+    var groups = null;
+    if (dim === 'theme') groups = state.result ? state.result.groups : null;
+    else if (dim === 'brand') groups = state.brandResult ? state.brandResult.groups : null;
+    else if (dim === 'type') groups = state.typeResult ? state.typeResult.groups : null;
+    if (!groups) return null;
+    for (var i = 0; i < groups.length; i++) if (groups[i].name === name) return groups[i];
+    return null;
+  }
+
+  function renderTrendTab() {
+    populateTrendSeries();
+    renderTrendChart();
+  }
+
+  function renderTrendChart() {
+    destroyChart('trend');
+    if (!chartAvailable()) return;
+    var select = $('trendSeries');
+    var group = trendGroupFor(select && select.value);
+    if (!group) {
+      $('trendLegend').innerHTML = '';
+      return;
+    }
+    var dates = state.result.dates;
+    var period = $('trendPeriod').value;
+    var count = (period === 'all') ? dates.length : Math.min(parseInt(period, 10) || dates.length, dates.length);
+    var start = dates.length - count;
+    var labels = dates.slice(start).map(fmtMonthShort);
+    var data = (group.monthly || []).slice(start);
+    var color = COLORS[0];
+    $('trendLegend').innerHTML = '<span><span class="swatch" style="background:' + color + '"></span>' + esc(group.name) + '</span>';
+    var context = $('trendChart').getContext('2d');
+    state.charts.trend = new Chart(context, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: group.name,
+          data: data,
+          borderColor: color,
+          backgroundColor: color + '14',
+          tension: 0.28,
+          pointRadius: 2,
+          borderWidth: 2.4,
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function (ctx) { return ctx.dataset.label + ': ' + fmtInt(ctx.parsed.y) + ' searches'; }
+            }
+          }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { maxTicksLimit: 16, maxRotation: 0 } },
+          y: {
+            grid: { color: 'rgba(23,32,51,0.07)' },
+            ticks: { callback: function (value) { return fmtCompact(value); } },
+            title: { display: true, text: 'Monthly searches' }
+          }
+        }
+      }
+    });
+  }
+
   // ---------------------------------------------------------------- tabs / sorting
   function activateTab(name) {
     state.activeTab = name;
@@ -3029,6 +3165,7 @@
     if (name === 'brands') renderBrandsTab();
     if (name === 'top') renderTopTab();
     if (name === 'season') renderSeasonTab();
+    if (name === 'trend') renderTrendTab();
   }
 
   function bindSorting() {
