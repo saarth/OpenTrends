@@ -31,8 +31,12 @@
     {"@type":"Question","name":"What file formats are supported?","acceptedAnswer":{"@type":"Answer","text":"Google Keyword Planner exports as .xlsx, .xls or .csv, plus dictionary files as .json, .xlsx, .xls or .csv. The parser auto-detects the header row, so extra title rows are fine."}},
     {"@type":"Question","name":"What columns does the export need?","acceptedAnswer":{"@type":"Answer","text":"A keyword column (Keyword, Query, Search term, ...), an AMS / average monthly searches column (optional, estimated from monthly values if missing), and monthly date columns (e.g. 2020-02-01, Feb-2020)."}},
     {"@type":"Question","name":"Can I analyse my own category?","acceptedAnswer":{"@type":"Answer","text":"Yes. Open Trends is category-agnostic. Upload your own theme dictionary under Category definitions and re-run. The bundled example is just a demo."}},
+    {"@type":"Question","name":"What are brands and product types?","acceptedAnswer":{"@type":"Answer","text":"An optional second attribution dimension. Upload a brand dictionary and/or a product-type dictionary (or load the bundled sneakers starter set) under Brand & product dictionary to see which brands and formats (sneakers, boots, sandals, heels) drive each theme."}},
+    {"@type":"Question","name":"What do the context toggles do?","acceptedAnswer":{"@type":"Answer","text":"\"Treat product words as search context\" adds shoe/product words to NEAR queries so searches like \"running shoe\" still match. \"Also match bare descriptor searches\" also accepts searches that are only descriptors and filler words, like \"running\". They only affect queries written as descriptor near context; plain term lists are unaffected."}},
+    {"@type":"Question","name":"Can I use an LLM to build my dictionaries?","acceptedAnswer":{"@type":"Answer","text":"Yes. Paste a sample of your Keyword Planner keywords (or a category description) into any LLM and ask for theme names with Boolean queries or term lists, plus brand aliases and product types. Request JSON in the app's dictionary shape or CSV/XLSX with Theme/Query columns, then paste or upload and Apply dictionary."}},
+    {"@type":"Question","name":"What format should an LLM produce?","acceptedAnswer":{"@type":"Answer","text":"For themes: an object keyed by theme name, value either a query string (\"(running OR jogging) NEAR/3 (shoe OR sneakers)\") or an array of terms. For brands/product types: an object keyed by name, value an array of alias strings. CSV/XLSX equivalents use Theme, Query (or Brand, Aliases) columns."}},
     {"@type":"Question","name":"How do themes work?","acceptedAnswer":{"@type":"Answer","text":"Each theme is either a Boolean query (OR, AND, NOT, NEAR/n, parentheses, phrases, * / ? wildcards, #hashtags) or a plain list of terms. Queries match against the words of each search term. Term lists use forgiving substring matching."}},
-    {"@type":"Question","name":"Why are most searches unclassified?","acceptedAnswer":{"@type":"Answer","text":"The example definitions classify a search only when it names a note. Most of a Keyword Planner export does not. That is a property of the definitions and the export, not a parsing failure."}},
+    {"@type":"Question","name":"Why are most searches unclassified?","acceptedAnswer":{"@type":"Answer","text":"The bundled example only classifies a search when it names a shoe type or product (e.g. running shoes, boots). Most of a Keyword Planner export does not. That is a property of the definitions and the export, not a parsing failure."}},
     {"@type":"Question","name":"Can themes overlap?","acceptedAnswer":{"@type":"Answer","text":"Yes. One keyword can match several themes and terms, so shares can sum above 100% and term-level volumes are not mutually exclusive. Only keyword-level tables are additive."}},
     {"@type":"Question","name":"What do short-term and long-term growth mean?","acceptedAnswer":{"@type":"Answer","text":"Short-term growth compares the latest month with the start of the short window (default 12 months). Long-term growth does the same over the long window (default 48 months). Formula: (latest - window start) / window start."}},
     {"@type":"Question","name":"What is the seasonality index?","acceptedAnswer":{"@type":"Answer","text":"Average volume for a calendar month divided by the average month for that theme, times 100. 100 = an average month."}},
@@ -121,12 +125,28 @@
     <p>Yes. Open Trends is category-agnostic. Upload your own theme dictionary under <span class="kbd">Category definitions</span> (see example-categories.xlsx / .json) and re-run. The bundled example is just a demo.</p>
   </div>
   <div class="qa">
+    <h2>What are brands and product types?</h2>
+    <p>An optional second attribution dimension. Upload a brand dictionary and/or a product-type dictionary (or load the bundled sneakers starter set) under <span class="kbd">Brand &amp; product dictionary</span> to see which brands and formats (sneakers, boots, sandals, heels) drive each theme.</p>
+  </div>
+  <div class="qa">
+    <h2>What do the context toggles do?</h2>
+    <p><span class="kbd">Treat product words as search context</span> adds shoe/product words to NEAR queries so searches like "running shoe" still match. <span class="kbd">Also match bare descriptor searches</span> also accepts searches that are only descriptors and filler words, like "running". They only affect queries written as descriptor near context; plain term lists are unaffected.</p>
+  </div>
+  <div class="qa">
+    <h2>Can I use an LLM to build my dictionaries?</h2>
+    <p>Yes. Paste a sample of your Keyword Planner keywords (or a category description) into any LLM and ask for theme names with Boolean queries or term lists, plus brand aliases and product types. Request JSON in the app's dictionary shape or CSV/XLSX with <span class="kbd">Theme</span>/<span class="kbd">Query</span> columns, then paste or upload and <span class="kbd">Apply dictionary</span>.</p>
+  </div>
+  <div class="qa">
+    <h2>What format should an LLM produce?</h2>
+    <p>Themes: an object keyed by theme name, value either a query string (<code>(running OR jogging) NEAR/3 (shoe OR sneakers)</code>) or an array of terms. Brands/product types: an object keyed by name, value an array of alias strings. CSV/XLSX equivalents use <span class="kbd">Theme</span>, <span class="kbd">Query</span> (or <span class="kbd">Brand</span>, <span class="kbd">Aliases</span>) columns.</p>
+  </div>
+  <div class="qa">
     <h2>How do themes work?</h2>
     <p>Each theme is either a Boolean query (OR, AND, NOT, NEAR/n, parentheses, "phrases", * / ? wildcards, #hashtags) or a plain list of terms. Queries match against the words of each search term. Term lists use forgiving substring matching.</p>
   </div>
   <div class="qa">
     <h2>Why are most searches "unclassified"?</h2>
-    <p>The example definitions classify a search only when it names a note. Most of a Keyword Planner export does not. That is a property of the definitions and the export, not a parsing failure. The Coverage card on the Overview tab and the unclassified CSV show what was left out and why.</p>
+    <p>The bundled example only classifies a search when it names a shoe type or product (e.g. running shoes, boots). Most of a Keyword Planner export does not. That is a property of the definitions and the export, not a parsing failure. The Coverage card on the Overview tab and the unclassified CSV show what was left out and why.</p>
   </div>
   <div class="qa">
     <h2>Can themes overlap?</h2>

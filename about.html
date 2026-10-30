@@ -108,7 +108,7 @@
       <ul class="list">
         <li><b>Category searches</b>  -  a Google Keyword Planner export (.xlsx, .xls or .csv) with a keyword column, an AMS / average monthly searches column, and monthly date columns.</li>
         <li><b>Keyword buckets (themes)</b>  -  a dictionary mapping each theme name to a Boolean query or a plain list of terms. Upload under <span class="kbd">Category definitions</span> or paste into the panel and press <span class="kbd">Apply dictionary</span>.</li>
-        <li><b>Brands &amp; products (optional)</b>  -  a brand/product dictionary for a second attribution dimension.</li>
+        <li><b>Brands &amp; products (optional)</b>  -  brand and product-type dictionaries for a second attribution dimension. Upload them separately or as a combined file under <span class="kbd">Brand &amp; product dictionary</span>.</li>
       </ul>
     </div>
     <div class="card">
@@ -129,11 +129,25 @@
     <ol class="steps">
       <li>Open <a href="index.html">the app</a>. A pre-computed sneakers &amp; footwear example is already loaded as a demo.</li>
       <li>Drop in a Keyword Planner export (.xlsx / .xls / .csv). Check the detected sheet, short/long windows and dedupe setting.</li>
+      <li>(Optional) Load or upload your own theme dictionary under <span class="kbd">Category definitions</span>, and brand/product dictionaries under <span class="kbd">Brand &amp; product dictionary</span> (use the <span class="kbd">Load example …</span> buttons to start from the bundled sneakers set).</li>
+      <li>(Optional) Adjust the context toggles: treat product words as search context, or also match bare descriptor searches.</li>
       <li>Click <span class="kbd">Run analysis</span>.</li>
       <li>Explore the tabs: Overview, Theme growth, Theme deep dive, Terms, Brands &amp; products, Top searches, Seasonality.</li>
       <li>Use <span class="kbd">Export &rarr; Download full Excel workbook</span> (or individual CSVs/JSON) for BI tools.</li>
       <li>To analyse your own category, upload or paste your own theme dictionary under <span class="kbd">Category definitions</span>, then re-run.</li>
     </ol>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>Build themes, brands &amp; product types with an LLM</h3></div>
+    <p>You can use any LLM (ChatGPT, Claude, Gemini, …) to draft your dictionaries, then paste or upload them into the app:</p>
+    <ol class="list">
+      <li>Export a sample of your Keyword Planner keywords (or describe the category) and paste it into the LLM.</li>
+      <li>Ask for theme names with Boolean queries (OR, AND, NOT, NEAR/n, phrases, wildcards) or plain term lists, plus a brand alias list and a product-type list.</li>
+      <li>Request the result as JSON in the app's dictionary shape (an object keyed by name; value is a query string or an array of terms), or as CSV/XLSX with <span class="kbd">Theme</span> / <span class="kbd">Query</span> columns.</li>
+      <li>Paste into <span class="kbd">Category definitions</span> / the brand panels, or save and upload the file, then <span class="kbd">Apply dictionary</span> and re-run.</li>
+    </ol>
+    <p class="hint" style="margin-top:10px">Tip: share a few example keywords and the desired number of themes; ask the LLM to keep product words (shoes, boots, sandals, …) as context so searches like "running shoe" still match.</p>
   </div>
 
   <div class="card">
