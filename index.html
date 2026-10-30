@@ -866,8 +866,8 @@
 <script src="vendor/chart.umd.min.js"></script>
 <script src="default_classification.js?v=8"></script>
 <script src="default_groups.js?v=2"></script>
-<script src="default_brands.js?v=3"></script>
-<script src="analysis.js?v=12"></script>
+<script src="default_brands.js?v=4"></script>
+<script src="analysis.js?v=13"></script>
 <script src="sneakers-trends.js?v=1"></script>
 <script>
 (function () {
@@ -2531,6 +2531,8 @@
   }
 
   function keywordHitsEntry(keyword, entry) {
+    // "Slip on" footwear must not be attributed to the brand "On".
+    if (entry.name === 'On' && /\bslip[- ]on\b/i.test(String(keyword || '').toLowerCase())) return false;
     for (var i = 0; i < entry.matchers.length; i++) {
       if (TrendAnalysis.termMatches(entry.matchers[i], keyword)) return true;
     }

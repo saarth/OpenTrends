@@ -2,7 +2,7 @@
 
 A free, open-source, local browser app for turning Google Keyword Planner exports into theme-level trend analysis for **any category**.
 
-No ads, no tracking, no accounts: everything runs in your browser and your data is never uploaded. A self-hostable version is available on [GitHub](https://github.com/saarth/OpenTrends).
+No ads, no tracking, no accounts: everything runs in your browser and your data is never uploaded.
 
 You define the category searches and the keyword buckets (themes); Open Trends tags each search term against them and produces theme-level and term-level growth, size, velocity, seasonality and top-search tables — plus brand/product attribution and an Excel export. The bundled example is a 22-theme fragrance taxonomy.
 
@@ -252,25 +252,3 @@ Growth columns are written as percentages.
 - Large exports are parsed in memory. The preloaded Sep 2026 export is 5.9 MB; the older 84 MB workbook still works but parses more slowly.
 - Theme, term and brand tags overlap by design; only keyword-level tables are additive.
 - The manual workbook has a few quirks (for example placeholder `zxcvbnm` columns and terms that never matched because of non-breaking spaces). This tool uses the effective term list from the workbook and normalises whitespace, so small differences in absolute volumes are expected.
-
-## Files
-
-- `index.html` — the application (UI, tabs, charts, export)
-- `analysis.js` — matching and aggregation engine (term lists, Boolean query compiler, growth, seasonality, cross tabs)
-- `default_groups.js` — the 22 fragrance theme definitions (Boolean queries, shipped as a working example)
-- `default_classification.js` — the workbook term list (11 themes, ~417 terms)
-- `default_brands.js` — brand dictionary (112 brands) and product types (16)
-- `vendor/` — local copies of SheetJS and Chart.js (needed for offline use)
-- `build-trends.js` — regenerates `fragrance-trends.js` (`node build-trends.js`) after changing a dictionary
-- `fragrance-trends.js` — precomputed demo analysis shown on first load
-- `example-gkp.xlsx`, `example-categories.xlsx`, `example-categories.json` — reference uploads
-
-## Self-hosting
-
-This is a fully static site. To self-host (e.g. on Unraid), run any static web server pointing at this folder. A ready-to-use `docker-compose.yml` is included:
-
-```bash
-docker compose up -d
-```
-
-Then open http://your-server:8765. Put it behind your reverse proxy (Nginx Proxy Manager, Traefik, Caddy, …) for HTTPS and a custom domain.

@@ -324,6 +324,7 @@
       var words = new Set();
       entry.atoms.forEach(function (atom) {
         if (!atom.matcher) return;
+        if (atom.context) return;
         atom.key.split(/\s+/).forEach(function (word) {
           var plain = word.replace(/[*?]+$/, '');
           if (plain) words.add(stemWord(plain));
@@ -510,17 +511,24 @@
     return [];
   }
 
-  function collectPositiveAtoms(node, out) {
+  function collectPositiveAtoms(node, out, role) {
+    role = role || 'primary';
     if (!node) return out;
     if (node.type === 'atom') {
+      node.role = node.role || role;
       out.push(node);
       return out;
     }
     if (node.type === 'not') {
-      return collectPositiveAtoms(node.left, out);
+      return collectPositiveAtoms(node.left, out, 'primary');
     }
-    collectPositiveAtoms(node.left, out);
-    collectPositiveAtoms(node.right, out);
+    if (node.type === 'near') {
+      collectPositiveAtoms(node.left, out, 'note');
+      collectPositiveAtoms(node.right, out, 'context');
+      return out;
+    }
+    collectPositiveAtoms(node.left, out, role);
+    collectPositiveAtoms(node.right, out, role);
     return out;
   }
 
@@ -560,7 +568,10 @@
         key: node.key,
         raw: node.raw,
         first: node.tokens[0],
-        matcher: termToMatcher(node.raw)
+        matcher: termToMatcher(node.raw),
+        // Atoms living on the product/context side of a NEAR expression (or added
+        // as context words) describe the category rather than a theme's terms.
+        context: node.role === 'context'
       });
     });
 
@@ -736,13 +747,26 @@
     var queryGroupNames = Object.keys(groupQueries);
     queryGroupNames.forEach(function (group) {
       groupQueries[group].atoms.forEach(function (atom) {
+        // Only count atoms that are part of a group's own definition. Context
+        // words are attached to every group and would otherwise make every
+        // such word look "too common" to be a term.
+        if (atom.context) return;
         atomFrequency[atom.key] = (atomFrequency[atom.key] || 0) + 1;
       });
     });
     queryGroupNames.forEach(function (group) {
-      groupQueries[group].terms = groupQueries[group].atoms.filter(function (atom) {
+      var filtered = groupQueries[group].atoms.filter(function (atom) {
         return atom.matcher && (atomFrequency[atom.key] || 0) < 4;
       });
+      // A group whose definition consists entirely of category-level words
+      // (e.g. "Sneakers & Trainers" = sneaker/trainer/kicks) would otherwise
+      // end up with no Terms, so fall back to all of its atoms.
+      if (!filtered.length) {
+        filtered = groupQueries[group].atoms.filter(function (atom) {
+          return atom.matcher;
+        });
+      }
+      groupQueries[group].terms = filtered;
     });
 
     // Optional fallback for bare note searches ("sandalwood", "white musk").
@@ -823,6 +847,8 @@
 
       for (var i = 0; i < matchers.length; i++) {
         var matcher = matchers[i];
+        // "Slip on" footwear must not be attributed to the brand "On".
+        if (matcher.group === 'On' && /\bslip[- ]on\b/i.test(keywordLower)) continue;
         if (!termMatches(matcher, keywordLower)) continue;
         matchedGroups.add(matcher.group);
         addTermHit(matcher.group, matcher, keyword, ams, monthly);
@@ -1024,6 +1050,8 @@
     var names = [];
     var seen = new Set();
     for (var i = 0; i < entries.length; i++) {
+      // "Slip on" footwear must not be attributed to the brand "On".
+      if (entries[i].group === 'On' && /\bslip[- ]on\b/i.test(keyword)) continue;
       if (!entryMatches(entries[i], keyword, getTokens)) continue;
       var name = entries[i].group;
       if (seen.has(name)) continue;
