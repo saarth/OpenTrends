@@ -16,9 +16,17 @@
 <meta property="og:title" content="FAQ — Open Trends Keyword Planner Trend Analysis">
 <meta property="og:description" content="Frequently asked questions about Open Trends: formats, themes, growth, seasonality, privacy and self-hosting.">
 <meta property="og:url" content="https://opentrends.win/faq.html">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://opentrends.win/og-image.png">
+<meta property="og:image:secure_url" content="https://opentrends.win/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Open Trends — turn Google Keyword Planner exports into theme-level trend analysis">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="FAQ — Open Trends">
 <meta name="twitter:description" content="Frequently asked questions about Open Trends trend analysis.">
+<meta name="twitter:image" content="https://opentrends.win/og-image.png">
+<meta name="twitter:image:alt" content="Open Trends — turn Google Keyword Planner exports into theme-level trend analysis">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -47,38 +55,148 @@
 </script>
 <style>
   :root {
-    --bg: #f6f3ee; --bg-soft: #efeae1; --panel: #ffffff; --ink: #1c1a17;
-    --ink-soft: #3a3630; --muted: #7a746a; --line: #e6e1d6; --line-strong: #d2ccbf;
-    --accent: #1f2d4a; --accent-soft: #e8ebf2; --gold: #9a7b4f;
-    --radius: 10px; --radius-sm: 6px;
+    color-scheme: light;
+    --md-sys-color-primary: #6750A4;
+    --md-sys-color-on-primary: #FFFFFF;
+    --md-sys-color-primary-container: #EADDFF;
+    --md-sys-color-on-primary-container: #21005D;
+    --md-sys-color-secondary: #625B71;
+    --md-sys-color-secondary-container: #E8DEF8;
+    --md-sys-color-on-secondary-container: #1D192B;
+    --md-sys-color-tertiary: #7D5260;
+    --md-sys-color-on-tertiary: #FFFFFF;
+    --md-sys-color-tertiary-container: #FFD8E4;
+    --md-sys-color-on-tertiary-container: #31111D;
+    --md-sys-color-error: #B3261E;
+    --md-sys-color-background: #FFFBFE;
+    --md-sys-color-on-background: #1C1B1F;
+    --md-sys-color-surface: #FFFBFE;
+    --md-sys-color-on-surface: #1C1B1F;
+    --md-sys-color-surface-variant: #E7E0EC;
+    --md-sys-color-on-surface-variant: #49454F;
+    --md-sys-color-surface-container-lowest: #FFFFFF;
+    --md-sys-color-surface-container-low: #F7F2FA;
+    --md-sys-color-surface-container: #F3EDF7;
+    --md-sys-color-surface-container-high: #ECE6F0;
+    --md-sys-color-surface-container-highest: #E6E0E9;
+    --md-sys-color-outline: #79747E;
+    --md-sys-color-outline-variant: #CAC4D0;
+    --md-sys-color-inverse-surface: #313033;
+    --md-sys-color-inverse-on-surface: #F4EFF4;
+    --bg: var(--md-sys-color-background);
+    --bg-soft: var(--md-sys-color-surface-container-low);
+    --panel: var(--md-sys-color-surface-container-lowest);
+    --ink: var(--md-sys-color-on-surface);
+    --ink-soft: var(--md-sys-color-on-surface-variant);
+    --muted: var(--md-sys-color-on-surface-variant);
+    --line: var(--md-sys-color-outline-variant);
+    --line-strong: var(--md-sys-color-outline);
+    --accent: var(--md-sys-color-primary);
+    --accent-soft: var(--md-sys-color-primary-container);
+    --gold: var(--md-sys-color-tertiary);
+    --radius: 16px;
+    --radius-sm: 12px;
+    --font-sans: "Roboto", "Inter", "Helvetica Neue", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+    --font-display: "Roboto", "Inter", system-ui, sans-serif;
+  }
+  html[data-theme="dark"] {
+    color-scheme: dark;
+    --md-sys-color-primary: #D0BCFF;
+    --md-sys-color-on-primary: #381E72;
+    --md-sys-color-primary-container: #4F378B;
+    --md-sys-color-on-primary-container: #EADDFF;
+    --md-sys-color-secondary: #CCC2DC;
+    --md-sys-color-secondary-container: #4A4458;
+    --md-sys-color-on-secondary-container: #E8DEF8;
+    --md-sys-color-tertiary: #EFB8C8;
+    --md-sys-color-tertiary-container: #633B48;
+    --md-sys-color-on-tertiary-container: #FFD8E4;
+    --md-sys-color-background: #141218;
+    --md-sys-color-on-background: #E6E1E5;
+    --md-sys-color-surface: #141218;
+    --md-sys-color-on-surface: #E6E1E5;
+    --md-sys-color-surface-variant: #49454F;
+    --md-sys-color-on-surface-variant: #CAC4D0;
+    --md-sys-color-surface-container-lowest: #0F0D13;
+    --md-sys-color-surface-container-low: #1D1B20;
+    --md-sys-color-surface-container: #211F26;
+    --md-sys-color-surface-container-high: #2B2930;
+    --md-sys-color-surface-container-highest: #36343B;
+    --md-sys-color-outline: #938F99;
+    --md-sys-color-outline-variant: #49454F;
+    --md-sys-color-inverse-surface: #E6E1E5;
+    --md-sys-color-inverse-on-surface: #313033;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--ink); font-family: "Inter", "Helvetica Neue", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif; font-size: 14px; line-height: 1.55; min-height: 100vh; -webkit-font-smoothing: antialiased; }
-  h1 { font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif; font-size: 42px; font-weight: 400; line-height: 1.05; letter-spacing: -0.02em; margin: 0; }
-  h2 { font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif; font-size: 20px; font-weight: 400; margin: 0 0 8px; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--font-sans); font-size: 14px; line-height: 1.55; min-height: 100vh; -webkit-font-smoothing: antialiased; transition: background-color .25s ease, color .25s ease; }
+  h1 { font-family: var(--font-display); font-size: 40px; font-weight: 400; line-height: 1.1; letter-spacing: -0.02em; margin: 0; }
+  h2 { font-family: var(--font-display); font-size: 22px; font-weight: 400; margin: 0 0 10px; }
+  h3 { font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
   p { margin: 0 0 12px; color: var(--ink-soft); }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
   .wrap { max-width: 980px; margin: 0 auto; padding: 0 40px 80px; }
-  .header { padding: 48px 0 40px; background: var(--bg); border-bottom: 1px solid var(--line); }
+  .header { padding: 40px 0 32px; background: var(--bg); border-bottom: 1px solid var(--line); }
   .header-inner { max-width: 980px; margin: 0 auto; padding: 0 40px; display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
-  .brand-mark { display: flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.18em; color: var(--muted); margin-bottom: 18px; }
-  .brand-mark .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
-  .brand-logo { height: 120px; width: auto; max-width: 100%; display: block; }
+  .brand-mark { display: flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.18em; color: var(--muted); margin-bottom: 18px; padding: 6px 12px 6px 6px; border-radius: 999px; background: var(--bg-soft); }
+  .brand-mark .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); }
+  .brand-logo { height: 108px; width: auto; max-width: 100%; display: block; }
   .header p { color: var(--muted); max-width: 640px; margin-top: 14px; font-size: 15px; line-height: 1.55; }
   .nav { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
-  .nav a { border: 1px solid var(--line-strong); border-radius: 6px; padding: 8px 14px; font-size: 13px; font-weight: 500; color: var(--ink); background: transparent; transition: all .2s; }
-  .nav a:hover { background: var(--ink); color: #fff; border-color: var(--ink); text-decoration: none; }
-  .qa { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 26px; margin-top: 16px; }
-  .qa h2 { font-size: 17px; }
-  .qa p:last-child { margin-bottom: 0; }
-  .kbd { display: inline-block; border: 1px solid var(--line-strong); border-radius: 4px; padding: 1px 6px; font-size: 12px; background: var(--bg-soft); color: var(--ink); font-family: ui-monospace, Consolas, monospace; }
+  .nav a, .nav button {
+    border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; font-size: 13px; font-weight: 500;
+    color: var(--ink); background: var(--panel); transition: all .2s; cursor: pointer; font-family: inherit;
+  }
+  .nav a:hover, .nav button:hover { background: var(--bg-soft); border-color: var(--line-strong); text-decoration: none; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; margin-top: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04); }
+  .card-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  .list { margin: 0; padding-left: 20px; }
+  .list li { margin-bottom: 6px; color: var(--ink-soft); }
+  .steps { counter-reset: step; list-style: none; padding: 0; }
+  .steps li { counter-increment: step; padding: 10px 0 10px 44px; position: relative; border-bottom: 1px solid var(--line); color: var(--ink-soft); }
+  .steps li:last-child { border-bottom: 0; }
+  .steps li::before { content: counter(step); position: absolute; left: 0; top: 10px; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--md-sys-color-on-primary); display: grid; place-items: center; font-size: 12px; font-weight: 600; }
+  .kbd { display: inline-block; border: 1px solid var(--line); border-radius: 8px; padding: 2px 8px; font-size: 12px; background: var(--bg-soft); color: var(--ink); font-family: ui-monospace, Consolas, monospace; }
   .footer { color: var(--muted); font-size: 12px; margin-top: 40px; text-align: center; letter-spacing: 0.02em; }
   .footer a { color: var(--muted); }
   .footer a:hover { color: var(--ink); }
-  @media (max-width: 640px) { .wrap { padding: 0 20px 60px; } .header-inner { padding: 0 20px; } h1 { font-size: 30px; } .brand-logo { height: 72px; } }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+  .qa { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 26px; margin-top: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04); }
+  .qa h2 { font-size: 18px; }
+  .qa p:last-child { margin-bottom: 0; }
+  .theme-fab {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 60;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    color: var(--ink);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1;
+    transition: transform .2s ease, background .2s ease;
+  }
+  .theme-fab:hover { transform: scale(1.06); background: var(--bg-soft); }
+  @media (max-width: 640px) { .wrap { padding: 0 20px 60px; } .header-inner { padding: 0 20px; } h1 { font-size: 30px; } .brand-logo { height: 72px; } .grid { grid-template-columns: 1fr; } }
+
 </style>
+<script>
+  (function () {
+    try {
+      var stored = localStorage.getItem('opentrends-theme');
+      var theme = stored || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    } catch (e) { document.documentElement.setAttribute('data-theme', 'light'); }
+  })();
+</script>
 </head>
 <body>
 <header class="header">
@@ -178,5 +296,23 @@
     <a href="https://www.linkedin.com/in/saarth" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.063 2.063 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
   </div>
 </main>
+<button class="theme-fab" id="themeToggleBtn" type="button" aria-label="Toggle light/dark theme"></button>
+<script>
+  (function () {
+    var btn = document.getElementById('themeToggleBtn');
+    function sync() {
+      var t = document.documentElement.getAttribute('data-theme') || 'light';
+      if (btn) btn.textContent = t === 'dark' ? '☀' : '☾';
+    }
+    sync();
+    if (btn) btn.addEventListener('click', function () {
+      var cur = document.documentElement.getAttribute('data-theme') || 'light';
+      var next = cur === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('opentrends-theme', next); } catch (e) {}
+      sync();
+    });
+  })();
+</script>
 </body>
 </html>
