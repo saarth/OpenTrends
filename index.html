@@ -514,6 +514,16 @@
     .chart-wrap { height: 300px; }
     .header-actions { width: 100%; }
   }
+  @media print {
+    body { background: #fff; color: #000; }
+    .app-header, .tabs, #setupCard, .footer-note, .theme-fab, #toast { display: none !important; }
+    main { padding: 0; max-width: 100%; }
+    .card { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
+    .chart-wrap { height: 260px; }
+    .tab-panel { display: block !important; }
+    .hidden { display: block !important; }
+    .table-wrap { max-height: none; overflow: visible; }
+  }
 
 </style>
 <script>
@@ -541,6 +551,8 @@
       <a class="btn ghost-light" href="faq.html">FAQ</a>
       <button class="btn ghost-light" id="headerDefaultBtn">Reset to example definitions</button>
       <button class="btn ghost-light" id="headerExportBtn" disabled>Export Excel</button>
+      <button class="btn ghost-light" id="headerPrintBtn" type="button">Print report</button>
+      <button class="btn ghost-light" id="headerResumeBtn" type="button" style="display:none">Resume session</button>
     </div>
   </div>
 </header>
@@ -622,6 +634,12 @@
       <label class="check" style="margin-top:10px"><input type="checkbox" id="contextToggle" checked> Treat product words as search context (shoes, sneakers, boots, sandals, trainers, heels, flats)</label>
       <label class="check" style="margin-top:6px"><input type="checkbox" id="bareToggle" checked> Also match bare descriptor searches ("running", "basketball", "hiking", "casual")</label>
       <p class="hint" style="margin-top:6px">These options keep short searches inside a theme. The first also accepts a product word, so a search like "running shoe" counts even when the definition only lists descriptor words. The second also accepts a search that is <i>only</i> descriptors and filler words, so "running" counts too  -  while unrelated searches stay out. They only matter for queries written as <i>descriptor near context</i>; plain term lists are unaffected.</p>
+      <div class="row" style="margin-top:12px">
+        <label style="flex:1 1 260px">Test a keyword
+          <input type="search" id="queryTesterInput" placeholder="e.g. running shoe">
+        </label>
+        <div id="queryTesterResult" class="hint" style="flex:1 1 260px;margin-top:18px"></div>
+      </div>
     </details>
 
     <details class="dict" id="brandDictDetails">
@@ -667,6 +685,7 @@
         <div class="card">
           <div class="card-head">
             <h3>Velocity map</h3>
+            <button class="btn small ghost-light" type="button" onclick="exportChartPng('bubbleChart','velocity-map')">PNG</button>
             <span class="hint">Bubble size = AMS  |  x = long-term growth  |  y = short-term growth</span>
           </div>
           <div class="chart-wrap"><canvas id="bubbleChart"></canvas></div>
@@ -709,6 +728,7 @@
       <div class="card">
         <div class="card-head">
           <h3 id="familyChartTitle">Monthly volume</h3>
+          <button class="btn small ghost-light" type="button" onclick="exportChartPng('familyChart','theme-monthly')">PNG</button>
           <label style="flex-direction:row;align-items:center;gap:8px;font-weight:500;color:var(--muted)">
             Theme
             <select id="familySelect" style="width:auto;min-width:180px"></select>
@@ -739,6 +759,7 @@
         <div class="card">
           <div class="card-head">
             <h3 id="driverChartTitle">Term contribution</h3>
+            <button class="btn small ghost-light" type="button" onclick="exportChartPng('driverChart','term-contribution')">PNG</button>
             <span class="hint">Change in monthly volume vs window start</span>
           </div>
           <div class="chart-wrap short"><canvas id="driverChart"></canvas></div>
@@ -784,6 +805,7 @@
       <div class="card">
         <div class="card-head">
           <h3>Term growth</h3>
+          <button class="btn small ghost-light" type="button" onclick="exportChartPng('termChart','term-growth')">PNG</button>
           <span class="hint">Within-theme term performance</span>
         </div>
         <div class="row" style="margin-bottom:12px">
@@ -814,6 +836,7 @@
       <div class="card">
         <div class="card-head">
           <h3>Brands &amp; products</h3>
+          <button class="btn small ghost-light" type="button" onclick="exportChartPng('brandChart','brands')">PNG</button>
           <span class="hint">Who and what is behind the searches</span>
         </div>
         <div class="row">
@@ -870,6 +893,7 @@
       <div class="card">
         <div class="card-head">
           <h3>Seasonality</h3>
+          <button class="btn small ghost-light" type="button" onclick="exportChartPng('seasonChart','seasonality')">PNG</button>
           <div class="row" style="gap:8px">
             <label style="flex-direction:row;align-items:center;gap:8px;font-weight:500;color:var(--muted)">
               Keyword term
@@ -959,6 +983,12 @@
   </div>
 </main>
 
+<div id="cmdPalette" class="hidden" style="position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.45);display:flex;align-items:flex-start;justify-content:center;padding-top:12vh">
+  <div style="background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);width:min(520px,90vw);box-shadow:0 24px 64px rgba(0,0,0,0.3);overflow:hidden">
+    <input id="cmdInput" type="search" placeholder="Search tabs and actions..." style="width:100%;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:14px 18px;font-size:14px;background:var(--panel);color:var(--ink)">
+    <div id="cmdList" style="max-height:320px;overflow:auto"></div>
+  </div>
+</div>
 <div id="toast"></div>
 <button class="theme-fab" id="themeToggleBtn" type="button" aria-label="Toggle light/dark theme"></button>
 
@@ -1000,7 +1030,8 @@
       brand: { key: 'size', dir: 'desc' },
        termDrill: { key: 'ams', dir: 'desc' }
     },
-    seasonFamilies: []
+    seasonFamilies: [],
+     coverageFilter: 'all'
   };
 
   var COLORS = ['#5b4bff', '#00a896', '#ff7a59', '#e5484d', '#2e90fa', '#9b51e0', '#f2c94c', '#219653', '#eb5757', '#56ccf2', '#bb6bd9', '#7a5cff'];
@@ -1498,6 +1529,9 @@
   function findColumns(headerRow) {
     var keywordIndex = null;
     var amsIndex = null;
+    var cpcIndex = null;
+    var competitionIndex = null;
+    var impressionShareIndex = null;
     var monthly = [];
     for (var c = 0; c < headerRow.length; c++) {
       var value = headerRow[c];
@@ -1506,6 +1540,9 @@
       var lower = text.toLowerCase();
       if (keywordIndex == null && /^(keyword|keywords|query|search term|term)$/.test(lower)) keywordIndex = c;
       if (amsIndex == null && /^(ams|avg\.? monthly searches|average monthly searches|search volume)$/.test(lower)) amsIndex = c;
+      if (cpcIndex == null && /cpc|cost per click|top of page bid/.test(lower)) cpcIndex = c;
+      if (competitionIndex == null && /competition/.test(lower)) competitionIndex = c;
+      if (impressionShareIndex == null && /impression share|search impr/.test(lower)) impressionShareIndex = c;
       if (isDateLike(value)) {
         var iso = dateToIso(value);
         if (iso) monthly.push({ index: c, iso: iso });
@@ -1524,7 +1561,7 @@
       }
     }
     monthly.sort(function (a, b) { return a.iso.localeCompare(b.iso); });
-    return { keywordIndex: keywordIndex, amsIndex: amsIndex, monthly: monthly };
+    return { keywordIndex: keywordIndex, amsIndex: amsIndex, cpcIndex: cpcIndex, competitionIndex: competitionIndex, impressionShareIndex: impressionShareIndex, monthly: monthly };
   }
 
   function parseSheet(workbook, sheetName) {
@@ -1555,6 +1592,9 @@
         return parseNumber(getCell(row, column.index));
       });
       var ams = columns.amsIndex == null ? 0 : parseNumber(getCell(row, columns.amsIndex));
+      var cpc = columns.cpcIndex == null ? null : parseNumber(getCell(row, columns.cpcIndex));
+      var competition = columns.competitionIndex == null ? null : getCell(row, columns.competitionIndex);
+      var impressionShare = columns.impressionShareIndex == null ? null : parseNumber(getCell(row, columns.impressionShareIndex));
       if (!ams) {
         var positive = monthly.filter(function (value) { return value > 0; });
         ams = positive.length ? positive.reduce(function (a, b) { return a + b; }, 0) / positive.length : 0;
@@ -1566,7 +1606,7 @@
         seen.add(key);
       }
 
-      parsedRows.push({ keyword: keyword, ams: ams, monthly: monthly });
+      parsedRows.push({ keyword: keyword, ams: ams, monthly: monthly, cpc: cpc, competition: competition, impressionShare: impressionShare });
     }
 
     if (!parsedRows.length) throw new Error('No keyword rows found below the header row.');
@@ -1668,7 +1708,71 @@
   }
 
   // ---------------------------------------------------------------- run
-  function runAnalysis() {
+  function saveSession() {
+     try {
+       var payload = {
+         fileName: state.fileName,
+         parsed: state.parsed,
+         result: state.result,
+         classification: state.classification,
+         brandDict: state.brandDict,
+         typeDict: state.typeDict,
+         brandResult: state.brandResult,
+         typeResult: state.typeResult,
+         crossBrands: state.crossBrands,
+         crossTypes: state.crossTypes,
+         coverage: state.coverage,
+         selectedFamily: state.selectedFamily,
+         seasonFamilies: state.seasonFamilies,
+         contextWords: state.contextWords,
+         bareNotes: state.bareNotes,
+         normalize: state.normalize,
+         shortWindow: $('shortWindow').value,
+         longWindow: $('longWindow').value,
+         dedupe: $('dedupe').checked
+       };
+       localStorage.setItem('opentrends-session', JSON.stringify(payload));
+       var btn = $('headerResumeBtn');
+       if (btn) btn.style.display = '';
+     } catch (e) { }
+   }
+   function resumeSession() {
+     try {
+       var raw = localStorage.getItem('opentrends-session');
+       if (!raw) return;
+       var p = JSON.parse(raw);
+       state.fileName = p.fileName;
+       state.parsed = p.parsed;
+       state.result = p.result;
+       state.classification = p.classification;
+       state.brandDict = p.brandDict;
+       state.typeDict = p.typeDict;
+       state.brandResult = p.brandResult;
+       state.typeResult = p.typeResult;
+       state.crossBrands = p.crossBrands;
+       state.crossTypes = p.crossTypes;
+       state.coverage = p.coverage;
+       state.selectedFamily = p.selectedFamily;
+       state.seasonFamilies = p.seasonFamilies || [];
+       state.contextWords = p.contextWords;
+       state.bareNotes = p.bareNotes;
+       state.normalize = p.normalize;
+       if (p.shortWindow) $('shortWindow').value = p.shortWindow;
+       if (p.longWindow) $('longWindow').value = p.longWindow;
+       if (p.dedupe != null) $('dedupe').checked = p.dedupe;
+       if (state.parsed) updateFileInfo(state.fileName || 'Restored session', state.parsed);
+       $('runBtn').disabled = false;
+       $('headerExportBtn').disabled = !state.result;
+       if (state.result) {
+         $('results').classList.remove('hidden');
+         populateResultControls();
+         renderKpis();
+         activateTab('overview');
+       }
+       showToast('Session restored');
+     } catch (e) { showToast('Could not restore session: ' + e.message, true); }
+   }
+   function runAnalysis() {
     if (!state.parsed) {
       showToast('Load a Keyword Planner export first.', true);
       return;
@@ -1707,6 +1811,9 @@
         });
         state.result = result;
         state.classification = classification;
+        state.contextWords = contextWords;
+        state.bareNotes = bareNotes;
+        state.normalize = window.BRAND_NORMALIZE || null;
         state.selectedFamily = result.groups.length ? result.groups[0].name : null;
         state.seasonFamilies = result.groups.slice(0, 5).map(function (group) { return group.name; });
         // Brand / product layer is optional: if the dictionaries are broken or
@@ -1755,7 +1862,8 @@
         renderKpis();
         activateTab('overview');
         $('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        showToast('Analysis complete');
+        saveSession();
+         showToast('Analysis complete');
       } catch (error) {
         console.error(error);
         $('parseStatus').className = 'status error';
@@ -2019,10 +2127,20 @@
     html += '</tbody></table>';
 
     if (c.rows.length) {
-      html += '<div class="card-head" style="margin-top:18px"><h3 style="font-size:15px">Largest unclassified searches</h3>' +
+      html += '<div class="row" style="margin-top:18px;align-items:center;gap:10px">' +
+        '<h3 style="font-size:15px;margin:0">Largest unclassified searches</h3>' +
+        '<select id="coverageFilter" style="width:auto;min-width:180px">' +
+        '<option value="all">All reasons</option>' +
+        '<option value="brand">Brand only</option>' +
+        '<option value="product">Product/category only</option>' +
+        '<option value="other">No theme match</option>' +
+        '</select>' +
         '<span class="hint">Top 20 by AMS  -  download the full list to extend the definitions or the brand dictionary</span></div>';
       html += '<div class="table-wrap" style="max-height:420px"><table><thead><tr><th>Keyword</th><th class="num">AMS</th><th>Why it is not in a group</th><th>Brand</th></tr></thead><tbody>';
-      c.rows.slice(0, 20).forEach(function (row) {
+      c.rows.filter(function (row) {
+        var f = state.coverageFilter || 'all';
+        return f === 'all' || row.bucket === f;
+      }).slice(0, 20).forEach(function (row) {
         html += '<tr>' +
           '<td class="family-name">' + esc(row.keyword) + '</td>' +
           '<td class="num">' + fmtCompact(row.ams) + '</td>' +
@@ -2033,6 +2151,11 @@
       html += '</tbody></table></div>';
     }
     $('coverageBody').innerHTML = html;
+    var cf = $('coverageFilter');
+    if (cf) {
+      cf.value = state.coverageFilter || 'all';
+      cf.addEventListener('change', function () { state.coverageFilter = this.value; renderCoverage(); });
+    }
   }
 
   function exportUnmatchedCsv() {
@@ -2567,7 +2690,10 @@
       ams: row.ams,
       latest: row.latest != null ? row.latest : Number(monthly[totals.endIdx] || 0),
       short: row.short || TrendAnalysis.computeGrowth(monthly, totals.endIdx, totals.shortWindow, state.result.dates),
-      long: row.long || TrendAnalysis.computeGrowth(monthly, totals.endIdx, totals.longWindow, state.result.dates)
+      long: row.long || TrendAnalysis.computeGrowth(monthly, totals.endIdx, totals.longWindow, state.result.dates),
+       cpc: row.cpc,
+       competition: row.competition,
+       impressionShare: row.impressionShare
     };
   }
 
@@ -2607,12 +2733,16 @@
       return;
     }
     var sort = state.sort.top;
+    var hasCpcTop = rows.some(function (r) { return r.cpc != null; });
+    var hasCompTop = rows.some(function (r) { return r.competition != null; });
     var html = '<table><thead><tr>' +
       sortHeader('Keyword', 'keyword', sort) +
       sortHeader('AMS', 'ams', sort) +
       sortHeader('Latest month', 'latest', sort) +
       sortHeader('Short-term', 'short.growth', sort) +
       sortHeader('Long-term', 'long.growth', sort) +
+      (hasCpcTop ? sortHeader('CPC', 'cpc', sort) : '') +
+      (hasCompTop ? sortHeader('Competition', 'competition', sort) : '') +
       '</tr></thead><tbody>';
     rows.slice(0, 200).forEach(function (row) {
       html += '<tr>' +
@@ -2621,6 +2751,8 @@
         '<td class="num">' + fmtInt(row.latest) + '</td>' +
         '<td class="num">' + growthHtml(row.short && row.short.growth) + '</td>' +
         '<td class="num">' + growthHtml(row.long && row.long.growth) + '</td>' +
+        (hasCpcTop ? '<td class="num">' + (row.cpc != null ? Number(row.cpc).toFixed(2) : ' - ') + '</td>' : '') +
+        (hasCompTop ? '<td class="num">' + (row.competition == null ? ' - ' : esc(row.competition)) + '</td>' : '') +
         '</tr>';
     });
     html += '</tbody></table>';
@@ -3384,7 +3516,9 @@
           row.ams,
           row.latest,
           row.short ? row.short.growth : null,
-          row.long ? row.long.growth : null
+          row.long ? row.long.growth : null,
+          row.cpc != null ? row.cpc : null,
+          row.competition != null ? row.competition : null
         ]);
       });
     });
@@ -3512,7 +3646,7 @@
     var driverKeywordHeader = [['Theme', 'Window', 'Keyword', 'AMS', 'Window start', 'Latest month', 'd volume', 'Growth']];
     XLSX.utils.book_append_sheet(wb, sheetWithFormats(driverKeywordHeader.concat(driverKeywordRows()), [22, 12, 46, 14, 15, 14, 14, 12], [7]), 'Keyword Drivers');
 
-    var topHeader = [['Theme', 'Keyword', 'AMS', 'Latest month', 'Short-term growth', 'Long-term growth']];
+    var topHeader = [['Theme', 'Keyword', 'AMS', 'Latest month', 'Short-term growth', 'Long-term growth', 'CPC', 'Competition']];
     XLSX.utils.book_append_sheet(wb, sheetWithFormats(topHeader.concat(topRows()), [22, 46, 14, 14, 17, 17], [4, 5]), 'Top Searches');
 
     if (state.brandResult) {
@@ -3699,6 +3833,77 @@
 
     $('sheetSelect').addEventListener('change', function () { loadSheet(this.value); });
     $('runBtn').addEventListener('click', runAnalysis);
+    $('headerPrintBtn').addEventListener('click', function () { window.print(); });
+    // Command palette
+    var cmdActions = [
+      { label: 'Overview', action: function(){ activateTab('overview'); } },
+      { label: 'Theme growth', action: function(){ activateTab('family'); } },
+      { label: 'Theme deep dive', action: function(){ activateTab('deep'); } },
+      { label: 'Terms', action: function(){ activateTab('terms'); } },
+      { label: 'Brands & products', action: function(){ activateTab('brands'); } },
+      { label: 'Top searches', action: function(){ activateTab('top'); } },
+      { label: 'Seasonality', action: function(){ activateTab('season'); } },
+      { label: 'Trend line', action: function(){ activateTab('trend'); } },
+      { label: 'Export', action: function(){ activateTab('export'); } },
+      { label: 'Run analysis', action: function(){ if (!$('runBtn').disabled) runAnalysis(); } },
+      { label: 'Print report', action: function(){ window.print(); } },
+      { label: 'Reset to example definitions', action: function(){ $('headerDefaultBtn').click(); } }
+    ];
+    function renderCmd(filter) {
+      filter = (filter || '').toLowerCase();
+      var list = $('cmdList');
+      list.innerHTML = '';
+      cmdActions.filter(function (a){ return !filter || a.label.toLowerCase().indexOf(filter) !== -1; }).forEach(function (a) {
+        var btn = document.createElement('button');
+        btn.className = 'btn ghost-light';
+        btn.style.cssText = 'display:block;width:100%;text-align:left;border:0;border-radius:0;padding:12px 18px';
+        btn.textContent = a.label;
+        btn.addEventListener('click', function () { $('cmdPalette').classList.add('hidden'); a.action(); });
+        list.appendChild(btn);
+      });
+    }
+    $('cmdInput').addEventListener('input', function () { renderCmd(this.value); });
+    $('cmdPalette').addEventListener('click', function (e) { if (e.target === this) this.classList.add('hidden'); });
+    document.addEventListener('keydown', function (e) {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        $('cmdPalette').classList.remove('hidden');
+        $('cmdInput').value = '';
+        renderCmd('');
+        setTimeout(function(){ $('cmdInput').focus(); }, 10);
+      }
+      if (e.key === 'Escape') $('cmdPalette').classList.add('hidden');
+      // Number shortcuts for tabs when not typing
+      var tag = (e.target && e.target.tagName) || '';
+      if (!e.ctrlKey && !e.metaKey && !e.altKey && tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') {
+        var tabs = ['overview','family','deep','terms','brands','top','season','trend','export'];
+        var idx = parseInt(e.key, 10);
+        if (idx >= 1 && idx <= tabs.length) {
+          e.preventDefault();
+          activateTab(tabs[idx - 1]);
+        }
+      }
+    });
+    renderCmd('');
+    var resumeBtn = $('headerResumeBtn');
+    if (resumeBtn) {
+      if (localStorage.getItem('opentrends-session')) resumeBtn.style.display = '';
+      resumeBtn.addEventListener('click', resumeSession);
+    }
+    window.exportChartPng = function (canvasId, fileName) {
+      var canvas = document.getElementById(canvasId);
+      if (!canvas) { showToast('Chart not found', true); return; }
+      try {
+        var url = canvas.toDataURL('image/png');
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = (fileName || canvasId) + '.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showToast('Chart downloaded', false);
+      } catch (e) { showToast('Could not export chart', true); }
+    };
     $('applyDictBtn').addEventListener('click', function () {
       try {
         var classification = readClassification();
@@ -3727,6 +3932,38 @@
     $('dedupe').addEventListener('change', function () {
       if (state.workbook && $('sheetSelect').value) loadSheet($('sheetSelect').value);
     });
+    function runQueryTester() {
+      var input = $('queryTesterInput');
+      var out = $('queryTesterResult');
+      if (!input || !out) return;
+      var kw = input.value.trim();
+      if (!kw) { out.textContent = ''; return; }
+      try {
+        var classification = readClassification();
+        var opts = {
+          dates: state.result ? state.result.dates : ['2024-01-01'],
+          shortWindow: Number($('shortWindow').value) || 12,
+          longWindow: Number($('longWindow').value) || 48,
+          endIdx: state.result ? state.result.totals.endIdx : 0,
+          contextWords: state.contextWords || [],
+          bareNotes: $('bareToggle').checked,
+          normalize: state.normalize || null
+        };
+        var rows = [{ keyword: kw, ams: 1, monthly: new Array(opts.dates.length).fill(1) }];
+        var res = TrendAnalysis.analyze(rows, classification, opts);
+        var names = res.groups.map(function (g) { return g.name; });
+        if (!names.length) { out.innerHTML = '<span style="color:var(--neg)">No theme match.</span>'; return; }
+        out.innerHTML = '<b>Themes:</b> ' + names.map(function(n){return esc(n);}).join(', ');
+        // terms
+        var terms = [];
+        res.groups.forEach(function (g) { (g.terms||[]).forEach(function(t){ terms.push(g.name + ' / ' + t.term); }); });
+        if (terms.length) out.innerHTML += '<br><span class="hint"><b>Terms:</b> ' + terms.map(esc).join(', ') + '</span>';
+      } catch (e) {
+        out.textContent = 'Error: ' + e.message;
+      }
+    }
+    var qti = $('queryTesterInput');
+    if (qti) qti.addEventListener('input', runQueryTester);
 
     document.querySelectorAll('.tab').forEach(function (tab) {
       tab.addEventListener('click', function () { activateTab(this.dataset.tab); });

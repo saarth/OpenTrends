@@ -823,7 +823,7 @@
       for (var j = 0; j < n; j++) {
         term.monthly[j] += Number(monthly[j]) || 0;
       }
-      if (term.keywordsList) term.keywordsList.push({ keyword: keyword, ams: ams, monthly: monthly });
+      if (term.keywordsList) term.keywordsList.push({ keyword: keyword, ams: ams, monthly: monthly, cpc: row.cpc, competition: row.competition, impressionShare: row.impressionShare });
     }
 
     rows.forEach(function (row, rowIndex) {
@@ -918,7 +918,10 @@
           groupKeywords[group].push({
             keyword: keyword,
             ams: ams,
-            monthly: monthly
+            monthly: monthly,
+            cpc: row.cpc,
+            competition: row.competition,
+            impressionShare: row.impressionShare
           });
         });
       }
@@ -941,7 +944,10 @@
           ams: row.ams,
           latest: Number(row.monthly[endIdx]) || 0,
           short: computeGrowth(row.monthly, endIdx, shortWindow, dates),
-          long: computeGrowth(row.monthly, endIdx, longWindow, dates)
+          long: computeGrowth(row.monthly, endIdx, longWindow, dates),
+          cpc: row.cpc,
+          competition: row.competition,
+          impressionShare: row.impressionShare
         };
       });
 
@@ -983,7 +989,10 @@
             ams: row.ams,
             latest: Number(row.monthly[endIdx]) || 0,
             short: computeGrowth(row.monthly, endIdx, shortWindow, dates),
-            long: computeGrowth(row.monthly, endIdx, longWindow, dates)
+            long: computeGrowth(row.monthly, endIdx, longWindow, dates),
+            cpc: row.cpc,
+            competition: row.competition,
+            impressionShare: row.impressionShare
           };
         });
 
