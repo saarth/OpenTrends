@@ -672,6 +672,59 @@
     };
   }
 
+  function pearson(a, b) {
+    if (!a || !b || a.length !== b.length || !a.length) return null;
+    var n = a.length;
+    var sa = 0, sb = 0, sa2 = 0, sb2 = 0, sab = 0, cnt = 0;
+    for (var i = 0; i < n; i++) {
+      var x = Number(a[i]) || 0;
+      var y = Number(b[i]) || 0;
+      sa += x; sb += y; sa2 += x * x; sb2 += y * y; sab += x * y; cnt++;
+    }
+    var cov = sab - (sa * sb) / cnt;
+    var va = sa2 - (sa * sa) / cnt;
+    var vb = sb2 - (sb * sb) / cnt;
+    if (va <= 0 || vb <= 0) return null;
+    return cov / Math.sqrt(va * vb);
+  }
+
+  function forecast(monthly, horizon, window) {
+    horizon = horizon || 6;
+    window = window || Math.min(12, monthly.length);
+    var n = monthly.length;
+    var start = Math.max(0, n - window);
+    var xs = [], ys = [];
+    for (var i = start; i < n; i++) {
+      xs.push(i);
+      ys.push(Number(monthly[i]) || 0);
+    }
+    var m = xs.length;
+    if (m < 2) return null;
+    var sx = 0, sy = 0, sxx = 0, sxy = 0;
+    for (var j = 0; j < m; j++) {
+      sx += xs[j]; sy += ys[j]; sxx += xs[j] * xs[j]; sxy += xs[j] * ys[j];
+    }
+    var slope = (m * sxy - sx * sy) / (m * sxx - sx * sx);
+    var intercept = (sy - slope * sx) / m;
+    // residual std
+    var resid = 0;
+    for (var r = 0; r < m; r++) {
+      var pred = intercept + slope * xs[r];
+      var d = ys[r] - pred;
+      resid += d * d;
+    }
+    var std = Math.sqrt(resid / Math.max(1, m - 2));
+    var values = [], lower = [], upper = [];
+    for (var h = 1; h <= horizon; h++) {
+      var xi = n - 1 + h;
+      var p = intercept + slope * xi;
+      values.push(p);
+      lower.push(p - 1.96 * std);
+      upper.push(p + 1.96 * std);
+    }
+    return { values: values, lower: lower, upper: upper, slope: slope, intercept: intercept, std: std };
+  }
+
   function buildDrivers(rows, endIdx, window, dates, limit) {
     var drivers = [];
     rows.forEach(function (row) {
@@ -783,6 +836,8 @@
     var groupKeywords = {};
     var termMap = {};
     var termKeywords = {};
+    var groupNewKeywords = {};
+    var groupNewAms = {};
     groupNames.forEach(function (group) {
       groupMonthly[group] = new Float64Array(n);
       groupSize[group] = 0;
@@ -790,6 +845,8 @@
       groupKeywords[group] = [];
       termMap[group] = new Map();
       termKeywords[group] = new Map();
+      groupNewKeywords[group] = 0;
+      groupNewAms[group] = 0;
     });
 
     var totalAms = 0;
@@ -899,6 +956,11 @@
         matchedKeywords += 1;
         matchedAms += ams;
         var matchedList = [];
+        var firstNonZero = -1;
+        for (var fi = 0; fi < monthly.length; fi++) {
+          if ((Number(monthly[fi]) || 0) > 0) { firstNonZero = fi; break; }
+        }
+        var isNew = firstNonZero >= 0 && firstNonZero >= (n - 12);
         matchedGroups.forEach(function (group) {
           matchedList.push(group);
           groupSet.add(group);
@@ -908,6 +970,7 @@
           for (var k = 0; k < n; k++) {
             target[k] += Number(monthly[k]) || 0;
           }
+          if (isNew) { groupNewKeywords[group] += 1; groupNewAms[group] += ams; }
         });
         if (rowGroups) rowGroups[rowIndex] = matchedList;
       }
@@ -996,16 +1059,29 @@
           };
         });
 
+      var yoy = null;
+      if (n >= 13) {
+        var yoyStartIdx = endIdx - 12;
+        if (yoyStartIdx >= 0) {
+          var yoyStart = Number(monthly[yoyStartIdx]) || 0;
+          var yoyEnd = Number(monthly[endIdx]) || 0;
+          yoy = yoyStart > 0 ? (yoyEnd - yoyStart) / yoyStart : null;
+        }
+      }
       return {
         name: group,
         size: size,
         keywords: groupKeywordCount[group],
+        newKeywords: groupNewKeywords[group] || 0,
+        newAms: groupNewAms[group] || 0,
+        establishedKeywords: (groupKeywordCount[group] || 0) - (groupNewKeywords[group] || 0),
         // Share of the AMS that actually landed in a family (not all raw rows).
         share: matchedAms > 0 ? size / matchedAms : 0,
         monthly: monthly,
         latest: Number(monthly[endIdx]) || 0,
         short: short,
         long: long,
+        yoy: yoy,
         shortChange: short ? short.end - short.start : null,
         longChange: long ? long.end - long.start : null,
         seasonality: seasonality(monthly, dates),
@@ -1018,6 +1094,42 @@
       };
     });
 
+    // Pearson correlation matrix between theme monthly series.
+    var corrNames = groups.map(function (g) { return g.name; });
+    var corrMatrix = corrNames.map(function () { return corrNames.map(function () { return null; }); });
+    for (var ci = 0; ci < corrNames.length; ci++) {
+      for (var cj = 0; cj < corrNames.length; cj++) {
+        var a = groups[ci].monthly;
+        var b = groups[cj].monthly;
+        corrMatrix[ci][cj] = pearson(a, b);
+      }
+    }
+
+    // Overlap matrix: shared AMS and keyword counts between themes.
+    var overlapMatrix = corrNames.map(function () { return corrNames.map(function () { return { sharedAms: 0, sharedKeywords: 0 }; }); });
+    if (rowGroups) {
+      // Build per-row theme membership already in rowGroups; compute pairwise.
+      var rowThemeAms = [];
+      // We need per-row ams; reconstruct from rows order using a map.
+      // rows is in original order; rowGroups aligned. Use rows array (closure).
+      for (var ri = 0; ri < rows.length; ri++) {
+        var rg = rowGroups[ri] || [];
+        if (rg.length < 2) continue;
+        var amsRow = Number.isFinite(rows[ri].ams) ? rows[ri].ams : 0;
+        for (var x = 0; x < rg.length; x++) {
+          for (var y = x + 1; y < rg.length; y++) {
+            var ix = corrNames.indexOf(rg[x]);
+            var iy = corrNames.indexOf(rg[y]);
+            if (ix < 0 || iy < 0) continue;
+            overlapMatrix[ix][iy].sharedAms += amsRow;
+            overlapMatrix[iy][ix].sharedAms += amsRow;
+            overlapMatrix[ix][iy].sharedKeywords += 1;
+            overlapMatrix[iy][ix].sharedKeywords += 1;
+          }
+        }
+      }
+    }
+
     groups.sort(function (a, b) { return b.size - a.size; });
 
     return {
@@ -1026,6 +1138,8 @@
       allTopKeywords: allTopKeywords,
       groupNames: groupNames,
       rowGroups: rowGroups,
+      correlations: { names: corrNames, matrix: corrMatrix },
+      overlap: { names: corrNames, matrix: overlapMatrix },
       totals: {
         keywords: rows.length,
         matchedKeywords: matchedKeywords,
@@ -1256,6 +1370,8 @@
   }
 
   return {
+    pearson: pearson,
+    forecast: forecast,
     normalizeText: normalizeText,
     keywordTokens: keywordTokens,
     termToMatcher: termToMatcher,

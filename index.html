@@ -677,6 +677,7 @@
       <button class="tab" data-tab="top">Top searches</button>
       <button class="tab" data-tab="season">Seasonality</button>
        <button class="tab" data-tab="trend">Trend line</button>
+      <button class="tab" data-tab="insights">Insights</button>
       <button class="tab" data-tab="export">Export</button>
     </nav>
 
@@ -697,6 +698,10 @@
           </div>
           <div class="table-wrap" id="fastestTable" style="max-height:350px"></div>
         </div>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <div class="card-head"><h3>Anomalies</h3><span class="hint">Themes whose latest month is &gt;2σ above seasonal expectation</span></div>
+        <div id="overviewAnomalies"></div>
       </div>
       <div class="card" id="coverageCard" style="margin-top:18px">
         <div class="card-head">
@@ -945,6 +950,50 @@
        </div>
      </section>
 
+     <section class="tab-panel hidden" id="tab-insights">
+       <div class="card">
+         <div class="card-head"><h3>Anomaly detection</h3><span class="hint">Themes whose latest month is &gt;2σ above their seasonal expectation</span></div>
+         <div id="anomalyBody"></div>
+       </div>
+       <div class="card">
+         <div class="card-head"><h3>Theme correlation matrix</h3><span class="hint">Pearson correlation of monthly series (1 = move together)</span></div>
+         <div class="table-wrap" id="corrBody"></div>
+       </div>
+       <div class="card">
+         <div class="card-head"><h3>Cannibalization / overlap matrix</h3><span class="hint">Shared AMS between themes (keywords matching both)</span></div>
+         <div class="table-wrap" id="overlapBody"></div>
+       </div>
+       <div class="card">
+         <div class="card-head"><h3>New vs established keywords</h3><span class="hint">Keywords first appearing in the last 12 months</span></div>
+         <div class="table-wrap" id="newKwBody"></div>
+       </div>
+       <div class="card">
+         <div class="card-head"><h3>Forecast (next 6 months)</h3><span class="hint">Linear projection per theme with 95% band</span></div>
+         <div class="row" style="margin-bottom:12px">
+           <label style="flex:0 0 220px">Theme <select id="forecastFamily"></select></label>
+         </div>
+         <div class="chart-wrap short"><canvas id="forecastChart"></canvas></div>
+         <div class="table-wrap" id="forecastTable" style="margin-top:14px"></div>
+       </div>
+       <div class="card">
+         <div class="card-head"><h3>N-gram / phrase miner</h3><span class="hint">Frequent 2-3 word phrases to help build dictionaries</span></div>
+         <div class="row" style="margin-bottom:12px">
+           <label style="flex:0 0 180px">Source
+             <select id="ngramSource"><option value="unclassified">Unclassified keywords</option><option value="all">All keywords</option></select>
+           </label>
+           <label style="flex:0 0 120px">N
+             <select id="ngramN"><option value="2">2 words</option><option value="3">3 words</option></select>
+           </label>
+           <button class="btn small" id="ngramRunBtn" type="button">Mine phrases</button>
+         </div>
+         <div class="table-wrap" id="ngramBody"></div>
+       </div>
+       <div class="card">
+         <div class="card-head"><h3>Auto-theme suggestions</h3><span class="hint">Cluster unclassified keywords into candidate themes</span></div>
+         <button class="btn small" id="autoSuggestBtn" type="button">Generate suggestions</button>
+         <div class="table-wrap" id="autoSuggestBody" style="margin-top:14px"></div>
+       </div>
+     </section>
      <section class="tab-panel hidden" id="tab-export">
       <div class="card">
         <div class="card-head"><h3>Export</h3></div>
@@ -1772,7 +1821,225 @@
        showToast('Session restored');
      } catch (e) { showToast('Could not restore session: ' + e.message, true); }
    }
-   function runAnalysis() {
+   
+  // ---------------------------------------------------------------- insights
+  function pearsonJS(a, b) {
+    return (window.TrendAnalysis && TrendAnalysis.pearson) ? TrendAnalysis.pearson(a, b) : null;
+  }
+
+  function renderAnomalies() {
+    var body = $('anomalyBody');
+    if (!body || !state.result) return;
+    var rows = [];
+    state.result.groups.forEach(function (g) {
+      var seas = g.seasonality;
+      var idx = new Date(state.result.totals.dateEnd).getMonth();
+      var expected = (seas && seas.avg && seas.avg[idx]) ? seas.avg[idx] : 0;
+      var overall = (seas && seas.overall) ? seas.overall : 0;
+      // std across months
+      var vals = (seas && seas.avg) ? seas.avg.filter(function(v){return v>0;}) : [];
+      var mean = vals.length ? vals.reduce(function(a,b){return a+b;},0)/vals.length : 0;
+      var variance = vals.length ? vals.reduce(function(a,b){return a+(b-mean)*(b-mean);},0)/vals.length : 0;
+      var sd = Math.sqrt(variance);
+      var latest = Number(g.monthly[state.result.totals.endIdx]) || 0;
+      var z = sd > 0 ? (latest - expected) / sd : 0;
+      if (z > 2) rows.push({ name: g.name, latest: latest, expected: expected, z: z });
+    });
+    rows.sort(function(a,b){return b.z-a.z;});
+    if (!rows.length) { body.innerHTML = '<div class="empty">No anomalous spikes detected (latest month within 2σ of seasonal expectation).</div>'; return; }
+    var html = '<table><thead><tr><th>Theme</th><th class="num">Latest month</th><th class="num">Seasonal expected</th><th class="num">Z-score</th></tr></thead><tbody>';
+    rows.forEach(function(r){
+      html += '<tr><td class="family-name">'+esc(r.name)+'</td><td class="num">'+fmtCompact(r.latest)+'</td><td class="num">'+fmtCompact(r.expected)+'</td><td class="num">'+r.z.toFixed(2)+'</td></tr>';
+    });
+    html += '</tbody></table>';
+    body.innerHTML = html;
+    var ob = $('overviewAnomalies');
+    if (ob) ob.innerHTML = html;
+  }
+
+  function renderCorr() {
+    var body = $('corrBody');
+    if (!body || !state.result || !state.result.correlations) return;
+    var c = state.result.correlations;
+    var names = c.names;
+    var html = '<table><thead><tr><th></th>';
+    names.forEach(function(n){ html += '<th class="num" style="font-size:10px">'+esc(n)+'</th>'; });
+    html += '</tr></thead><tbody>';
+    names.forEach(function(rowName, i){
+      html += '<tr><td class="family-name" style="font-size:11px">'+esc(rowName)+'</td>';
+      names.forEach(function(colName, j){
+        var v = c.matrix[i][j];
+        var color = '';
+        if (v != null) {
+          var t = Math.abs(v);
+          color = v >= 0 ? 'rgba(46,125,50,'+(t*0.6)+')' : 'rgba(198,40,40,'+(t*0.6)+')';
+        }
+        html += '<td class="num" style="background:'+color+';font-size:10px">'+(v==null?' - ':v.toFixed(2))+'</td>';
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table>';
+    body.innerHTML = html;
+  }
+
+  function renderOverlap() {
+    var body = $('overlapBody');
+    if (!body || !state.result || !state.result.overlap) return;
+    var o = state.result.overlap;
+    var names = o.names;
+    var html = '<table><thead><tr><th></th>';
+    names.forEach(function(n){ html += '<th class="num" style="font-size:10px">'+esc(n)+'</th>'; });
+    html += '</tr></thead><tbody>';
+    names.forEach(function(rowName, i){
+      html += '<tr><td class="family-name" style="font-size:11px">'+esc(rowName)+'</td>';
+      names.forEach(function(colName, j){
+        if (i === j) { html += '<td class="num" style="background:#eee"> - </td>'; return; }
+        var v = o.matrix[i][j].sharedAms;
+        html += '<td class="num" style="font-size:10px">'+(v?fmtCompact(v):'')+'</td>';
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table>';
+    body.innerHTML = html;
+  }
+
+  function renderNewKw() {
+    var body = $('newKwBody');
+    if (!body || !state.result) return;
+    var rows = state.result.groups.map(function(g){
+      return { name: g.name, total: g.keywords, newKw: g.newKeywords||0, newAms: g.newAms||0, est: g.establishedKeywords||0 };
+    }).sort(function(a,b){return b.newKw-a.newKw;});
+    var html = '<table><thead><tr><th>Theme</th><th class="num">Total keywords</th><th class="num">New (last 12m)</th><th class="num">New AMS</th><th class="num">Established</th></tr></thead><tbody>';
+    rows.forEach(function(r){
+      html += '<tr><td class="family-name">'+esc(r.name)+'</td><td class="num">'+fmtInt(r.total)+'</td><td class="num">'+fmtInt(r.newKw)+'</td><td class="num">'+fmtCompact(r.newAms)+'</td><td class="num">'+fmtInt(r.est)+'</td></tr>';
+    });
+    html += '</tbody></table>';
+    body.innerHTML = html;
+  }
+
+  function renderForecast() {
+    var sel = $('forecastFamily');
+    if (!sel) return;
+    if (!sel.options.length && state.result) {
+      state.result.groups.forEach(function(g){
+        var o = document.createElement('option'); o.value = g.name; o.textContent = g.name; sel.appendChild(o);
+      });
+    }
+    var name = sel.value || (state.result.groups.length?state.result.groups[0].name:null);
+    if (!name) return;
+    var group = state.result.groups.find(function(g){return g.name===name;});
+    if (!group) return;
+    var fc = TrendAnalysis.forecast(group.monthly, 6, 12);
+    // table
+    var tbl = $('forecastTable');
+    if (tbl && fc) {
+      var html = '<table><thead><tr><th>Month</th><th class="num">Projected</th><th class="num">Lower 95%</th><th class="num">Upper 95%</th></tr></thead><tbody>';
+      var lastDate = state.result.dates[state.result.dates.length-1];
+      for (var h=0; h<fc.values.length; h++) {
+        // compute future month label
+        var d = new Date(lastDate);
+        d.setMonth(d.getMonth() + h + 1);
+        var label = d.toISOString().slice(0,7);
+        html += '<tr><td>'+label+'</td><td class="num">'+fmtCompact(fc.values[h])+'</td><td class="num">'+fmtCompact(fc.lower[h])+'</td><td class="num">'+fmtCompact(fc.upper[h])+'</td></tr>';
+      }
+      html += '</tbody></table>';
+      tbl.innerHTML = html;
+    }
+    // chart
+    var canvas = $('forecastChart');
+    if (canvas && typeof Chart !== 'undefined') {
+      if (state.charts.forecast) { state.charts.forecast.destroy(); }
+      var labels = state.result.dates.slice(-12).concat(fc.values.map(function(_,i){
+        var d = new Date(lastDate); d.setMonth(d.getMonth()+i+1); return d.toISOString().slice(0,7);
+      }));
+      var histData = state.result.dates.slice(-12).map(function(d,i){ return group.monthly[state.result.dates.indexOf(d)]; });
+      // pad
+      var hist = new Array(12).fill(null);
+      for (var i=0;i<12;i++) hist[i] = group.monthly[state.result.dates.length-12+i];
+      var fut = new Array(12).fill(null);
+      // align forecast starting after history
+      var fvals = fc.values;
+      var fall = hist.concat(fvals);
+      var lower = new Array(12).fill(null).concat(fc.lower);
+      var upper = new Array(12).fill(null).concat(fc.upper);
+      var allLabels = state.result.dates.slice(-12).concat(fvals.map(function(_,i){ var d=new Date(lastDate); d.setMonth(d.getMonth()+i+1); return d.toISOString().slice(0,7); }));
+      state.charts.forecast = new Chart(canvas, {
+        type: 'line',
+        data: { labels: allLabels, datasets: [
+          { label: 'History', data: hist.concat(new Array(fvals.length).fill(null)), borderColor: '#5b4bff', fill: false },
+          { label: 'Forecast', data: new Array(12).fill(null).concat(fvals), borderColor: '#ff7a59', borderDash: [6,4], fill: false },
+          { label: 'Upper', data: upper, borderColor: 'rgba(255,122,89,0.3)', fill: '+1', pointRadius: 0 },
+          { label: 'Lower', data: lower, borderColor: 'rgba(255,122,89,0.3)', fill: false, pointRadius: 0 }
+        ]},
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true } } }
+      });
+    }
+  }
+
+  function renderNgram() {
+    var body = $('ngramBody');
+    if (!body || !state.result || !state.parsed) return;
+    var src = $('ngramSource').value;
+    var n = parseInt($('ngramN').value, 10) || 2;
+    var rows = (src === 'unclassified' && state.coverage) ? state.coverage.rows : state.parsed.rows;
+    var counts = {};
+    var amsTotals = {};
+    rows.forEach(function(r){
+      var kw = (r.keyword || '').toLowerCase();
+      var words = kw.split(/\s+/).filter(Boolean);
+      if (words.length < n) return;
+      for (var i=0; i+n <= words.length; i++) {
+        var gram = words.slice(i, i+n).join(' ');
+        counts[gram] = (counts[gram]||0) + 1;
+        amsTotals[gram] = (amsTotals[gram]||0) + (Number(r.ams)||0);
+      }
+    });
+    var list = Object.keys(counts).map(function(g){ return { gram: g, count: counts[g], ams: amsTotals[g] }; });
+    list.sort(function(a,b){ return b.count - a.count; });
+    list = list.slice(0, 40);
+    var html = '<table><thead><tr><th>Phrase</th><th class="num">Count</th><th class="num">AMS</th></tr></thead><tbody>';
+    list.forEach(function(x){
+      html += '<tr><td class="family-name">'+esc(x.gram)+'</td><td class="num">'+fmtInt(x.count)+'</td><td class="num">'+fmtCompact(x.ams)+'</td></tr>';
+    });
+    html += '</tbody></table>';
+    body.innerHTML = html;
+  }
+
+  function renderAutoSuggest() {
+    var body = $('autoSuggestBody');
+    if (!body || !state.result || !state.coverage) return;
+    // Cluster unclassified keywords by their first 2-word phrase
+    var clusters = {};
+    state.coverage.rows.forEach(function(r){
+      var words = (r.keyword||'').toLowerCase().split(/\s+/).filter(Boolean);
+      var key = words.slice(0,2).join(' ');
+      if (!key) return;
+      if (!clusters[key]) clusters[key] = { name: key, keywords: [], ams: 0 };
+      clusters[key].keywords.push(r.keyword);
+      clusters[key].ams += (Number(r.ams)||0);
+    });
+    var list = Object.keys(clusters).map(function(k){ return clusters[k]; })
+      .filter(function(c){ return c.keywords.length >= 3; })
+      .sort(function(a,b){ return b.ams - a.ams; })
+      .slice(0, 25);
+    var html = '<table><thead><tr><th>Suggested theme</th><th class="num">Keywords</th><th class="num">AMS</th><th>Sample keywords</th></tr></thead><tbody>';
+    list.forEach(function(c){
+      html += '<tr><td class="family-name">'+esc(c.name)+'</td><td class="num">'+fmtInt(c.keywords.length)+'</td><td class="num">'+fmtCompact(c.ams)+'</td><td style="font-size:11px">'+esc(c.keywords.slice(0,5).join(', '))+'</td></tr>';
+    });
+    html += '</tbody></table>';
+    if (!list.length) html = '<div class="empty">Not enough unclassified keywords to suggest themes.</div>';
+    body.innerHTML = html;
+  }
+
+  function renderInsights() {
+    renderAnomalies();
+    renderCorr();
+    renderOverlap();
+    renderNewKw();
+    renderForecast();
+  }
+
+function runAnalysis() {
     if (!state.parsed) {
       showToast('Load a Keyword Planner export first.', true);
       return;
@@ -1807,7 +2074,7 @@
           contextWords: contextWords,
           bareNotes: bareNotes,
           // Saves the brand/product mix from re-evaluating every group query.
-          collectRowGroups: hasBrands || hasTypes
+          collectRowGroups: true
         });
         state.result = result;
         state.classification = classification;
@@ -2047,6 +2314,7 @@
     renderFastestTable();
     renderBubbleChart();
     renderCoverage();
+    renderAnomalies();
   }
 
   /**
@@ -2268,6 +2536,8 @@
       sortHeader('Latest', 'latest', sort) +
       sortHeader('Short-term', 'short.growth', sort) +
       sortHeader('Long-term', 'long.growth', sort) +
+      sortHeader('YoY', 'yoy', sort) +
+      sortHeader('New kw', 'newKeywords', sort) +
       '<th>Window start</th>' +
       '<th></th>' +
       '</tr></thead><tbody>';
@@ -2280,6 +2550,8 @@
         '<td class="num">' + fmtInt(group.latest) + '</td>' +
         '<td class="num">' + growthHtml(group.short && group.short.growth) + '</td>' +
         '<td class="num">' + growthHtml(group.long && group.long.growth) + '</td>' +
+        '<td class="num">' + growthHtml(group.yoy) + '</td>' +
+        '<td class="num">' + fmtInt(group.newKeywords) + '</td>' +
         '<td class="nowrap muted">' + fmtMonth(group.short && group.short.startIso) + '</td>' +
         '<td><button class="btn small" data-deepdive="' + esc(group.name) + '">Deep dive -></button></td>' +
         '</tr>';
@@ -3373,6 +3645,7 @@
     if (name === 'top') renderTopTab();
     if (name === 'season') renderSeasonTab();
     if (name === 'trend') renderTrendTab();
+    if (name === 'insights') renderInsights();
   }
 
   function bindSorting() {
@@ -3833,6 +4106,12 @@
 
     $('sheetSelect').addEventListener('change', function () { loadSheet(this.value); });
     $('runBtn').addEventListener('click', runAnalysis);
+    var ngBtn = $('ngramRunBtn');
+    if (ngBtn) ngBtn.addEventListener('click', renderNgram);
+    var asBtn = $('autoSuggestBtn');
+    if (asBtn) asBtn.addEventListener('click', renderAutoSuggest);
+    var fcSel = $('forecastFamily');
+    if (fcSel) fcSel.addEventListener('change', renderForecast);
     $('headerPrintBtn').addEventListener('click', function () { window.print(); });
     // Command palette
     var cmdActions = [
