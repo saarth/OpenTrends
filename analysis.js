@@ -857,7 +857,7 @@
     // cross tabs can reuse this pass instead of re-running the queries.
     var rowGroups = options.collectRowGroups ? new Array(rows.length) : null;
 
-    function addTermHit(group, matcher, keyword, ams, monthly) {
+    function addTermHit(group, matcher, keyword, ams, monthly, row) {
       var store = termMap[group];
       if (!store) return;
       var term = store.get(matcher.term);
@@ -908,14 +908,14 @@
         if (matcher.group === 'On' && /\bslip[- ]on\b/i.test(keywordLower)) continue;
         if (!termMatches(matcher, keywordLower)) continue;
         matchedGroups.add(matcher.group);
-        addTermHit(matcher.group, matcher, keyword, ams, monthly);
+        addTermHit(matcher.group, matcher, keyword, ams, monthly, row);
       }
 
       // Fuzzy fallback for brand/product attribution (opt-in).
       if (options.fuzzy && !matchedGroups.size && matchers.length) {
         fuzzyMatchEntries(matchers, keyword).forEach(function (entry) {
           matchedGroups.add(entry.group);
-          addTermHit(entry.group, entry.matcher, keyword, ams, monthly);
+          addTermHit(entry.group, entry.matcher, keyword, ams, monthly, row);
         });
       }
 
@@ -932,7 +932,7 @@
           for (var t = 0; t < compiled.terms.length; t++) {
             var atom = compiled.terms[t];
             if (!atom.matcher || !termMatches(atom.matcher, keywordLower)) continue;
-            addTermHit(queryGroup, atom.matcher, keyword, ams, monthly);
+            addTermHit(queryGroup, atom.matcher, keyword, ams, monthly, row);
           }
         }
       }
@@ -948,7 +948,7 @@
             noteMatcher = termToMatcher(hit.word) || false;
             bareMatchers.set(hit.word, noteMatcher);
           }
-          if (noteMatcher) addTermHit(hit.group, noteMatcher, keyword, ams, monthly);
+          if (noteMatcher) addTermHit(hit.group, noteMatcher, keyword, ams, monthly, row);
         });
       }
 
